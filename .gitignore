@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+*.parquet
+staticfiles/
+db.sqlite3
+.DS_Store
