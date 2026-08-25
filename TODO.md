@@ -4,7 +4,7 @@ Each phase is independently buildable and has a concrete verification step — s
 
 - [x] **Phase 0 — Project skeleton.** Django scaffold, `accounts.User` wired before any other migration, Postgres via docker-compose, DRF installed, this file committed.
   *Verify:* clean `migrate` from empty DB, `/admin/` loads, `/healthz` returns 200, `check --deploy` against prod settings shows only expected warnings.
-- [ ] **Phase 1 — Council reference data.** `Council`/`CouncilCoverage` models + `councils/selectors.py`; import a hand-verified 32-row London borough fixture; expose `GET /api/v1/councils/`.
+- [x] **Phase 1 — Council reference data.** `Council`/`CouncilCoverage` models + `councils/selectors.py`; import a hand-verified 32-row London borough fixture; expose `GET /api/v1/councils/`.
   *Verify:* count is 32, spot-check 3 GSS codes against ONS's current register, API endpoint matches `Council.objects.all()`.
 - [ ] **Phase 2 — One-council ETL vertical slice.** `SpendTransaction`/`DataLoadRun` + loader, tested against Haringey (missing `AMOUNT_GBP_EX_VAT`).
   *Verify:* loaded row count matches parquet's true count exactly; spot-check 3 rows against Polars directly; re-run loader, confirm identical count and no duplicates.

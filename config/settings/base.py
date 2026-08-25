@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "apps.accounts",
     "apps.core",
+    "apps.councils",
 ]
 
 MIDDLEWARE = [
