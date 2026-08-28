@@ -11,7 +11,7 @@ Decisions locked in:
 - **Database: PostgreSQL**, for indexing and future nationwide scale.
 - **API-backed frontend, single deploy.** The Django website is a thin wrapper on an internal REST API (Django REST Framework), not a second implementation of the query logic. One repo, one deploy for MVP; a fully separate frontend/backend split was considered and explicitly deferred until a second real client (mobile app, third party) exists, to avoid CORS/token-auth complexity with no current payoff.
 
-Verified directly from the data repo (not assumed): only 5 of 44 sampled councils have the `AMOUNT_GBP_EX_VAT` column — **Haringey, Camden, and Westminster (all in-scope) lack it**, so the loader must treat it as optional from day one. There is no transaction ID in the curated schema anywhere, which drives the idempotent full-replace load strategy below. The "data quality caveat" table (first-coverage-month, pre-coverage rows, future-dated rows) exists only as hand-written prose in the data repo's README for the 32 London boroughs — it must be hand-transcribed into a fixture in this repo, not parsed, since it's not machine-readable and only covers 32 rows once.
+There is no transaction ID in the curated schema anywhere, which drives the idempotent full-replace load strategy below. The "data quality caveat" table (first-coverage-month, pre-coverage rows, future-dated rows) exists only as hand-written prose in the data repo's README for the 32 London boroughs — it must be hand-transcribed into a fixture in this repo, not parsed, since it's not machine-readable and only covers 32 rows once.
 
 Security is an explicit, non-negotiable requirement — see "Security plan" below.
 
@@ -86,7 +86,7 @@ DRF-specific security notes: use `JSONRenderer` only in production (disable the 
 
 **`councils.CouncilCoverage`** — one-to-one with `Council`. `first_coverage_month`, `pre_coverage_row_count`/`amount`, `future_dated_row_count`/`amount`, `has_data_quality_issue` (boolean, computed once at import — precomputed because the hover badge is a hot read path), `detail_text`, denormalized `earliest_transaction_date`/`latest_transaction_date`/`last_loaded_at` (avoids a live MIN/MAX query on every hover). Populated from a hand-transcribed fixture sourced from the data repo's README table — kept separate from `Council` so it stays clearly "derived/curated" data.
 
-**`spend.SpendTransaction`** — `council` (FK), `date`, `beneficiary_name` (verbatim, unresolved — no entity dedup exists upstream), `amount_gbp`, `amount_gbp_ex_vat` (nullable — absent for Haringey/Camden/Westminster), `directorate`/`category`/`sub_category`/`description` (all sparse, blank-default). Indexes on `(council, date)` and `(council, amount_gbp)`, plus a `pg_trgm` GIN index on `beneficiary_name` for recipient search (added via a static `RunSQL` migration — no user input in the DDL itself). No natural key / `unique_together` — there is no dedup key upstream, so duplicate-prevention lives in the load strategy, not the schema.
+**`spend.SpendTransaction`** — `council` (FK), `date`, `beneficiary_name` (verbatim, unresolved — no entity dedup exists upstream), `amount_gbp`, `directorate`/`category`/`sub_category`/`description` (all sparse, blank-default). Indexes on `(council, date)` and `(council, amount_gbp)`, plus a `pg_trgm` GIN index on `beneficiary_name` for recipient search (added via a static `RunSQL` migration — no user input in the DDL itself). No natural key / `unique_together` — there is no dedup key upstream, so duplicate-prevention lives in the load strategy, not the schema.
 
 Deliberately **no FK to any consultancy table** — `beneficiary_name` stays a plain string so the parked "by-consultancy spend" feature can be added later as a separate `ConsultancyFirm` + `BeneficiaryAlias` lookup table, joined by name at query time, without ever migrating `SpendTransaction`.
 
@@ -94,7 +94,7 @@ Deliberately **no FK to any consultancy table** — `beneficiary_name` stays a p
 
 ## ETL loader (`spend/services/etl.py`)
 
-- **Read**: Polars `scan_parquet`, inspect `.columns` before selecting; explicitly backfill `AMOUNT_GBP_EX_VAT` as null when absent. Only hard-require `DATE`, `BENEFICIARY_NAME`, `AMOUNT_GBP` — tolerate everything else missing.
+- **Read**: Polars `scan_parquet`, inspect `.columns` before selecting; tolerate sparse/optional columns (`directorate`/`category`/`sub_category`/`description`) being absent. Only hard-require `DATE`, `BENEFICIARY_NAME`, `AMOUNT_GBP`.
 - **Load strategy: idempotent full-replace per council**, not incremental upsert — the only correct approach given no transaction ID exists upstream. Delete all `SpendTransaction` rows for the council, bulk-insert the new set (`bulk_create(batch_size=5000)`, benchmark against `COPY` via `psycopg` if throughput is inadequate at 275K–415K-row councils), update `CouncilCoverage`'s denormalized date fields. Re-running the loader twice must produce an identical end state with zero duplicates. Because delete+insert commits atomically, Postgres's MVCC guarantees a concurrent reader (someone browsing the Spend View mid-reload) sees either the fully-old or fully-new dataset, never a partial/empty state — this is a designed property, not incidental.
 - **Audit log must outlive the transaction it describes.** Write the `DataLoadRun` row as `status="running"` and commit it *before* starting the delete+insert transaction — not inside the same transaction. If the load fails and rolls back, the failure needs to survive to be visible; wrapping the audit row in the same transaction as the payload means a crash erases the only record that a crash happened. Update the same row to `success`/`failed` in its own small transaction afterward.
 - **Concurrency guard.** Two loader runs for the same council overlapping (stuck job re-triggered, accidental double-run) would race the delete+insert. Acquire a `pg_advisory_lock` keyed on `council_id` at the start of the load; if already held, exit immediately with a clear error rather than racing.
@@ -142,6 +142,6 @@ Build Phases 0–6 (see `TODO.md`) against Haringey (plus Redbridge for the badg
 
 - `config/settings/base.py` — where `AUTH_USER_MODEL` gets set before anything else exists.
 - `apps/accounts/models.py` — custom `User`, must be in the very first migration.
-- `apps/spend/services/etl.py` — schema-drift-tolerant loader; correctness of the whole dataset hinges on handling the missing `AMOUNT_GBP_EX_VAT` case and the idempotent-replace strategy.
+- `apps/spend/services/etl.py` — schema-drift-tolerant loader; correctness of the whole dataset hinges on tolerating sparse optional columns and the idempotent-replace strategy.
 - `apps/councils/models.py` — `Council`/`CouncilCoverage`, the join point between reference data, boundaries, and the quality badge.
 - `apps/spend/views.py` — where the ORM-only filter/sort contract and streaming CSV export both live.
