@@ -2,16 +2,16 @@
 
 ## Context
 
-`local-spend-tracker-frontend` serves UK council spend-transparency data as a public, map-driven browser: click a council on a map of the UK, see its spend table with filters/sort/CSV export. The sibling repo `local-big-con-nationwide` (read-only from here) scrapes council "spend over £500" disclosures and writes harmonised Parquet files per council, but has no database, API, or web layer — this project is that serving layer.
+`local-spend-tracker-frontend` serves English council spend-transparency data as a public, map-driven browser: click a council on a map of the UK, see its spend table with filters/sort/CSV export. The sibling repo `local-big-con-nationwide` (read-only from here) scrapes council "spend over £500" disclosures and writes harmonised Parquet files per council, but has no database, API, or web layer — this project is that serving layer.
 
 Decisions locked in:
-- **MVP scope: London boroughs only (~32 councils)** — the only councils with documented data-quality caveats in the source repo, and the fastest path to a trustworthy first slice.
+- **Target scope: all of England (~300 local authorities — exact count moves with ongoing local-government reorganisation)**. Wales, Scotland, and Northern Ireland are out of scope, matching the sibling data repo's actual coverage today: NI has no equivalent statutory duty, and the Wales/Scotland councils it surveyed were later dropped as too thin to carry. **London's 32 boroughs are the pilot batch, not the final scope** — the only councils with documented data-quality caveats in the source repo, and the fastest path to a trustworthy first slice before scaling out to the rest of England.
 - **Map: Leaflet + static GeoJSON**, no PostGIS for MVP. Doesn't block a future PostGIS migration — boundary files and the `gss_code` join key carry over unchanged; only click-hit-testing moves from client to server later.
 - **No auth in MVP** — site is fully public/read-only. Screen 0 (future magic-link login) is accounted for by getting the custom `User` model in place now, not by building any login flow.
-- **Database: PostgreSQL**, for indexing and future nationwide scale.
+- **Database: PostgreSQL**, for indexing and England-wide scale.
 - **API-backed frontend, single deploy.** The Django website is a thin wrapper on an internal REST API (Django REST Framework), not a second implementation of the query logic. One repo, one deploy for MVP; a fully separate frontend/backend split was considered and explicitly deferred until a second real client (mobile app, third party) exists, to avoid CORS/token-auth complexity with no current payoff.
 
-There is no transaction ID in the curated schema anywhere, which drives the idempotent full-replace load strategy below. The "data quality caveat" table (first-coverage-month, pre-coverage rows, future-dated rows) exists only as hand-written prose in the data repo's README for the 32 London boroughs — it must be hand-transcribed into a fixture in this repo, not parsed, since it's not machine-readable and only covers 32 rows once.
+There is no transaction ID in the curated schema anywhere, which drives the idempotent full-replace load strategy below. The "data quality caveat" table (first-coverage-month, pre-coverage rows, future-dated rows) exists only as hand-written prose in the data repo's README for the London pilot boroughs — it must be hand-transcribed into a fixture in this repo, not parsed, since it's not machine-readable and only covers 32 rows once. This hand-transcription approach is pilot-scale only; see Open risks for what it means once the rest of England's ~300 councils are in play.
 
 Security is an explicit, non-negotiable requirement — see "Security plan" below.
 
@@ -49,7 +49,7 @@ local-spend-tracker-frontend/
       management/commands/
         import_council_reference.py
         import_council_coverage.py
-      static/councils/geo/          # per-borough simplified GeoJSON + manifest.json
+      static/councils/geo/          # per-council simplified GeoJSON + manifest.json
     spend/
       models.py                     # SpendTransaction, DataLoadRun
       selectors.py                  # get_filtered_transactions(council, filters, sort) — single source of truth
@@ -67,7 +67,7 @@ local-spend-tracker-frontend/
     core/
       templates/core/base.html      # shared chrome, DeepMind-style CSS shell
       static/core/js/{map,filters}.js  # filters.js progressively enhances by calling apps/api endpoints
-  scripts/fetch_boundaries.py       # ONS Open Geography -> simplified per-borough GeoJSON
+  scripts/fetch_boundaries.py       # ONS Open Geography -> simplified per-council GeoJSON
 ```
 
 ## API layer
@@ -103,7 +103,7 @@ Deliberately **no FK to any consultancy table** — `beneficiary_name` stays a p
 
 ## GeoJSON boundaries
 
-Source from ONS Open Geography Portal, **Generalised (Clipped)** Local Authority District boundaries (not full resolution) — confirm exact vintage during Phase 1, and do not reuse the data repo's `docs/local-authorities.csv` GSS codes, which are confirmed stale (pre-2023 reorg); pull the current 32 London borough codes from ONS's own register instead. Store one GeoJSON file per borough plus a combined manifest under `apps/councils/static/councils/geo/` — plain static files, no PostGIS. Leaflet renders with a UK-wide `maxBounds` and `minZoom` so the map reads as "map of the UK" while panning/zooming can't leave it; only the 32 London polygons are interactive for MVP, the rest of the UK is plain basemap tiles with no overlay.
+Source from ONS Open Geography Portal, **Generalised (Clipped)** Local Authority District boundaries (not full resolution) — confirmed during Phase 3 as `LAD_MAY_2025_UK_BGC_V2`, queryable directly as EPSG:4326 GeoJSON by GSS code, no shapefile/reprojection step needed. Do not reuse the data repo's `docs/local-authorities.csv` GSS codes, which are confirmed stale (pre-2023 reorg); pull codes fresh from ONS's own register instead — this holds for every council added, not just the London pilot. Store one GeoJSON file per council plus a combined manifest under `apps/councils/static/councils/geo/` — plain static files, no PostGIS. Leaflet renders with a UK-wide `maxBounds` and `minZoom` so the map reads as "map of the UK" while panning/zooming can't leave it; only councils with data loaded are interactive (the 32 London boroughs for the pilot, growing toward all of England), the rest of the UK is plain basemap tiles with no overlay.
 
 ## Frontend
 
@@ -129,14 +129,18 @@ Server-rendered Django templates, no SPA framework — interactivity is map-clic
 
 Build Phases 0–6 (see `TODO.md`) against Haringey (plus Redbridge for the badge check) before touching the other 30 boroughs. This exercises every architectural seam — schema drift, model design, boundary rendering, ORM-safe filtering, streaming export, and the quality flag — on a fully verifiable two-council dataset before Phase 7 fans out.
 
+London (Phases 0–7) is the pilot batch, not the finish line: it validates every architectural seam above on a real, verifiable ~32-council dataset before the same pipeline is pointed at the rest of England's ~300 councils. That England-wide expansion isn't phased out in `TODO.md` yet — it depends on the sibling data repo actually porting England's remaining councils first (its own roadmap has this as pending "v2.0 Nationwide Expansion" work), and on revisiting the pilot-scale assumptions flagged in Open risks below.
+
 ## Open risks (proceeding with stated defaults; revisit if needed)
 
-1. **GSS code freshness** — London boroughs weren't touched by the April 2023 reorg, but the data repo's CSV is confirmed stale regardless; source the 32 codes fresh from ONS's own register during Phase 1.
-2. **Exact ONS boundary dataset vintage** — defaulting to a recent "Generalised, Clipped" LAD product; confirm during Phase 3 and note the one-line OGL attribution requirement.
-3. **Data hand-off automation** — the data repo has no scheduling/publishing today; defaulting to a documented manual runbook (Phase 10) rather than building automation, consistent with "lightweight."
-4. **Full-replace load strategy** — correct given no transaction ID exists, but means every refresh reloads a whole council rather than an incremental delta; fine at current volumes, worth revisiting only if the data repo ever produces true incremental output.
+1. **GSS code freshness** — London boroughs weren't touched by the April 2023 reorg, but the data repo's CSV is confirmed stale regardless; source codes fresh from ONS's own register for every council, London or otherwise.
+2. **Exact ONS boundary dataset vintage** — confirmed during Phase 3 as `LAD_MAY_2025_UK_BGC_V2` ("Generalised, Clipped"); note the one-line OGL attribution requirement, and that ONS reissues this periodically (the vintage is pinned by name in `scripts/fetch_boundaries.py`, so bumping it later is a one-line change).
+3. **Data hand-off automation** — the data repo has no scheduling/publishing today; defaulting to a documented manual runbook (Phase 10) rather than building automation, consistent with "lightweight." At ~300 councils this may need revisiting even for London-pilot-era manual cadence.
+4. **Full-replace load strategy** — correct given no transaction ID exists, but means every refresh reloads a whole council rather than an incremental delta; fine at pilot volumes, worth revisiting only if the data repo ever produces true incremental output.
 5. **Recipient autocomplete will look noisy** — `beneficiary_name` is unresolved until the parked consultancy-alias table is built; expected, not a bug.
 6. **`pg_trgm` extension** — recipient search needs `CREATE EXTENSION pg_trgm`, which needs admin rights on whatever Postgres host is chosen; confirm the hosting provider allows it before Phase 4.
+7. **Hand-transcribed data-quality caveat table doesn't scale past the pilot.** The `CouncilCoverage` fixture is manually transcribed from hand-written README prose per council (see Data model) — workable for 32 London boroughs, not for ~300 English councils. Revisit before England-wide expansion: either get the sibling data repo to emit this as structured output per council, or accept a slower, batched manual-transcription cadence as councils are added.
+8. **Boundary/GeoJSON file count at England scale.** The current one-file-per-council approach (~2.8KB minified per council after Phase 3) scales to low-single-digit MB in total across ~300 councils — fine for the per-council boundary fetch itself, but a future "whole of England" map view loading all files at once should reconsider bundling (combined file, or TopoJSON to dedupe shared borough/district borders) rather than ~300 individual HTTP requests. Not needed for the London pilot; worth deciding before Phase 7 (32 files) grows toward the full set.
 
 ## Critical files
 
