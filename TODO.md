@@ -8,7 +8,7 @@ Each phase is independently buildable and has a concrete verification step — s
   *Verify:* count is 32, spot-check 3 GSS codes against ONS's current register, API endpoint matches `Council.objects.all()`.
 - [x] **Phase 2 — One-council ETL vertical slice.** `SpendTransaction`/`DataLoadRun` + loader, tested against Haringey.
   *Verify:* loaded row count matches parquet's true count exactly; spot-check 3 rows against Polars directly; re-run loader, confirm identical count and no duplicates.
-- [ ] **Phase 3 — One boundary + minimal map.** Fetch Haringey's boundary, bare Leaflet page with UK-locked bounds.
+- [x] **Phase 3 — One boundary + minimal map.** Fetch Haringey's boundary, bare Leaflet page with UK-locked bounds.
   *Verify:* polygon sits correctly in north London at correct scale; click-inside fires, click-outside doesn't; can't pan/zoom off the UK.
 - [ ] **Phase 4 — One council's Spend View + API, end-to-end.** `spend/selectors.py`, server-rendered sortable/filterable table for Haringey, Category filter disabled, `GET /api/v1/councils/haringey/transactions/`.
   *Verify:* filtered counts/totals cross-checked against an equivalent Polars query; sort columns toggle correctly on both HTML and API; `connection.queries` confirms parameterized queries; `EXPLAIN ANALYZE` confirms index usage, not sequential scan.
