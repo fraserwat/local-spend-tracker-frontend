@@ -23,6 +23,7 @@ from pathlib import Path
 import django
 import geopandas as gpd
 import requests
+import shapely
 from shapely.geometry import mapping
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +43,9 @@ ONS_FEATURE_SERVER = (
     f"{SOURCE_VINTAGE}/FeatureServer/0/query"
 )
 SIMPLIFY_TOLERANCE_DEGREES = 0.0002
+# ~11cm at UK latitudes — ONS's source precision (13+ decimal places) is
+# sub-nanometer and pure file-size waste for a web map.
+COORDINATE_PRECISION_DEGREES = 1e-6
 
 GEO_DIR = BASE_DIR / "apps" / "councils" / "static" / "councils" / "geo"
 MANIFEST_PATH = GEO_DIR / "manifest.json"
@@ -68,7 +72,8 @@ def fetch_boundary(gss_code: str) -> dict:
 def simplify_geometry(raw_geojson: dict, tolerance: float) -> dict:
     gdf = gpd.GeoDataFrame.from_features(raw_geojson["features"], crs="EPSG:4326")
     simplified = gdf.geometry.iloc[0].simplify(tolerance, preserve_topology=True)
-    return mapping(simplified)
+    rounded = shapely.set_precision(simplified, grid_size=COORDINATE_PRECISION_DEGREES)
+    return mapping(rounded)
 
 
 def write_council_boundary(council: Council) -> dict:
@@ -90,7 +95,7 @@ def write_council_boundary(council: Council) -> dict:
     }
     GEO_DIR.mkdir(parents=True, exist_ok=True)
     out_path = GEO_DIR / f"{council.slug}.geojson"
-    out_path.write_text(json.dumps(feature_collection, indent=2))
+    out_path.write_text(json.dumps(feature_collection, separators=(",", ":")))
     return {
         "slug": council.slug,
         "gss_code": council.gss_code,
