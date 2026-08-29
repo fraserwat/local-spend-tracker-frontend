@@ -6,7 +6,7 @@ Each phase is independently buildable and has a concrete verification step — s
   *Verify:* clean `migrate` from empty DB, `/admin/` loads, `/healthz` returns 200, `check --deploy` against prod settings shows only expected warnings.
 - [x] **Phase 1 — Council reference data.** `Council`/`CouncilCoverage` models + `councils/selectors.py`; import a hand-verified 32-row London borough fixture; expose `GET /api/v1/councils/`.
   *Verify:* count is 32, spot-check 3 GSS codes against ONS's current register, API endpoint matches `Council.objects.all()`.
-- [ ] **Phase 2 — One-council ETL vertical slice.** `SpendTransaction`/`DataLoadRun` + loader, tested against Haringey.
+- [x] **Phase 2 — One-council ETL vertical slice.** `SpendTransaction`/`DataLoadRun` + loader, tested against Haringey.
   *Verify:* loaded row count matches parquet's true count exactly; spot-check 3 rows against Polars directly; re-run loader, confirm identical count and no duplicates.
 - [ ] **Phase 3 — One boundary + minimal map.** Fetch Haringey's boundary, bare Leaflet page with UK-locked bounds.
   *Verify:* polygon sits correctly in north London at correct scale; click-inside fires, click-outside doesn't; can't pan/zoom off the UK.
