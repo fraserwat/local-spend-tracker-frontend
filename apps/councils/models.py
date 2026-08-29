@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Council(models.Model):
-    """Reference data for one London borough.
+    """Reference data for one English council (London's boroughs are the pilot batch).
 
     `gss_code` is the ONS join key (Register of geographic codes) used to
     match council rows against GeoJSON boundaries later. `slug` matches
