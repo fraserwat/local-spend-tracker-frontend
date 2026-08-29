@@ -1,0 +1,17 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.5
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: no-push-to-main
+        name: Block push to main
+        entry: .githooks/no-push-to-main.sh
+        language: script
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true
