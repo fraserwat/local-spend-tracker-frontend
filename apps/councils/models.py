@@ -24,15 +24,17 @@ class Council(models.Model):
 class CouncilCoverage(models.Model):
     """Data-quality join point for a council, one-to-one with Council.
 
-    Deliberately minimal for Phase 1 — just enough to hang a future hover
-    badge (Phase 6) off of. Denormalized date fields, pre-coverage row
-    counts etc. are added later once the ETL loader (Phase 2) exists to
-    populate them.
+    `earliest_transaction_date`/`latest_transaction_date`/`last_loaded_at`
+    are denormalized from `SpendTransaction` by the ETL loader (Phase 2) —
+    avoids a live MIN/MAX query on every hover-badge read.
     """
 
     council = models.OneToOneField(Council, on_delete=models.CASCADE, related_name="coverage")
     has_data_quality_issue = models.BooleanField(default=False)
     detail_text = models.TextField(blank=True, default="")
+    earliest_transaction_date = models.DateField(null=True, blank=True)
+    latest_transaction_date = models.DateField(null=True, blank=True)
+    last_loaded_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Coverage: {self.council.name}"
