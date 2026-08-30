@@ -2,6 +2,10 @@ from django.db import models
 
 from apps.councils.models import Council
 
+# GBP amounts always carry pence-level precision. Shared with the rounding
+# step in apps/spend/services/etl.py so both stay in sync.
+AMOUNT_DECIMAL_PLACES = 2
+
 
 class SpendTransaction(models.Model):
     """One row of council spend, loaded verbatim from the upstream parquet.
@@ -20,7 +24,7 @@ class SpendTransaction(models.Model):
     council = models.ForeignKey(Council, on_delete=models.CASCADE, related_name="transactions")
     date = models.DateField()
     beneficiary_name = models.CharField(max_length=255)
-    amount_gbp = models.DecimalField(max_digits=14, decimal_places=2)
+    amount_gbp = models.DecimalField(max_digits=14, decimal_places=AMOUNT_DECIMAL_PLACES)
     directorate = models.CharField(max_length=255, blank=True, default="")
     category = models.CharField(max_length=255, blank=True, default="")
     sub_category = models.CharField(max_length=255, blank=True, default="")

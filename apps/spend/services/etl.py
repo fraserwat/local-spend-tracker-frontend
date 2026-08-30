@@ -16,7 +16,7 @@ from django.db import connection, transaction
 from django.utils import timezone
 
 from apps.councils.models import Council, CouncilCoverage
-from apps.spend.models import DataLoadRun, SpendTransaction
+from apps.spend.models import AMOUNT_DECIMAL_PLACES, DataLoadRun, SpendTransaction
 
 # Fixed column contract enforced by the data repo's harmonise() step
 # (src/ingest/harmonise.py:TARGET_COLUMNS) -- always exactly these 8
@@ -57,7 +57,7 @@ def _to_transaction(row: dict, council: Council) -> SpendTransaction:
         beneficiary_name=row["BENEFICIARY_NAME"],
         # str() before Decimal avoids binary float artifacts (e.g. 8249.13
         # stored as 8249.129999999999) that Decimal(float) would preserve.
-        amount_gbp=Decimal(str(round(amount, 2))),
+        amount_gbp=Decimal(str(round(amount, AMOUNT_DECIMAL_PLACES))),
         directorate=row["DIRECTORATE"] or "",
         category=row["CATEGORY"] or "",
         sub_category=row["SUB_CATEGORY"] or "",
