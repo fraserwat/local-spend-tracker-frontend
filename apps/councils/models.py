@@ -1,6 +1,24 @@
 from django.db import models
 
 
+class Region(models.TextChoices):
+    """The 9 ONS statistical regions of England.
+
+    Fixed set, rarely changes -- a `choices` CharField on Council, not a
+    separate table.
+    """
+
+    NORTH_EAST = "north_east", "North East"
+    NORTH_WEST = "north_west", "North West"
+    YORKSHIRE_HUMBER = "yorkshire_humber", "Yorkshire and the Humber"
+    EAST_MIDLANDS = "east_midlands", "East Midlands"
+    WEST_MIDLANDS = "west_midlands", "West Midlands"
+    EAST_OF_ENGLAND = "east_of_england", "East of England"
+    LONDON = "london", "London"
+    SOUTH_EAST = "south_east", "South East"
+    SOUTH_WEST = "south_west", "South West"
+
+
 class Council(models.Model):
     """Reference data for one English council (London's boroughs are the pilot batch).
 
@@ -13,6 +31,15 @@ class Council(models.Model):
     slug = models.SlugField(max_length=100, unique=True)
     gss_code = models.CharField(max_length=9, unique=True, db_index=True)
     is_active = models.BooleanField(default=True)
+    # No model-level default -- future onboarding must always state a
+    # region explicitly, not silently inherit one. Note `choices` is a
+    # Python/form-level constraint only, not a DB CHECK constraint --
+    # `.objects.create()`/`bulk_create()` without a full_clean() call will
+    # happily write an empty string or any other value here. Any future
+    # onboarding path (admin, serializer, management command) that creates
+    # Council rows should call full_clean() or otherwise validate before
+    # save() so this stays enforced in practice, not just in intent.
+    region = models.CharField(max_length=20, choices=Region.choices)
 
     class Meta:
         ordering = ["name"]

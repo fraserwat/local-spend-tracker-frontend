@@ -6,7 +6,7 @@ import psycopg
 import pytest
 from django.conf import settings
 
-from apps.councils.models import Council
+from apps.councils.models import Council, Region
 from apps.spend.models import DataLoadRun, SpendTransaction
 from apps.spend.services.etl import LoadError, load_council_spend
 
@@ -34,7 +34,9 @@ def _row(**overrides):
 
 @pytest.fixture
 def council(db):
-    return Council.objects.create(name="Test Borough", slug="testborough", gss_code="E09000998")
+    return Council.objects.create(
+        name="Test Borough", slug="testborough", gss_code="E09000998", region=Region.LONDON
+    )
 
 
 @pytest.mark.django_db

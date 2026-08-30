@@ -1,0 +1,194 @@
+[
+  {
+    "name": "Barking and Dagenham",
+    "slug": "barking-and-dagenham",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Barnet",
+    "slug": "barnet",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Bexley",
+    "slug": "bexley",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Brent",
+    "slug": "brent",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Bromley",
+    "slug": "bromley",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Camden",
+    "slug": "camden",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Croydon",
+    "slug": "croydon",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Ealing",
+    "slug": "ealing",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Enfield",
+    "slug": "enfield",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Greenwich",
+    "slug": "greenwich",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Hackney",
+    "slug": "hackney",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Hammersmith and Fulham",
+    "slug": "hammersmith-and-fulham",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Haringey",
+    "slug": "haringey",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Harrow",
+    "slug": "harrow",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Havering",
+    "slug": "havering",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Hillingdon",
+    "slug": "hillingdon",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Hounslow",
+    "slug": "hounslow",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Islington",
+    "slug": "islington",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Kensington and Chelsea",
+    "slug": "kensington-and-chelsea",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Kingston upon Thames",
+    "slug": "kingston-upon-thames",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Lambeth",
+    "slug": "lambeth",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Lewisham",
+    "slug": "lewisham",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Merton",
+    "slug": "merton",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Newham",
+    "slug": "newham",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Redbridge",
+    "slug": "redbridge",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Richmond upon Thames",
+    "slug": "richmond-upon-thames",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Southwark",
+    "slug": "southwark",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Sutton",
+    "slug": "sutton",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Tower Hamlets",
+    "slug": "tower-hamlets",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Waltham Forest",
+    "slug": "waltham-forest",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Wandsworth",
+    "slug": "wandsworth",
+    "region": "london",
+    "region_display": "London"
+  },
+  {
+    "name": "Westminster",
+    "slug": "westminster",
+    "region": "london",
+    "region_display": "London"
+  }
+]
