@@ -1,0 +1,54 @@
+{% load static %}
+{% comment %}
+Council picker as a sidebar fragment -- included wherever the shared
+navigation lives (currently the "/" landing page; Phase 3's map and
+Phase 7's council-detail view will include this same fragment once they
+exist), not a full page in its own right.
+{% endcomment %}
+<div class="council-sidebar">
+  <div id="council-search-container" data-index-url="{% static 'councils/data/council-index.json' %}"></div>
+  <p id="search-status"></p>
+  <noscript>
+    <p>Search needs JavaScript. Browse by region below instead.</p>
+  </noscript>
+
+  <h2 class="council-sidebar__heading">Browse by region</h2>
+  {% regroup councils by get_region_display as region_groups %}
+  {% for group in region_groups %}
+  <details>
+    {# A council with a blank/invalid region (shouldn't happen via the app's #}
+    {# own onboarding paths, but `choices` isn't DB-enforced) would otherwise #}
+    {# render an unlabelled, inaccessible <summary> -- fall back to a plain #}
+    {# label instead of silently dropping it from view. #}
+    <summary>{{ group.grouper|default:"Unknown region" }}</summary>
+    <ul>
+      {% for council in group.list %}
+      <li><a href="{% url 'council-detail' slug=council.slug %}">{{ council.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% empty %}
+  <p>No councils available yet.</p>
+  {% endfor %}
+</div>
+
+<script>
+  // Placeholder path built from the same "council-detail" named route the
+  // region-group links use via the url template tag, not a hardcoded
+  // "/council/" string -- the search widget doesn't know the slug until a
+  // suggestion is confirmed, so the placeholder is swapped in client-side
+  // instead.
+  var councilUrlTemplate = "{% url 'council-detail' slug='__SLUG__' %}";
+</script>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/accessible-autocomplete@3.0.1/dist/accessible-autocomplete.min.css"
+  integrity="sha384-tm2lkBj7LRznflL/jGlXy/p8q+F2u49L5GXWaZZj2FlYy97QB8SUbC4yVGVz2PQc"
+  crossorigin="anonymous"
+/>
+<script
+  src="https://unpkg.com/accessible-autocomplete@3.0.1/dist/accessible-autocomplete.min.js"
+  integrity="sha384-1OflYz7DmKfj0jIJ8DiQC510AbUslTNMYmhRucfm1Eg057frmHHYejk7+YJZZCwX"
+  crossorigin="anonymous"
+></script>
+<script src="{% static 'councils/js/picker.js' %}"></script>

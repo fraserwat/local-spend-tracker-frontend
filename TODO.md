@@ -20,8 +20,8 @@ Each phase is independently buildable and has a concrete verification step — s
   *Verify:* badge appears only for Redbridge with matching detail text; Haringey shows none.
 - [ ] **Phase 7 — Scale to all 32 London boroughs (pilot completion).** Repeat reference/boundary/load/coverage for the rest. England-wide expansion beyond London is future work — see `docs/ARCHITECTURE.md`'s "Recommended sequencing" and Open risks #7–8 — and isn't phased out here yet, pending the sibling data repo porting the rest of England's councils.
   *Verify:* reconciliation script comparing DB row counts against each parquet file for all 32, exact match; full map renders 32 gap-free, hoverable/clickable polygons.
-- [ ] **Phase 8 — Shared sidebar/navigation.** Alphabetical sidebar, "Back to Map", a dormant `view=consultancy` query-param hook (recognized-but-unimplemented).
-  *Verify:* ampersands sort correctly ("Barking & Dagenham" under B); sidebar navigation jumps council-to-council without returning to the map.
+- [ ] **Phase 8 — Shared sidebar/navigation.** Search-first typeahead (GOV.UK `accessible-autocomplete` against a static `council-index.json`) plus a collapsed-by-default, region-grouped `<details>` browse list as a sidebar fragment, not a standalone page; a dormant `view=consultancy` query-param hook (recognized-but-unimplemented).
+  *Verify:* typing a partial name filters live and keyboard selection navigates to the right council; region groups stay collapsed until clicked and degrade to plain links with JS disabled; sidebar navigation jumps council-to-council without returning to the map.
 - [ ] **Phase 9 — Security hardening pass.** Checklist pass over `docs/ARCHITECTURE.md`'s security plan, including DRF-specific items.
   *Verify:* `check --deploy` clean; grep for `|safe`/`mark_safe`/raw SQL returns nothing unexpected; manual XSS smoke test; rate limit still holds; `/api/v1/` in prod returns JSON only.
 - [ ] **Phase 10 — Deployment & data-refresh runbook.** Dockerfile/gunicorn, managed Postgres with automated backups, documented manual data-refresh runbook, scheduled reconciliation.
