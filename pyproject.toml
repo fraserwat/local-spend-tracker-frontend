@@ -13,9 +13,15 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "bandit>=1.9.4",
+    "django-stubs>=6.1.0",
+    "djangorestframework-stubs>=3.18.1",
     "geopandas>=1.1.4",
+    "mypy>=2.3.1",
+    "pip-audit>=2.10.1",
     "pre-commit>=4.6.2",
     "pytest>=8.3",
+    "pytest-cov>=7.1.0",
     "pytest-django>=4.9,<4.13",
     "requests>=2.34.2",
     "ruff>=0.16.5",
@@ -38,3 +44,28 @@ known-first-party = ["config"]
 
 [tool.ruff.lint.per-file-ignores]
 "*/migrations/*.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.13"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+mypy_path = "$MYPY_CONFIG_FILE_DIR"
+exclude = ["migrations/"]
+
+[[tool.mypy.overrides]]
+module = "*.migrations.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+# django-environ ships no stubs and no py.typed marker.
+module = "environ"
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings.dev"
+
+[tool.coverage.run]
+source = ["apps"]
+omit = ["*/migrations/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_also = ["if TYPE_CHECKING:"]

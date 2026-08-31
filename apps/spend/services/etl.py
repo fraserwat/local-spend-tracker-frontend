@@ -10,6 +10,7 @@ from datetime import datetime
 from decimal import Decimal
 from itertools import batched
 from pathlib import Path
+from typing import cast
 
 import polars as pl
 from django.db import connection, transaction
@@ -92,11 +93,13 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
                 row_count += len(batch)
 
             dates = df["DATE"]
+            earliest = cast(datetime, dates.min())
+            latest = cast(datetime, dates.max())
             CouncilCoverage.objects.update_or_create(
                 council=council,
                 defaults={
-                    "earliest_transaction_date": dates.min().date(),
-                    "latest_transaction_date": dates.max().date(),
+                    "earliest_transaction_date": earliest.date(),
+                    "latest_transaction_date": latest.date(),
                     "last_loaded_at": timezone.now(),
                 },
             )
