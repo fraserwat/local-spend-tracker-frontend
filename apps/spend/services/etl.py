@@ -6,11 +6,10 @@ giving concurrent readers an old-or-new snapshot (Postgres MVCC) and making
 repeat runs converge to the same state rather than accumulating duplicates.
 """
 
-from datetime import datetime
+from datetime import date as date_cls
 from decimal import Decimal
 from itertools import batched
 from pathlib import Path
-from typing import cast
 
 import polars as pl
 from django.db import connection, transaction
@@ -51,10 +50,10 @@ def _validate(df_columns: set[str], council_names: set[str], slug: str) -> None:
 
 def _to_transaction(row: dict, council: Council) -> SpendTransaction:
     amount: float = row["AMOUNT_GBP"]
-    date: datetime = row["DATE"]
+    date: date_cls = row["DATE"]
     return SpendTransaction(
         council=council,
-        date=date.date(),
+        date=date,
         beneficiary_name=row["BENEFICIARY_NAME"],
         # str() before Decimal avoids binary float artifacts (e.g. 8249.13
         # stored as 8249.129999999999) that Decimal(float) would preserve.
@@ -77,6 +76,9 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
 
     try:
         df = pl.read_parquet(source_path)
+        # Upstream DATE dtype varies (Date vs Datetime) -- normalize once so
+        # downstream code always sees plain datetime.date values.
+        df = df.with_columns(pl.col("DATE").cast(pl.Date))
         _validate(set(df.columns), set(df["COUNCIL_NAME"].unique().to_list()), council.slug)
 
         with transaction.atomic():
@@ -93,13 +95,11 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
                 row_count += len(batch)
 
             dates = df["DATE"]
-            earliest = cast(datetime, dates.min())
-            latest = cast(datetime, dates.max())
             CouncilCoverage.objects.update_or_create(
                 council=council,
                 defaults={
-                    "earliest_transaction_date": earliest.date(),
-                    "latest_transaction_date": latest.date(),
+                    "earliest_transaction_date": dates.min(),
+                    "latest_transaction_date": dates.max(),
                     "last_loaded_at": timezone.now(),
                 },
             )
