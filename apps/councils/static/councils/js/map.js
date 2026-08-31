@@ -25,8 +25,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ).addTo(map);
 
+  // No council selected yet (the "/" landing state) -- leave a bare,
+  // pannable UK map with no boundary to fetch and no inside/outside status
+  // to track.
+  if (!geojsonUrl) return;
+
   fetch(geojsonUrl)
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) throw new Error("boundary fetch failed: " + response.status);
+      return response.json();
+    })
     .then((geojson) => {
       const layer = L.geoJSON(geojson, {
         style: { color: "#1a5276", weight: 2, fillOpacity: 0.15 },
@@ -41,6 +49,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }).addTo(map);
 
       map.fitBounds(layer.getBounds());
+    })
+    .catch((error) => {
+      // Only Haringey has a fetched boundary today (Phase 7 scales this to
+      // the rest) -- a missing file for any other council is expected, not
+      // a bug, so this degrades to a status message rather than an
+      // unhandled rejection.
+      statusEl.textContent = "boundary data not available yet for this council";
+      // eslint-disable-next-line no-console
+      console.error("boundary fetch failed", error);
     });
 
   map.on("click", () => {

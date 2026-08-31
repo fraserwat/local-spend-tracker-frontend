@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{% if council %}{{ council.name }} — {% endif %}Local Spend Tracker{% endblock %}
+
+{% block extra_head %}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+<style>
+  html, body, #app { height: 100%; margin: 0; }
+  body { font-family: system-ui, sans-serif; color: #0b0c0c; }
+  .layout { display: flex; align-items: stretch; height: 100%; }
+  .main-panel { flex: 1; min-width: 0; position: relative; }
+  #map { height: 100%; width: 100%; }
+  #status {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-size: 0.9rem;
+  }
+  .council-sidebar {
+    width: 20rem;
+    flex: none;
+    overflow-y: auto;
+    padding: 1.5rem;
+    box-sizing: border-box;
+  }
+  #search-status { font-size: 0.85rem; color: #505a5f; }
+  .council-sidebar__heading { font-size: 1rem; margin-bottom: 0.25rem; }
+  details { border-bottom: 1px solid #b1b4b6; padding: 0.5rem 0; }
+  summary { cursor: pointer; font-weight: 600; padding: 0.25rem 0; }
+  details ul { list-style: none; margin: 0.5rem 0 0.5rem 1rem; padding: 0; }
+  details li { padding: 0.15rem 0; }
+  details a { color: #1d70b8; text-decoration: underline; }
+  details a[aria-current="page"] { font-weight: 600; text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="layout">
+  <main class="main-panel">
+    <div id="status">{% if council %}click the map{% else %}select a council to see its boundary{% endif %}</div>
+    <div id="map" data-geojson-url="{% if geojson_static_path %}{% static geojson_static_path %}{% endif %}"></div>
+  </main>
+  <aside>
+    {% include "councils/_council_sidebar.html" %}
+  </aside>
+</div>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+<script src="{% static 'councils/js/map.js' %}"></script>
+{% endblock %}

@@ -1,5 +1,4 @@
-from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404, render
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import CursorPagination
 
@@ -24,16 +23,30 @@ class CouncilListView(ListAPIView):
         return get_councils()
 
 
-class MapView(TemplateView):
-    """Screen 1, Phase 3 slice: bare Leaflet map, one council's boundary.
+def council_dashboard(request, slug=None):
+    """GET / and GET /council/<slug>/ — one screen, two states.
 
-    Hardcodes Haringey for now — Phase 7 generalises this to all 32 boroughs
-    via the geo manifest built by scripts/fetch_boundaries.py.
+    The sidebar (search + region browse) and the map are the same screen,
+    not separate pages: "/" is that screen with no council chosen yet,
+    "/council/<slug>/" is the same screen with that council's boundary
+    loaded. Selecting a council in the sidebar moves between the two
+    without ever leaving the screen.
+
+    Region groups are server-rendered straight from the DB via `{% regroup %}`
+    so they're always fresh -- the search widget's data comes from the
+    separately-generated `council-index.json` instead (see
+    `generate_council_index` management command), not this queryset.
     """
-
-    template_name = "councils/map.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["council"] = get_object_or_404(Council, slug="haringey")
-        return context
+    council = get_object_or_404(Council, slug=slug) if slug else None
+    councils = get_councils().filter(is_active=True).order_by("region", "name")
+    context = {
+        "council": council,
+        "councils": councils,
+        "selected_slug": slug,
+    }
+    if council:
+        # Only Haringey has a fetched boundary file today (Phase 7 scales
+        # this to the rest); other councils just render an empty map until
+        # then, rather than 404ing the whole page.
+        context["geojson_static_path"] = f"councils/geo/{council.slug}.geojson"
+    return render(request, "councils/main.html", context)
