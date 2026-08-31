@@ -1,0 +1,13 @@
+{
+  "councils": {
+    "haringey": {
+      "file": "haringey.geojson",
+      "gss_code": "E09000014",
+      "name": "Haringey",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "haringey",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    }
+  },
+  "schema_version": 1
+}
