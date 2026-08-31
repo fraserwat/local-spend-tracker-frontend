@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const map = L.map(mapEl, {
     maxBounds: ukBounds,
     maxBoundsViscosity: 1.0,
-    minZoom: 6,
-  }).setView([54.5, -3], 6);
+    minZoom: 8,
+  }).setView([54.5, -3], 8);
 
   // Esri World Light Gray Canvas: minimal no-key basemap built for overlay
   // maps — keeps borough polygons legible instead of competing with full
