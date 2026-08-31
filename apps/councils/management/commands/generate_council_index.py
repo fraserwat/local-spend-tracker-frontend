@@ -19,10 +19,10 @@ DEFAULT_OUTPUT_PATH = (
 
 class Command(BaseCommand):
     help = (
-        "Generate the static council-index.json used by the picker page's search "
-        "widget (apps/councils/templates/councils/picker.html). Server-rendered "
-        "region groups on that same page read the DB directly instead -- this "
-        "file only backs the client-side autocomplete."
+        "Generate the static council-index.json used by the council search "
+        "widget (apps/councils/templates/councils/_council_sidebar.html). "
+        "Server-rendered region groups on that same page read the DB directly "
+        "instead -- this file only backs the client-side autocomplete."
     )
 
     def add_arguments(self, parser):

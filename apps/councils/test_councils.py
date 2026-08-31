@@ -174,10 +174,41 @@ def test_council_picker_view_renders_region_and_council_names():
 
 
 @pytest.mark.django_db
-def test_council_detail_stub_route_resolves_and_responds():
+def test_council_detail_route_renders_map_for_known_council():
+    """ "/" and "/council/<slug>/" are the same screen (sidebar + map), just
+    with a council loaded or not -- this checks the loaded state renders
+    the map with that council's boundary and highlights it in the sidebar."""
     client = Client()
-    url = reverse("council-detail", kwargs={"slug": "some-slug"})
-    assert url == "/council/some-slug/"
+    url = reverse("council-detail", kwargs={"slug": "haringey"})
+    assert url == "/council/haringey/"
 
     response = client.get(url)
-    assert response.status_code == 501
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert 'id="map"' in content
+    assert "haringey.geojson" in content
+    assert f'<a href="{url}" aria-current="page">Haringey</a>' in content
+
+
+@pytest.mark.django_db
+def test_council_detail_route_404s_for_unknown_slug():
+    client = Client()
+    response = client.get(reverse("council-detail", kwargs={"slug": "not-a-real-council"}))
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_council_picker_root_has_no_council_selected():
+    """The "/" state of the shared screen: map has no boundary to fetch yet,
+    and no sidebar link is marked as the current one."""
+    client = Client()
+    response = client.get(reverse("council-picker"))
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert 'data-geojson-url=""' in content
+    # The CSS rule `a[aria-current="page"]` in <style> also contains this
+    # substring -- check for the attribute as it'd appear on a rendered
+    # anchor (leading space), not the bare string.
+    assert ' aria-current="page"' not in content

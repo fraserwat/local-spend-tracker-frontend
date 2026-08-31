@@ -6,6 +6,6 @@ from . import views
 
 urlpatterns = [
     path("healthz", views.healthz, name="healthz"),
-    path("", council_views.council_picker, name="council-picker"),
-    path("council/<slug:slug>/", council_views.council_detail_stub, name="council-detail"),
+    path("", council_views.council_dashboard, name="council-picker"),
+    path("council/<slug:slug>/", council_views.council_dashboard, name="council-detail"),
 ]

@@ -1,8 +1,8 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import CursorPagination
 
+from .models import Council
 from .selectors import get_councils
 from .serializers import CouncilSerializer
 
@@ -23,25 +23,30 @@ class CouncilListView(ListAPIView):
         return get_councils()
 
 
-def council_picker(request):
-    """GET / — search-first typeahead plus a collapsed-by-default,
-    region-grouped browse list. Both are independent entry points into the
-    same council list (search bypasses the region hierarchy, it isn't
-    filtering within it).
+def council_dashboard(request, slug=None):
+    """GET / and GET /council/<slug>/ — one screen, two states.
+
+    The sidebar (search + region browse) and the map are the same screen,
+    not separate pages: "/" is that screen with no council chosen yet,
+    "/council/<slug>/" is the same screen with that council's boundary
+    loaded. Selecting a council in the sidebar moves between the two
+    without ever leaving the screen.
 
     Region groups are server-rendered straight from the DB via `{% regroup %}`
     so they're always fresh -- the search widget's data comes from the
     separately-generated `council-index.json` instead (see
     `generate_council_index` management command), not this queryset.
     """
+    council = get_object_or_404(Council, slug=slug) if slug else None
     councils = get_councils().filter(is_active=True).order_by("region", "name")
-    return render(request, "councils/picker.html", {"councils": councils})
-
-
-def council_detail_stub(request, slug):
-    """Placeholder for the not-yet-built Phase 7 council detail view.
-
-    Exists only so `{% url 'council-detail' %}` resolves for the picker
-    page's links -- no real functionality here yet.
-    """
-    return HttpResponse(f"Coming soon — Phase 7 ({slug})", status=501)
+    context = {
+        "council": council,
+        "councils": councils,
+        "selected_slug": slug,
+    }
+    if council:
+        # Only Haringey has a fetched boundary file today (Phase 7 scales
+        # this to the rest); other councils just render an empty map until
+        # then, rather than 404ing the whole page.
+        context["geojson_static_path"] = f"councils/geo/{council.slug}.geojson"
+    return render(request, "councils/main.html", context)

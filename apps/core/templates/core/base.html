@@ -5,8 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Local Spend Tracker{% endblock %}</title>
   {% block extra_head %}{% endblock %}
+  <style>
+    #mobile-gate { display: none; }
+
+    /* This app packs a map plus dense data panels — that layout has no
+       useful mobile rendering, so screens narrower than a landscape
+       tablet get a plain message instead of a squeezed, broken UI. */
+    @media (max-width: 768px) {
+      #app { display: none; }
+
+      #mobile-gate {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        padding: 2rem;
+        text-align: center;
+        font-family: system-ui, sans-serif;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        box-sizing: border-box;
+      }
+    }
+  </style>
 </head>
 <body>
-  {% block content %}{% endblock %}
+  <div id="app">{% block content %}{% endblock %}</div>
+  <div id="mobile-gate">This app needs a wider screen — please open it on a desktop or laptop.</div>
 </body>
 </html>

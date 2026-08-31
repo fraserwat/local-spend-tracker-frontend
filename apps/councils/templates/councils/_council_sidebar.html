@@ -1,9 +1,10 @@
 {% load static %}
 {% comment %}
-Council picker as a sidebar fragment -- included wherever the shared
-navigation lives (currently the "/" landing page; Phase 3's map and
-Phase 7's council-detail view will include this same fragment once they
-exist), not a full page in its own right.
+Council picker as a sidebar fragment, included alongside the map in
+councils/main.html -- not a full page in its own right. "/" and
+"/council/<slug>/" are the same screen (see council_dashboard), so this
+fragment renders identically either way, aside from which link (if any)
+gets aria-current="page".
 {% endcomment %}
 <div class="council-sidebar">
   <div id="council-search-container" data-index-url="{% static 'councils/data/council-index.json' %}"></div>
@@ -23,7 +24,7 @@ exist), not a full page in its own right.
     <summary>{{ group.grouper|default:"Unknown region" }}</summary>
     <ul>
       {% for council in group.list %}
-      <li><a href="{% url 'council-detail' slug=council.slug %}">{{ council.name }}</a></li>
+      <li><a href="{% url 'council-detail' slug=council.slug %}"{% if council.slug == selected_slug %} aria-current="page"{% endif %}>{{ council.name }}</a></li>
       {% endfor %}
     </ul>
   </details>
