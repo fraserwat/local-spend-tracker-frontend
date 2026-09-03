@@ -13,6 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedLayer = null;
   let coveragePromise = Promise.resolve(null);
 
+  // Bumped at the top of every renderSelectedCouncil()/showIdleState() call.
+  // Each call's async .then/.catch captures the value current at its own
+  // call time -- if a newer call has since bumped it, this one is stale and
+  // must not touch selectedLayer/selectedSlugState/the camera, which by now
+  // belong to whatever the newer call rendered. Without this, a slow fetch
+  // for an earlier switch can resolve after a faster later one and overwrite
+  // its result, orphaning the newer layer on the map.
+  let renderGeneration = 0;
+
   // slug -> parsed GeoJSON. Populated on first fetch (idle-outline load or a
   // selected-boundary load, whichever happens first for that council) and
   // never evicted, so switching back to a previously-seen council is a
@@ -162,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // passes null when the preloaded index says this council has no coverage
   // row, skipping a fetch known to 404).
   function renderSelectedCouncil(slug, coverageUrl) {
+    const generation = ++renderGeneration;
     badgeEl.classList.remove("visible");
     demoteSelectedToIdle();
 
@@ -179,6 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return loadAndRenderCouncilBoundary(slug)
       .then((layer) => {
+        if (generation !== renderGeneration) return;
+
         layer.addTo(map);
         selectedLayer = layer;
         selectedSlugState = slug;
@@ -195,6 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       })
       .catch((error) => {
+        if (generation !== renderGeneration) return;
+
         // Only a handful of councils have a fetched boundary so far (Phase
         // 7 scales this to the rest) -- a missing file for any other
         // council is expected, not a bug, so this degrades to a status
@@ -209,6 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Counterpart to renderSelectedCouncil for navigating back to "/" -- no
   // council selected, camera returns to the England-wide default view.
   function showIdleState() {
+    ++renderGeneration;
     badgeEl.classList.remove("visible");
     demoteSelectedToIdle();
     selectedSlugState = null;
