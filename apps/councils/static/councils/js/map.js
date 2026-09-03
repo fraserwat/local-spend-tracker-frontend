@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusEl = document.getElementById("status");
   const geojsonUrl = mapEl.dataset.geojsonUrl;
   const manifestUrl = mapEl.dataset.manifestUrl;
+  const spendUrl = mapEl.dataset.spendUrl;
 
   // Locks pan/zoom to the UK — maxBoundsViscosity 1.0 makes the bounds
   // fully solid (no rubber-band drag past the edge).
@@ -95,7 +96,18 @@ document.addEventListener("DOMContentLoaded", () => {
             // Stops the click reaching map's own handler below, so
             // inside/outside clicks are mutually exclusive.
             L.DomEvent.stopPropagation(event);
-            statusEl.textContent = `clicked inside: ${feature.properties.name}`;
+            // Same destination as the "view spend" link shown before any
+            // click -- clicking the boundary is just a faster path there,
+            // not a different action.
+            if (spendUrl) {
+              statusEl.innerHTML = "";
+              const link = document.createElement("a");
+              link.href = spendUrl;
+              link.textContent = `View ${feature.properties.name} Spend`;
+              statusEl.appendChild(link);
+            } else {
+              statusEl.textContent = `clicked inside: ${feature.properties.name}`;
+            }
           });
         },
       }).addTo(map);

@@ -59,6 +59,7 @@
       id="map"
       data-geojson-url="{% if geojson_static_path %}{% static geojson_static_path %}{% endif %}"
       data-manifest-url="{% static 'councils/geo/manifest.json' %}"
+      data-spend-url="{% if council %}{% url 'council-spend' slug=council.slug %}{% endif %}"
     ></div>
   </main>
 </div>
