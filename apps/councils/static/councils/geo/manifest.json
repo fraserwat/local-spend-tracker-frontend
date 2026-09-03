@@ -1,11 +1,35 @@
 {
   "councils": {
+    "barnet": {
+      "file": "barnet.geojson",
+      "gss_code": "E09000003",
+      "name": "Barnet",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "barnet",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "haringey": {
       "file": "haringey.geojson",
       "gss_code": "E09000014",
       "name": "Haringey",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "haringey",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "newham": {
+      "file": "newham.geojson",
+      "gss_code": "E09000025",
+      "name": "Newham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "newham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "redbridge": {
+      "file": "redbridge.geojson",
+      "gss_code": "E09000026",
+      "name": "Redbridge",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "redbridge",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     }
   },

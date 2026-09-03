@@ -1,9 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const mapEl = document.getElementById("map");
   const statusEl = document.getElementById("status");
+  const badgeEl = document.getElementById("coverage-badge");
   const geojsonUrl = mapEl.dataset.geojsonUrl;
   const manifestUrl = mapEl.dataset.manifestUrl;
   const spendUrl = mapEl.dataset.spendUrl;
+  const coverageUrl = mapEl.dataset.coverageUrl;
 
   // Locks pan/zoom to the UK — maxBoundsViscosity 1.0 makes the bounds
   // fully solid (no rubber-band drag past the edge).
@@ -83,6 +85,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // Fetched once up front (not per hover) so the first hover shows the
+  // badge immediately instead of waiting on a network round-trip. A
+  // missing/failed coverage row (no data loaded yet for this council) just
+  // means the badge never has anything to show -- not an error state.
+  const coveragePromise = coverageUrl
+    ? fetch(coverageUrl)
+        .then((response) => (response.ok ? response.json() : null))
+        .catch(() => null)
+    : Promise.resolve(null);
+
   fetch(geojsonUrl)
     .then((response) => {
       if (!response.ok) throw new Error("boundary fetch failed: " + response.status);
@@ -109,16 +121,26 @@ document.addEventListener("DOMContentLoaded", () => {
               statusEl.textContent = `clicked inside: ${feature.properties.name}`;
             }
           });
+          featureLayer.on("mouseover", () => {
+            coveragePromise.then((coverage) => {
+              if (!coverage || !coverage.has_data_quality_issue) return;
+              badgeEl.textContent = coverage.detail_text;
+              badgeEl.classList.add("visible");
+            });
+          });
+          featureLayer.on("mouseout", () => {
+            badgeEl.classList.remove("visible");
+          });
         },
       }).addTo(map);
 
       map.fitBounds(layer.getBounds());
     })
     .catch((error) => {
-      // Only Haringey has a fetched boundary today (Phase 7 scales this to
-      // the rest) -- a missing file for any other council is expected, not
-      // a bug, so this degrades to a status message rather than an
-      // unhandled rejection.
+      // Only a handful of councils have a fetched boundary so far (Phase 7
+      // scales this to the rest) -- a missing file for any other council is
+      // expected, not a bug, so this degrades to a status message rather
+      // than an unhandled rejection.
       statusEl.textContent = "boundary data not available yet for this council";
       // eslint-disable-next-line no-console
       console.error("boundary fetch failed", error);

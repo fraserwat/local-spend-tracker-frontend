@@ -1,10 +1,12 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404, render
-from rest_framework.generics import ListAPIView
+from django.urls import reverse
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import CursorPagination
 
 from .models import Council
-from .selectors import get_councils
-from .serializers import CouncilSerializer
+from .selectors import get_councils, get_coverage
+from .serializers import CouncilSerializer, CoverageSerializer
 
 
 class CouncilCursorPagination(CursorPagination):
@@ -21,6 +23,24 @@ class CouncilListView(ListAPIView):
 
     def get_queryset(self):
         return get_councils()
+
+
+class CouncilCoverageView(RetrieveAPIView):
+    """GET /api/v1/councils/<slug>/coverage/ — backs the map's hover badge.
+
+    404s (rather than returning a null-ish payload) when the council exists
+    but hasn't been loaded yet, so the frontend's existing missing-boundary
+    catch-and-degrade pattern (map.js) handles this the same way.
+    """
+
+    serializer_class = CoverageSerializer
+
+    def get_object(self):
+        council = get_object_or_404(Council, slug=self.kwargs["slug"])
+        coverage = get_coverage(council)
+        if coverage is None:
+            raise Http404(f"no coverage data loaded yet for council slug={council.slug!r}")
+        return coverage
 
 
 def council_dashboard(request, slug=None):
@@ -45,8 +65,9 @@ def council_dashboard(request, slug=None):
         "selected_slug": slug,
     }
     if council:
-        # Only Haringey has a fetched boundary file today (Phase 7 scales
-        # this to the rest); other councils just render an empty map until
-        # then, rather than 404ing the whole page.
+        # Only a handful of councils have a fetched boundary file so far
+        # (Phase 7 scales this to the rest); other councils just render an
+        # empty map until then, rather than 404ing the whole page.
         context["geojson_static_path"] = f"councils/geo/{council.slug}.geojson"
+        context["coverage_url"] = reverse("council-coverage", kwargs={"slug": council.slug})
     return render(request, "councils/main.html", context)
