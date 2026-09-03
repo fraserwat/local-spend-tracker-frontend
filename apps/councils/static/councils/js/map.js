@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (prefersReducedMotion) {
           map.fitBounds(bounds);
         } else {
-          map.flyToBounds(bounds, { duration: 0.8, easeLinearity: 0.25, maxZoom: 12 });
+          map.flyToBounds(bounds, { duration: 0.4, easeLinearity: 0.25, maxZoom: 12 });
         }
       })
       .catch((error) => {
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (prefersReducedMotion) {
       map.setView(englandMidpoint, 8);
     } else {
-      map.flyTo(englandMidpoint, 8, { duration: 0.8, easeLinearity: 0.25 });
+      map.flyTo(englandMidpoint, 8, { duration: 0.4, easeLinearity: 0.25 });
     }
   }
 
