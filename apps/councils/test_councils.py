@@ -159,16 +159,13 @@ def test_council_picker_view_renders_region_and_council_names():
     assert response.status_code == 200
     content = response.content.decode()
     haringey_url = reverse("council-detail", kwargs={"slug": "haringey"})
-    js_sri = "sha384-1OflYz7DmKfj0jIJ8DiQC510AbUslTNMYmhRucfm1Eg057frmHHYejk7+YJZZCwX"
-    css_sri = "sha384-tm2lkBj7LRznflL/jGlXy/p8q+F2u49L5GXWaZZj2FlYy97QB8SUbC4yVGVz2PQc"
 
     assert "<summary>London</summary>" in content
     assert f'<a href="{haringey_url}">Haringey</a>' in content
     assert '<div id="council-search-container"' in content
-    assert '<p id="search-status">' in content
-    # CDN assets must carry the SRI integrity attribute, not be included bare.
-    assert f'integrity="{js_sri}"' in content
-    assert f'integrity="{css_sri}"' in content
+    assert '<input type="text" id="council-search"' in content
+    assert '<ul id="council-search-results" hidden></ul>' in content
+    assert '<p id="search-status" aria-live="polite">' in content
     # No stray/leaked Django comment syntax anywhere in the rendered output.
     assert "{#" not in content and "#}" not in content
 

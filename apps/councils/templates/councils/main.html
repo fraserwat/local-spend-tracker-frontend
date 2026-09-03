@@ -121,6 +121,17 @@
     background: var(--color-surface);
     border-right: 1px solid var(--color-border-subtle);
   }
+  #council-search {
+    width: 100%;
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
   #search-status { font-size: 0.85rem; color: var(--color-text-muted); }
   .council-sidebar__heading {
     font-size: 0.75rem;
@@ -131,10 +142,11 @@
   }
   details { border-bottom: 1px solid var(--color-border-subtle); padding: var(--space-2) 0; }
   summary { cursor: pointer; font-weight: 600; padding: var(--space-1) 0; color: var(--color-text); }
-  details ul { list-style: none; margin: var(--space-2) 0 var(--space-2) var(--space-4); padding: 0; }
-  details li { padding: var(--space-1) 0; }
-  details a { color: var(--color-accent); text-decoration: none; }
-  details a:hover { text-decoration: underline; }
+  details ul, #council-search-results { list-style: none; margin: var(--space-2) 0 var(--space-2) 0; padding: 0; }
+  details ul { margin-left: var(--space-4); }
+  details li, #council-search-results li { padding: var(--space-1) 0; }
+  details a, #council-search-results a { color: var(--color-accent); text-decoration: none; }
+  details a:hover, #council-search-results a:hover { text-decoration: underline; }
   details a[aria-current="page"] { font-weight: 600; color: var(--color-text); }
 
   /* Leaflet ships its own light-mode chrome for the zoom control — the
@@ -146,42 +158,6 @@
     color: var(--color-text) !important;
   }
   .leaflet-bar a:hover { background: var(--color-surface-hover) !important; }
-
-  /* accessible-autocomplete (GOV.UK pattern) ships light-mode CSS with no
-     theming hooks besides class names — override with !important since
-     its own stylesheet loads after this block via CDN link order. */
-  .autocomplete__wrapper { font-family: var(--font-sans); }
-  .autocomplete__input {
-    background: var(--color-bg-elevated) !important;
-    color: var(--color-text) !important;
-    border: 1px solid var(--color-border) !important;
-    border-radius: var(--radius-sm) !important;
-  }
-  .autocomplete__menu {
-    background: var(--color-bg-elevated) !important;
-    border: 1px solid var(--color-border) !important;
-    color: var(--color-text) !important;
-  }
-  .autocomplete__option {
-    background: var(--color-bg-elevated) !important;
-    color: var(--color-text) !important;
-    border-color: var(--color-border-subtle) !important;
-  }
-  /* The vendor CSS hardcodes a light-grey background on odd rows for
-     zebra-striping (accessible-autocomplete.min.css: .autocomplete__option
-     --odd { background-color: #f3f2f1 }) — flattened to match the other
-     rows instead of carrying that striping into the dark theme. */
-  .autocomplete__option--odd { background: var(--color-bg-elevated) !important; }
-  .autocomplete__option--no-results {
-    background: var(--color-bg-elevated) !important;
-    color: var(--color-text-faint) !important;
-  }
-  .autocomplete__option--focused,
-  .autocomplete__option:hover {
-    background: var(--color-accent) !important;
-    color: var(--color-accent-text) !important;
-  }
-  .autocomplete__hint { color: var(--color-text-faint) !important; }
 </style>
 {% endblock %}
 
