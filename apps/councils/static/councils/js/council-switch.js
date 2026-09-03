@@ -25,6 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
     "^" + councilUrlTemplate.replace("__SLUG__", "([^/]+)") + "$"
   );
 
+  // Bumped by every showCouncil()/showPicker() call. A showCouncil() call's
+  // async CouncilIndex.load().then() captures the value current at its own
+  // call time -- if a later call has since bumped it, this one is stale and
+  // must not touch document.title/statusEl/headingEl, which by now belong
+  // to whatever the later call rendered.
+  let switchGeneration = 0;
+
   function announce(message) {
     // Clearing first, then setting on a later tick, forces the change to
     // register as a fresh update even if two switches in a row would
@@ -50,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showCouncil(slug, opts) {
     opts = opts || {};
+    const generation = ++switchGeneration;
     const targetUrl = councilUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
 
     if (!window.councilMap) {
@@ -57,42 +65,53 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    CouncilIndex.load(indexUrl).then((rows) => {
-      const row = CouncilIndex.findBySlug(rows, slug);
-      if (!row) {
-        // Not in the preloaded index (stale cache, or a slug that doesn't
-        // exist) -- a real navigation lets the server 404 it properly
-        // rather than this script guessing at a degraded in-page state.
+    CouncilIndex.load(indexUrl)
+      .then((rows) => {
+        if (generation !== switchGeneration) return;
+
+        const row = CouncilIndex.findBySlug(rows, slug);
+        if (!row) {
+          // Not in the preloaded index (stale cache, or a slug that doesn't
+          // exist) -- a real navigation lets the server 404 it properly
+          // rather than this script guessing at a degraded in-page state.
+          window.location.href = targetUrl;
+          return;
+        }
+
+        const coverageUrl =
+          row.has_coverage === true
+            ? councilCoverageUrlTemplate.replace("__SLUG__", encodeURIComponent(slug))
+            : null;
+        window.councilMap.renderSelectedCouncil(slug, coverageUrl);
+
+        document.title = row.name + " — Local Spend Tracker";
+        statusEl.innerHTML = "";
+        const link = document.createElement("a");
+        link.href = councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
+        link.className = "spend-cta";
+        link.textContent = "View " + row.name + " Spend";
+        statusEl.appendChild(link);
+        setAriaCurrent(slug);
+        headingEl.textContent = row.name;
+        headingEl.focus();
+        announce("Now showing " + row.name);
+
+        if (!opts.fromPopState) {
+          history.pushState({ slug: slug }, "", targetUrl);
+        }
+      })
+      .catch(() => {
+        // CouncilIndex.load() rejected (network blip, etc.) -- fall back to
+        // a real navigation, same as the "slug not found" branch above,
+        // instead of leaving the click silently swallowed.
+        if (generation !== switchGeneration) return;
         window.location.href = targetUrl;
-        return;
-      }
-
-      const coverageUrl =
-        row.has_coverage === true
-          ? councilCoverageUrlTemplate.replace("__SLUG__", encodeURIComponent(slug))
-          : null;
-      window.councilMap.renderSelectedCouncil(slug, coverageUrl);
-
-      document.title = row.name + " — Local Spend Tracker";
-      statusEl.innerHTML = "";
-      const link = document.createElement("a");
-      link.href = councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
-      link.className = "spend-cta";
-      link.textContent = "View " + row.name + " Spend";
-      statusEl.appendChild(link);
-      setAriaCurrent(slug);
-      headingEl.textContent = row.name;
-      headingEl.focus();
-      announce("Now showing " + row.name);
-
-      if (!opts.fromPopState) {
-        history.pushState({ slug: slug }, "", targetUrl);
-      }
-    });
+      });
   }
 
   function showPicker(opts) {
     opts = opts || {};
+    switchGeneration++;
     if (window.councilMap) window.councilMap.showIdleState();
 
     document.title = "Local Spend Tracker";

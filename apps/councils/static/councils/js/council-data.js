@@ -9,10 +9,18 @@ window.CouncilIndex = (function () {
 
   function load(url) {
     if (!promise) {
-      promise = fetch(url).then(function (response) {
-        if (!response.ok) throw new Error("council-index fetch failed: " + response.status);
-        return response.json();
-      });
+      promise = fetch(url)
+        .then(function (response) {
+          if (!response.ok) throw new Error("council-index fetch failed: " + response.status);
+          return response.json();
+        })
+        .catch(function (error) {
+          // A transient failure shouldn't poison the cache forever -- clear
+          // it so the next load() call retries instead of replaying the
+          // same rejected promise to every future caller.
+          promise = null;
+          throw error;
+        });
     }
     return promise;
   }
