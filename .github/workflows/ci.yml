@@ -5,6 +5,11 @@ on:
     branches: [main]
   push:
     branches: [main]
+  schedule:
+    # Catch newly disclosed CVEs against already-merged dependency pins --
+    # pip-audit/bandit/gitleaks otherwise only run when a PR happens to
+    # touch the repo. Matches docs/ARCHITECTURE.md's "periodic pip-audit".
+    - cron: "0 6 * * 1"
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -55,15 +60,20 @@ jobs:
       - name: bandit (Python SAST)
         run: uv run bandit -r apps config -ll
       - name: pip-audit (dependency CVEs)
-        # Non-blocking: Django 5.1.15 currently has known CVEs
-        # (fix pending 5.2.x bump, tracked separately). Flip to
-        # blocking once the pyproject.toml pin is bumped past it.
         run: uv run pip-audit
-        continue-on-error: true
       - name: gitleaks (secret scanning)
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: check --deploy (prod settings)
+        # Dummy values -- this only exercises settings validation
+        # (HSTS, cookie flags, ALLOWED_HOSTS presence, etc.), never
+        # touches a real deploy target.
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.prod
+          DJANGO_SECRET_KEY: ci-check-deploy-placeholder-not-a-real-secret-0123456789
+          DJANGO_ALLOWED_HOSTS: example.com
+        run: uv run python manage.py check --deploy
 
   dependency-review:
     name: Dependency review
