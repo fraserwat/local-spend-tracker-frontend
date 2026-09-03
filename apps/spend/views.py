@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+from django.db.models import Count, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from rest_framework.generics import ListAPIView
@@ -105,10 +108,19 @@ def council_spend_view(request, slug):
         return stream_transactions_csv(queryset, filename=f"{council.slug}-transactions.csv")
 
     page = []
+    total_count = 0
+    total_amount = Decimal("0")
     paginator = TransactionCursorPagination()
     if form.is_valid():
         queryset = _filtered_transactions(council, form)
         page = paginator.paginate_queryset(queryset, Request(request)) or []
+        # One aggregate query over the filtered (unsliced) queryset -- an
+        # index-backed scan of the matching rows, not the 400K+-row table,
+        # so it doesn't reintroduce the offset-pagination cost this view's
+        # keyset pagination (see pagination.py) is built to avoid.
+        totals = queryset.aggregate(count=Count("id"), amount=Sum("amount_gbp"))
+        total_count = totals["count"] or 0
+        total_amount = totals["amount"] or Decimal("0")
 
     current_sort = form.sort_field if form.is_valid() else "date"
     current_descending = form.descending if form.is_valid() else True
@@ -116,6 +128,8 @@ def council_spend_view(request, slug):
         "council": council,
         "form": form,
         "transactions": page,
+        "total_count": total_count,
+        "total_amount": total_amount,
         "next_link": paginator.get_next_link() if form.is_valid() else None,
         "previous_link": paginator.get_previous_link() if form.is_valid() else None,
         "sort": current_sort,

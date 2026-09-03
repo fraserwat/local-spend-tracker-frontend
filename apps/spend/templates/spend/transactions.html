@@ -6,16 +6,38 @@
 <style>
   body { margin: var(--space-5); }
   h1 { font-size: 1.4rem; margin-bottom: var(--space-4); }
-  .back-link {
-    display: inline-block;
-    margin-bottom: var(--space-4);
-    color: var(--color-text-muted);
-    font-size: 0.85rem;
-    text-decoration: none;
-  }
-  .back-link:hover { color: var(--color-accent); }
 
-  .filters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; margin-bottom: var(--space-5); }
+  .page-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-bg);
+    padding-top: var(--space-1);
+    padding-bottom: var(--space-2);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+    background: var(--color-cta);
+    color: var(--color-cta-text);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(233, 180, 76, 0.35);
+    transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .back-link:hover {
+    background: var(--color-cta-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(233, 180, 76, 0.45);
+  }
+
+  .filters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; }
   .filters label {
     display: block;
     font-size: 0.7rem;
@@ -24,18 +46,37 @@
     color: var(--color-text-muted);
     margin-bottom: var(--space-1);
   }
+  .reset-link {
+    align-self: center;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .reset-link:hover { color: var(--color-accent); }
 
   .errorlist { color: var(--color-error); list-style: none; padding: 0; margin: 0 0 var(--space-4); font-size: 0.85rem; }
 
-  table {
-    border-collapse: collapse;
-    width: 100%;
+  .result-summary {
+    margin: var(--space-4) 0 var(--space-2);
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+  }
+
+  .table-wrapper {
+    max-height: calc(100vh - 320px);
+    overflow-y: auto;
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
   }
-  th, td { text-align: left; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border-subtle); font-size: 0.85rem; }
-  th {
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--color-border-subtle); font-size: 0.85rem; }
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--color-bg-elevated);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -44,79 +85,129 @@
   }
   th a { color: var(--color-text-muted); text-decoration: none; }
   th a:hover { color: var(--color-accent); }
+  .sort-arrow { color: var(--color-accent); margin-left: var(--space-1); }
   tbody tr:hover { background: var(--color-surface-hover); }
   .amount { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .category-pill {
+    display: inline-block;
+    padding: 0.15rem var(--space-2);
+    border-radius: 999px;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .category-empty { color: var(--color-text-faint); }
+
+  tfoot td {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background: var(--color-bg-elevated);
+    border-top: 2px solid var(--color-border);
+    border-bottom: none;
+    font-weight: 700;
+  }
+
   .pagination { margin-top: var(--space-4); display: flex; gap: var(--space-4); font-size: 0.85rem; }
+
+  button.button-cta {
+    background: var(--color-cta);
+    color: var(--color-cta-text);
+    box-shadow: 0 2px 10px rgba(233, 180, 76, 0.35);
+  }
+  button.button-cta:hover {
+    background: var(--color-cta-hover);
+    box-shadow: 0 4px 14px rgba(233, 180, 76, 0.45);
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<a class="back-link" href="{% url 'council-detail' slug=council.slug %}">&larr; back to map</a>
-<h1>{{ council.name }} — spend</h1>
+<div class="page-header">
+  <a class="back-link" href="{% url 'council-detail' slug=council.slug %}">&larr; Back</a>
+  <h1>{{ council.name }} — spend</h1>
 
-{% if form.errors %}
-<ul class="errorlist">
-  {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-</ul>
-{% endif %}
+  {% if form.errors %}
+  <ul class="errorlist">
+    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+  </ul>
+  {% endif %}
 
-<form class="filters" method="get">
-  <div>
-    <label for="{{ form.date_from.id_for_label }}">From</label>
-    {{ form.date_from }}
-  </div>
-  <div>
-    <label for="{{ form.date_to.id_for_label }}">To</label>
-    {{ form.date_to }}
-  </div>
-  <div>
-    <label for="{{ form.amount_min.id_for_label }}">Min £</label>
-    {{ form.amount_min }}
-  </div>
-  <div>
-    <label for="{{ form.amount_max.id_for_label }}">Max £</label>
-    {{ form.amount_max }}
-  </div>
-  <div>
-    <label for="{{ form.q.id_for_label }}">Recipient</label>
-    {{ form.q }}
-  </div>
-  <div>
-    <label for="{{ form.category.id_for_label }}">Category (Coming Soon)</label>
-    {{ form.category }}
-  </div>
-  <input type="hidden" name="sort" value="{{ sort }}">
-  <input type="hidden" name="dir" value="{{ dir }}">
-  <button type="submit">Filter</button>
-  <button type="submit" name="export" value="csv" class="button-secondary">Export CSV</button>
-</form>
+  <form class="filters" method="get">
+    <div>
+      <label for="{{ form.date_from.id_for_label }}">From</label>
+      {{ form.date_from }}
+    </div>
+    <div>
+      <label for="{{ form.date_to.id_for_label }}">To</label>
+      {{ form.date_to }}
+    </div>
+    <div>
+      <label for="{{ form.amount_min.id_for_label }}">Min £</label>
+      {{ form.amount_min }}
+    </div>
+    <div>
+      <label for="{{ form.amount_max.id_for_label }}">Max £</label>
+      {{ form.amount_max }}
+    </div>
+    <div>
+      <label for="{{ form.q.id_for_label }}">Recipient</label>
+      {{ form.q }}
+    </div>
+    <div>
+      <label for="{{ form.category.id_for_label }}">Category (Coming Soon)</label>
+      {{ form.category }}
+    </div>
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <input type="hidden" name="dir" value="{{ dir }}">
+    <button type="submit">Filter</button>
+    <button type="submit" name="export" value="csv" class="button-cta">Export CSV</button>
+    <a class="reset-link" href="{% url 'council-spend' slug=council.slug %}">Reset filters</a>
+  </form>
 
-<table>
-  <thead>
-    <tr>
-      <th><a href="{{ sort_links.date }}">Date</a></th>
-      <th><a href="{{ sort_links.beneficiary_name }}">Beneficiary</a></th>
-      <th class="amount"><a href="{{ sort_links.amount_gbp }}">Amount (£)</a></th>
-      <th>Directorate</th>
-      <th>Category</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for txn in transactions %}
-    <tr>
-      <td>{{ txn.date }}</td>
-      <td>{{ txn.beneficiary_name }}</td>
-      <td class="amount">{{ txn.amount_gbp }}</td>
-      <td>{{ txn.directorate }}</td>
-      <td>{{ txn.category }}</td>
-      <td>{{ txn.description }}</td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="6">No transactions match these filters.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+  <div class="result-summary">Showing {{ transactions|length }} of {{ total_count }} transaction{{ total_count|pluralize }} matching filters</div>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th><a href="{{ sort_links.date }}">Date{% if sort == "date" %}<span class="sort-arrow">{% if dir == "asc" %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+        <th><a href="{{ sort_links.beneficiary_name }}">Beneficiary{% if sort == "beneficiary_name" %}<span class="sort-arrow">{% if dir == "asc" %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+        <th class="amount"><a href="{{ sort_links.amount_gbp }}">Amount (£){% if sort == "amount_gbp" %}<span class="sort-arrow">{% if dir == "asc" %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+        <th>Directorate</th>
+        <th>Category</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for txn in transactions %}
+      <tr>
+        <td>{{ txn.date }}</td>
+        <td>{{ txn.beneficiary_name }}</td>
+        <td class="amount">{{ txn.amount_gbp }}</td>
+        <td>{{ txn.directorate }}</td>
+        <td>
+          {% if txn.category %}<span class="category-pill">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">No transactions match these filters.</td></tr>
+      {% endfor %}
+    </tbody>
+    {% if transactions %}
+    <tfoot>
+      <tr>
+        <td colspan="2">Total (all matching results)</td>
+        <td class="amount">£{{ total_amount }}</td>
+        <td colspan="2"></td>
+      </tr>
+    </tfoot>
+    {% endif %}
+  </table>
+</div>
 
 <div class="pagination">
   {% if previous_link %}<a href="{{ previous_link }}">&larr; Previous</a>{% endif %}
