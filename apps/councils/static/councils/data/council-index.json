@@ -3,192 +3,224 @@
     "name": "Barking and Dagenham",
     "slug": "barking-and-dagenham",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Barnet",
     "slug": "barnet",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": true
   },
   {
     "name": "Bexley",
     "slug": "bexley",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Brent",
     "slug": "brent",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Bromley",
     "slug": "bromley",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Camden",
     "slug": "camden",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Croydon",
     "slug": "croydon",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Ealing",
     "slug": "ealing",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Enfield",
     "slug": "enfield",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Greenwich",
     "slug": "greenwich",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Hackney",
     "slug": "hackney",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Hammersmith and Fulham",
     "slug": "hammersmith-and-fulham",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Haringey",
     "slug": "haringey",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": true
   },
   {
     "name": "Harrow",
     "slug": "harrow",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Havering",
     "slug": "havering",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Hillingdon",
     "slug": "hillingdon",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Hounslow",
     "slug": "hounslow",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Islington",
     "slug": "islington",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Kensington and Chelsea",
     "slug": "kensington-and-chelsea",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Kingston upon Thames",
     "slug": "kingston-upon-thames",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Lambeth",
     "slug": "lambeth",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Lewisham",
     "slug": "lewisham",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Merton",
     "slug": "merton",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Newham",
     "slug": "newham",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": true
   },
   {
     "name": "Redbridge",
     "slug": "redbridge",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": true
   },
   {
     "name": "Richmond upon Thames",
     "slug": "richmond-upon-thames",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Southwark",
     "slug": "southwark",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Sutton",
     "slug": "sutton",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Tower Hamlets",
     "slug": "tower-hamlets",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Waltham Forest",
     "slug": "waltham-forest",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Wandsworth",
     "slug": "wandsworth",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   },
   {
     "name": "Westminster",
     "slug": "westminster",
     "region": "london",
-    "region_display": "London"
+    "region_display": "London",
+    "has_coverage": false
   }
 ]

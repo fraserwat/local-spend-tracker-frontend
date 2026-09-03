@@ -161,7 +161,7 @@ def test_council_picker_view_renders_region_and_council_names():
     haringey_url = reverse("council-detail", kwargs={"slug": "haringey"})
 
     assert "<summary>London</summary>" in content
-    assert f'<a href="{haringey_url}">Haringey</a>' in content
+    assert f'<a href="{haringey_url}" data-slug="haringey">Haringey</a>' in content
     assert '<div id="council-search-container"' in content
     assert '<input type="text" id="council-search"' in content
     assert '<ul id="council-search-results" hidden></ul>' in content
@@ -185,7 +185,7 @@ def test_council_detail_route_renders_map_for_known_council():
     content = response.content.decode()
     assert 'id="map"' in content
     assert "haringey.geojson" in content
-    assert f'<a href="{url}" aria-current="page">Haringey</a>' in content
+    assert f'<a href="{url}" data-slug="haringey" aria-current="page">Haringey</a>' in content
 
 
 @pytest.mark.django_db

@@ -18,11 +18,7 @@
     return councilUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
   }
 
-  fetch(indexUrl)
-    .then(function (response) {
-      if (!response.ok) throw new Error("index fetch failed: " + response.status);
-      return response.json();
-    })
+  CouncilIndex.load(indexUrl)
     .then(function (councils) {
       // council-index.json is generated pre-sorted by name (see
       // generate_council_index), so filtering preserves alphabetical order
@@ -53,6 +49,10 @@
           var li = document.createElement("li");
           var a = document.createElement("a");
           a.href = councilUrl(council.slug);
+          // data-slug lets council-switch.js's delegated .council-sidebar
+          // click listener intercept these the same way it does the
+          // region-browse links -- no separate wiring needed here.
+          a.dataset.slug = council.slug;
           a.textContent = council.name;
           li.appendChild(a);
           resultsList.appendChild(li);

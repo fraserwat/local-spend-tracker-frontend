@@ -112,6 +112,17 @@
     font-size: 0.85rem;
   }
   #coverage-badge.visible { display: block; }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   .council-sidebar {
     width: 20rem;
     flex: none;
@@ -167,6 +178,8 @@
     {% include "councils/_council_sidebar.html" %}
   </aside>
   <main class="main-panel">
+    <h1 id="council-route-heading" class="visually-hidden" tabindex="-1">{% if council %}{{ council.name }}{% else %}Select a council{% endif %}</h1>
+    <div id="council-switch-announcer" class="visually-hidden" aria-live="polite" role="status"></div>
     <div id="status">
       {% if council %}click the map — <a href="{% url 'council-spend' slug=council.slug %}">view spend</a>{% else %}select a council to see its boundary{% endif %}
     </div>
@@ -187,4 +200,5 @@
   crossorigin=""
 ></script>
 <script src="{% static 'councils/js/map.js' %}"></script>
+<script src="{% static 'councils/js/council-switch.js' %}"></script>
 {% endblock %}
