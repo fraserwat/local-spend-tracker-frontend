@@ -74,10 +74,12 @@ document.addEventListener("DOMContentLoaded", () => {
       window.councilMap.renderSelectedCouncil(slug, coverageUrl);
 
       document.title = row.name + " — Local Spend Tracker";
-      statusEl.innerHTML =
-        'click the map — <a href="' +
-        councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug)) +
-        '">view spend</a>';
+      statusEl.innerHTML = "";
+      const link = document.createElement("a");
+      link.href = councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
+      link.className = "spend-cta";
+      link.textContent = "View " + row.name + " Spend";
+      statusEl.appendChild(link);
       setAriaCurrent(slug);
       headingEl.textContent = row.name;
       headingEl.focus();
