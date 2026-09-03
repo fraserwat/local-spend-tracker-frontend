@@ -7,13 +7,25 @@
   body { margin: var(--space-5); }
   h1 { font-size: 1.4rem; margin-bottom: var(--space-4); }
   .back-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
     margin-bottom: var(--space-4);
-    color: var(--color-text-muted);
+    background: var(--color-cta);
+    color: var(--color-cta-text);
+    font-weight: 700;
     font-size: 0.85rem;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
     text-decoration: none;
+    box-shadow: 0 2px 10px rgba(233, 180, 76, 0.35);
+    transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
   }
-  .back-link:hover { color: var(--color-accent); }
+  .back-link:hover {
+    background: var(--color-cta-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(233, 180, 76, 0.45);
+  }
 
   .filters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; margin-bottom: var(--space-5); }
   .filters label {
@@ -34,7 +46,7 @@
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
   }
-  th, td { text-align: left; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border-subtle); font-size: 0.85rem; }
+  th, td { text-align: left; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--color-border-subtle); font-size: 0.85rem; }
   th {
     font-size: 0.7rem;
     text-transform: uppercase;
@@ -47,11 +59,21 @@
   tbody tr:hover { background: var(--color-surface-hover); }
   .amount { text-align: right; font-variant-numeric: tabular-nums; }
   .pagination { margin-top: var(--space-4); display: flex; gap: var(--space-4); font-size: 0.85rem; }
+
+  button.button-cta {
+    background: var(--color-cta);
+    color: var(--color-cta-text);
+    box-shadow: 0 2px 10px rgba(233, 180, 76, 0.35);
+  }
+  button.button-cta:hover {
+    background: var(--color-cta-hover);
+    box-shadow: 0 4px 14px rgba(233, 180, 76, 0.45);
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<a class="back-link" href="{% url 'council-detail' slug=council.slug %}">&larr; back to map</a>
+<a class="back-link" href="{% url 'council-detail' slug=council.slug %}">&larr; Back</a>
 <h1>{{ council.name }} — spend</h1>
 
 {% if form.errors %}
@@ -88,7 +110,7 @@
   <input type="hidden" name="sort" value="{{ sort }}">
   <input type="hidden" name="dir" value="{{ dir }}">
   <button type="submit">Filter</button>
-  <button type="submit" name="export" value="csv" class="button-secondary">Export CSV</button>
+  <button type="submit" name="export" value="csv" class="button-cta">Export CSV</button>
 </form>
 
 <table>
@@ -99,7 +121,6 @@
       <th class="amount"><a href="{{ sort_links.amount_gbp }}">Amount (£)</a></th>
       <th>Directorate</th>
       <th>Category</th>
-      <th>Description</th>
     </tr>
   </thead>
   <tbody>
@@ -110,10 +131,9 @@
       <td class="amount">{{ txn.amount_gbp }}</td>
       <td>{{ txn.directorate }}</td>
       <td>{{ txn.category }}</td>
-      <td>{{ txn.description }}</td>
     </tr>
     {% empty %}
-    <tr><td colspan="6">No transactions match these filters.</td></tr>
+    <tr><td colspan="5">No transactions match these filters.</td></tr>
     {% endfor %}
   </tbody>
 </table>
