@@ -90,4 +90,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
     "PAGE_SIZE": 100,
+    # export: CSV export rate limit, shared by the HTML view and the API's
+    # export action -- see apps/spend/throttling.py.
+    "DEFAULT_THROTTLE_RATES": {"export": "5/min"},
 }

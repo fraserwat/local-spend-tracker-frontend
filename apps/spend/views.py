@@ -1,7 +1,9 @@
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.councils.models import Council
 
@@ -9,6 +11,8 @@ from .forms import TransactionFilterForm
 from .pagination import TransactionCursorPagination
 from .selectors import SORT_FIELDS, get_council_transactions
 from .serializers import SpendTransactionSerializer
+from .services.export import stream_transactions_csv
+from .throttling import ExportRateThrottle
 
 
 def _filtered_transactions(council: Council, form: TransactionFilterForm):
@@ -48,6 +52,27 @@ class TransactionListAPIView(ListAPIView):
         return self.get_paginated_response(serializer.data)
 
 
+class TransactionExportAPIView(APIView):
+    """GET /api/v1/councils/<slug>/transactions/export/ — streaming CSV,
+    same filters as TransactionListAPIView.
+
+    DRF applies `throttle_classes` before `get()` runs, returning 429
+    automatically -- the manual check in council_spend_export_response()
+    below exists only because the HTML view isn't a DRF view and has no
+    equivalent hook.
+    """
+
+    throttle_classes = [ExportRateThrottle]
+
+    def get(self, request, slug):
+        form = TransactionFilterForm(request.query_params)
+        if not form.is_valid():
+            return Response(form.errors, status=400)
+        council = get_object_or_404(Council, slug=slug)
+        queryset = _filtered_transactions(council, form)
+        return stream_transactions_csv(queryset, filename=f"{council.slug}-transactions.csv")
+
+
 def _sort_link(request, field: str, current_sort: str, current_descending: bool) -> str:
     """Build a same-page URL that sorts by `field`, toggling direction if it's
     already the active sort column. Drops any pagination cursor -- changing
@@ -61,6 +86,9 @@ def _sort_link(request, field: str, current_sort: str, current_descending: bool)
 
 def council_spend_view(request, slug):
     """GET /council/<slug>/spend/ — server-rendered sortable/filterable transaction table.
+    GET .../spend/?export=csv — same filters, streams a CSV attachment instead
+    of rendering the table (one route, not a separate export page -- see
+    TransactionExportAPIView for the equivalent API action).
 
     Calls spend/selectors.py directly (no self-referential HTTP hop to the
     API) for the initial page load; reuses the same TransactionCursorPagination
@@ -69,6 +97,12 @@ def council_spend_view(request, slug):
     """
     council = get_object_or_404(Council, slug=slug)
     form = TransactionFilterForm(request.GET)
+
+    if form.is_valid() and request.GET.get("export") == "csv":
+        if not ExportRateThrottle().allow_request(Request(request), view=None):
+            return HttpResponse("Too many export requests, try again shortly.", status=429)
+        queryset = _filtered_transactions(council, form)
+        return stream_transactions_csv(queryset, filename=f"{council.slug}-transactions.csv")
 
     page = []
     paginator = TransactionCursorPagination()
