@@ -40,6 +40,27 @@ def test_html_view_renders_table_for_council(council, rows):
 
 
 @pytest.mark.django_db
+def test_scraped_beneficiary_name_is_escaped_in_html(council):
+    """docs/ARCHITECTURE.md's security plan: scraped text (beneficiary_name,
+    description, directorate, category) must never be rendered via |safe or
+    mark_safe. A payload injected here proves Django's default auto-escaping
+    is still doing the job, not just that nobody wrote |safe today."""
+    payload = "<script>alert(1)</script>"
+    SpendTransaction.objects.create(
+        council=council,
+        date=date(2026, 1, 1),
+        beneficiary_name=payload,
+        amount_gbp="10.00",
+    )
+    client = Client()
+    response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
+
+    content = response.content.decode()
+    assert payload not in content
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in content
+
+
+@pytest.mark.django_db
 def test_html_view_404s_for_unknown_council():
     client = Client()
     response = client.get(reverse("council-spend", kwargs={"slug": "not-a-real-council"}))
