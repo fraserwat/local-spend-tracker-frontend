@@ -2,9 +2,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const mapEl = document.getElementById("map");
   const statusEl = document.getElementById("status");
   const badgeEl = document.getElementById("coverage-badge");
+  const nationNoteEl = document.getElementById("nation-note");
   const geojsonUrl = mapEl.dataset.geojsonUrl;
   const manifestUrl = mapEl.dataset.manifestUrl;
+  const nationsUrl = mapEl.dataset.nationsUrl;
   const initialSelectedSlug = mapEl.dataset.selectedSlug || null;
+
+  // Scotland, Wales and Northern Ireland have no equivalent of England's
+  // Local Government Transparency Code 2015, so there's no comparable
+  // itemised spend data to show for their councils -- see the sibling
+  // local-big-con-nationwide repo's README for the full per-nation survey
+  // this is summarised from. Static copy, not model-backed, since these
+  // three notes don't change per-request the way council coverage does.
+  const NATION_NOTES = {
+    scotland:
+      "Scotland has no equivalent of England's Local Government " +
+      "Transparency Code 2015 -- itemised spend disclosure is voluntary. " +
+      "Of 32 councils surveyed, only 6 publish anything close to " +
+      "transaction-level data, at inconsistent thresholds and via " +
+      "inconsistent channels. See the sibling data repo for the full survey.",
+    wales:
+      "Wales has no equivalent of England's Local Government Transparency " +
+      "Code 2015 either. Of 22 councils surveyed, only 3 publish a " +
+      "spend-over-£500 register -- one council's own FOI response " +
+      "confirmed Welsh authorities aren't required to. See the sibling " +
+      "data repo for the full survey.",
+    "northern-ireland":
+      "Northern Ireland has no equivalent statutory duty to publish " +
+      "itemised spend. All 11 district councils were surveyed and none " +
+      "publish a spend-over-£500 register, so it's out of scope " +
+      "entirely. See the sibling data repo for details.",
+  };
 
   // Mutable "current selection" state -- read by the selected layer's own
   // event handlers (via closure, not as a build-time parameter) so a switch
@@ -45,6 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const IDLE_STYLE = { color: "#8b8da3", weight: 2, fillOpacity: 0.04, dashArray: "4 4" };
+  // Solid mid-grey fill at a real opacity, with a crisp border a shade
+  // darker -- the basemap's sea tile is near-white, so a faint/translucent
+  // fill here would read as the coastline fading out rather than as a
+  // deliberately greyed-out nation.
+  const NATION_STYLE = {
+    color: "#6b6e87",
+    weight: 1.5,
+    fillColor: "#8b8da3",
+    fillOpacity: 0.65,
+    className: "nation-boundary",
+  };
   const SELECTED_STYLE = {
     color: "#3ecdd4",
     weight: 3,
@@ -88,6 +127,46 @@ document.addEventListener("DOMContentLoaded", () => {
       attribution: "&copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
     }
   ).addTo(map);
+
+  function showNationNote(slug) {
+    nationNoteEl.textContent = NATION_NOTES[slug] || "";
+    nationNoteEl.classList.add("visible");
+  }
+
+  function hideNationNote() {
+    nationNoteEl.classList.remove("visible");
+  }
+
+  // Fetched once up front like the council manifest -- a static overlay,
+  // not tied to any council selection, so it loads independently of
+  // whichever council (if any) the page opened on.
+  if (nationsUrl) {
+    fetch(nationsUrl)
+      .then((response) => {
+        if (!response.ok) throw new Error("nations fetch failed: " + response.status);
+        return response.json();
+      })
+      .then((geojson) => {
+        L.geoJSON(geojson, {
+          style: NATION_STYLE,
+          onEachFeature: (feature, featureLayer) => {
+            featureLayer.on("click", (event) => {
+              L.DomEvent.stopPropagation(event);
+              showNationNote(feature.properties.slug);
+            });
+          },
+        }).addTo(map);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error("nations fetch failed", error);
+      });
+  }
+
+  // Clicking anywhere else on the map (idle canvas, a council boundary)
+  // dismisses the note the same way a council switch dismisses the
+  // coverage badge.
+  map.on("click", hideNationNote);
 
   function buildIdleLayer(geojson, slug) {
     return L.geoJSON(geojson, {
@@ -173,6 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderSelectedCouncil(slug, coverageUrl) {
     const generation = ++renderGeneration;
     badgeEl.classList.remove("visible");
+    hideNationNote();
     demoteSelectedToIdle();
 
     coveragePromise = coverageUrl
@@ -225,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showIdleState() {
     ++renderGeneration;
     badgeEl.classList.remove("visible");
+    hideNationNote();
     demoteSelectedToIdle();
     selectedSlugState = null;
     coveragePromise = Promise.resolve(null);

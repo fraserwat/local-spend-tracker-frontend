@@ -118,6 +118,38 @@
     font-weight: 600;
   }
   #coverage-badge.visible { display: block; }
+
+  /* Same rounded-bubble treatment as #coverage-badge, but blue and in the
+     opposite corner -- this explains an absence of data (a devolved
+     nation's councils aren't covered), not a problem with data that
+     exists, so it shouldn't read with the same alarm tone or risk
+     overlapping a coverage badge shown for an already-selected council. */
+  #nation-note {
+    display: none;
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 1000;
+    max-width: 22rem;
+    background: var(--color-info-bg);
+    border: none;
+    color: var(--color-info-text);
+    padding: var(--space-3) var(--space-4);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 24px rgba(72, 172, 240, 0.55);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  #nation-note.visible { display: block; }
+
+  /* Grey fill for the non-England nations -- opaque and bordered enough
+     to read as deliberately "greyed out" against the pale basemap,
+     rather than fading toward the sea's near-white tile colour and
+     looking like the coastline is dissolving. */
+  .nation-boundary {
+    cursor: pointer;
+  }
+
   .visually-hidden {
     position: absolute;
     width: 1px;
@@ -190,10 +222,12 @@
       {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta">View {{ council.name }} Spend</a>{% else %}select a council to see its boundary{% endif %}
     </div>
     <div id="coverage-badge"></div>
+    <div id="nation-note"></div>
     <div
       id="map"
       data-geojson-url="{% if geojson_static_path %}{% static geojson_static_path %}{% endif %}"
       data-manifest-url="{% static 'councils/geo/manifest.json' %}"
+      data-nations-url="{% static 'councils/geo/nations.geojson' %}"
       data-coverage-url="{{ coverage_url|default:'' }}"
       data-selected-slug="{% if council %}{{ council.slug }}{% endif %}"
     ></div>
