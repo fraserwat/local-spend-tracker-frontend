@@ -149,7 +149,11 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       }).addTo(map);
 
-      map.fitBounds(layer.getBounds());
+      // Padded well past the selected boundary itself -- fitting tightly
+      // to just this council leaves neighbouring councils off-screen,
+      // making the idle outlines drawn above effectively unreachable
+      // without the user manually zooming out first.
+      map.fitBounds(layer.getBounds().pad(0.6));
     })
     .catch((error) => {
       // Only a handful of councils have a fetched boundary so far (Phase 7

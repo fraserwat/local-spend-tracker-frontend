@@ -169,9 +169,9 @@
   }
   /* The vendor CSS hardcodes a light-grey background on odd rows for
      zebra-striping (accessible-autocomplete.min.css: .autocomplete__option
-     --odd { background-color: #f3f2f1 }) — left un-overridden, that read
-     as a broken/blank white row on the dark dropdown. */
-  .autocomplete__option--odd { background: var(--color-surface) !important; }
+     --odd { background-color: #f3f2f1 }) — flattened to match the other
+     rows instead of carrying that striping into the dark theme. */
+  .autocomplete__option--odd { background: var(--color-bg-elevated) !important; }
   .autocomplete__option--no-results {
     background: var(--color-bg-elevated) !important;
     color: var(--color-text-faint) !important;
