@@ -90,7 +90,16 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
     "PAGE_SIZE": 100,
-    # export: CSV export rate limit, shared by the HTML view and the API's
-    # export action -- see apps/spend/throttling.py.
-    "DEFAULT_THROTTLE_RATES": {"export": "5/min"},
+    # Baseline abuse backstop for every /api/v1/ endpoint, not just export --
+    # generous enough not to bother normal browsing (docs/ARCHITECTURE.md's
+    # security plan only calls out export specifically; this covers the rest
+    # of the public, unauthenticated surface). TransactionExportAPIView sets
+    # its own stricter throttle_classes, which replaces rather than adds to
+    # this default -- that 5/min export scope is intentionally not doubled up
+    # with the baseline.
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
+    # anon: baseline for every endpoint above. export: CSV export rate limit,
+    # shared by the HTML view and the API's export action -- see
+    # apps/spend/throttling.py.
+    "DEFAULT_THROTTLE_RATES": {"anon": "120/min", "export": "5/min"},
 }
