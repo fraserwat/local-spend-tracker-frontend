@@ -1,11 +1,23 @@
 """Single query surface for apps.councils — views/API call these, not the ORM directly."""
 
-from .models import Council
+from .models import Council, CouncilCoverage
 
 
 def get_councils():
     """All councils, ordered by name. Backs both the HTML view and the API."""
     return Council.objects.all()
+
+
+def get_coverage(council: Council) -> CouncilCoverage | None:
+    """This council's coverage row, or None if it hasn't been loaded yet.
+
+    `council.coverage` (the OneToOneField reverse accessor) raises
+    `RelatedObjectDoesNotExist` for an unloaded council -- that exception is
+    deliberately also an `AttributeError` subclass, so `getattr` with a
+    default resolves it to plain None instead of the caller needing a
+    try/except.
+    """
+    return getattr(council, "coverage", None)
 
 
 def councils_missing_coverage():
