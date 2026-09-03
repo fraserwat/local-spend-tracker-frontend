@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
     {
       maxZoom: 16,
-      opacity: 0.55,
+      opacity: 0.4,
       attribution: "&copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
     }
   ).addTo(map);
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((geojson) => {
               L.geoJSON(geojson, {
                 interactive: false,
-                style: { color: "#8a94a6", weight: 1, fillOpacity: 0.04, dashArray: "4 4" },
+                style: { color: "#8a94a6", weight: 2, fillOpacity: 0.04, dashArray: "4 4" },
               }).addTo(map);
             })
             .catch((error) => {
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((geojson) => {
       const layer = L.geoJSON(geojson, {
-        style: { color: "#1a5276", weight: 2, fillOpacity: 0.15 },
+        style: { color: "#1a5276", weight: 3, fillOpacity: 0.15 },
         onEachFeature: (feature, featureLayer) => {
           featureLayer.on("click", (event) => {
             // Stops the click reaching map's own handler below, so
