@@ -26,10 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // maps — keeps borough polygons legible instead of competing with full
   // OSM street/POI detail. (CartoDB's anonymous tile endpoint now requires
   // an API key, so that's not an option without signing up for one.)
+  // Faded (opacity < 1) so street/building detail doesn't compete with a
+  // council boundary once zoomed in close enough for that detail to render.
   L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
     {
       maxZoom: 16,
+      opacity: 0.55,
       attribution: "&copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
     }
   ).addTo(map);
