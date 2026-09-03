@@ -14,7 +14,7 @@ Each phase is independently buildable and has a concrete verification step — s
   *Verify:* polygon sits correctly in north London at correct scale; click-inside fires, click-outside doesn't; can't pan/zoom off the UK.
 - [x] **Phase 4 — One council's Spend View + API, end-to-end.** `spend/selectors.py`, server-rendered sortable/filterable table for Haringey, Category filter disabled, `GET /api/v1/councils/haringey/transactions/`.
   *Verify:* filtered counts/totals cross-checked against an equivalent Polars query; sort columns toggle correctly on both HTML and API; `connection.queries` confirms parameterized queries; `EXPLAIN ANALYZE` confirms index usage, not sequential scan.
-- [ ] **Phase 5 — CSV export.** Streaming, filtered, rate-limited; one `services/export.py` used by both the HTML view and the API export action.
+- [x] **Phase 5 — CSV export.** Streaming, filtered, rate-limited; one `services/export.py` used by both the HTML view and the API export action.
   *Verify:* unfiltered export row count matches DB/parquet exactly; process memory stays flat across a ~275K-row export; 6th rapid request gets throttled.
 - [ ] **Phase 6 — Hover badge, two councils.** Haringey (no issue) and Redbridge (real issue: 1,121 pre-coverage rows / £24.68M) side by side; `GET /api/v1/councils/<slug>/coverage/`.
   *Verify:* badge appears only for Redbridge with matching detail text; Haringey shows none.
