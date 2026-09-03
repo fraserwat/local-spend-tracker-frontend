@@ -8,4 +8,9 @@ urlpatterns = [
         views.TransactionListAPIView.as_view(),
         name="council-transactions",
     ),
+    path(
+        "councils/<slug:slug>/transactions/export/",
+        views.TransactionExportAPIView.as_view(),
+        name="council-transactions-export",
+    ),
 ]
