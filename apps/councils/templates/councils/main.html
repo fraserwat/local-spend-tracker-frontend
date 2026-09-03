@@ -12,35 +12,103 @@
 />
 <style>
   html, body, #app { height: 100%; margin: 0; }
-  body { font-family: system-ui, sans-serif; color: #0b0c0c; }
-  .layout { display: flex; align-items: stretch; height: 100%; }
+  .layout { display: flex; align-items: stretch; height: 100%; background: var(--color-bg); }
   .main-panel { flex: 1; min-width: 0; position: relative; }
   #map { height: 100%; width: 100%; }
   #status {
     position: absolute;
-    top: 1rem;
+    top: var(--space-4);
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    background: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
     font-size: 0.9rem;
+  }
+  /* :not(.spend-cta) so this doesn't out-specificity the CTA button's own
+     (deliberately dark-on-teal, for contrast) text color below. */
+  #status a:not(.spend-cta) { color: var(--color-accent); font-weight: 600; }
+
+  /* Once a boundary's been clicked, #status holds nothing but the "View
+     X Spend" CTA -- drop the pill chrome and re-center it over the map so
+     the link itself can become the focal point instead of a small inline
+     text link. pointer-events: none on the container (re-enabled on the
+     link) lets outside-boundary clicks still reach the map underneath. */
+  #status:has(a.spend-cta) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    pointer-events: none;
+  }
+  a.spend-cta {
+    display: inline-block;
+    pointer-events: auto;
+    /* Honey bronze, not teal -- this sits directly on top of the teal
+       boundary fill, so it needs to visually detach from that backdrop
+       rather than blend into it. */
+    background: var(--color-cta);
+    color: var(--color-cta-text);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    /* Offset-heavy, mostly-black shadow (mimics light from above) plus a
+       thin bronze-tinted layer for cohesion -- a big colored glow here
+       reads as fuzzy rather than "elevated, pressable". */
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(233, 180, 76, 0.35);
+    transition: transform 180ms ease-out, box-shadow 180ms ease-out, background 180ms ease-out;
+  }
+  a.spend-cta:hover {
+    background: var(--color-cta-hover);
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(233, 180, 76, 0.45);
+  }
+
+  /* Selected boundary gets a persistent glow, not a hover-only one -- it
+     needs to read as "this is the one you picked" the whole time its page
+     is open. The base (non-animated) rule is the glow's resting state;
+     the pulse is a few cycles of emphasis on arrival, not a permanent
+     loop -- an infinite animation running alongside page content trips
+     WCAG 2.2.2 (pause/stop/hide), so it's capped at 4 iterations here and
+     settles back to the static glow once done. 2s/cycle is also nowhere
+     near SC 2.3.1's 3-flashes-per-second threshold. prefers-reduced-motion
+     skips the animation and goes straight to the static glow. */
+  .leaflet-interactive.council-boundary--selected {
+    filter: drop-shadow(0 0 5px rgba(62, 205, 212, 0.8)) drop-shadow(0 0 11px rgba(62, 205, 212, 0.45));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .leaflet-interactive.council-boundary--selected {
+      animation: council-pulse 2s ease-in-out 4;
+    }
+  }
+  @keyframes council-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 5px rgba(62, 205, 212, 0.8)) drop-shadow(0 0 11px rgba(62, 205, 212, 0.45));
+    }
+    50% {
+      filter: drop-shadow(0 0 8px rgba(62, 205, 212, 0.95)) drop-shadow(0 0 16px rgba(62, 205, 212, 0.6));
+    }
   }
   #coverage-badge {
     display: none;
     position: absolute;
-    bottom: 1rem;
-    left: 1rem;
+    bottom: var(--space-4);
+    left: var(--space-4);
     z-index: 1000;
     max-width: 22rem;
-    background: #fff3cd;
-    border: 1px solid #d4a017;
-    color: #6b4a00;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    background: var(--color-warning-bg);
+    border: 1px solid var(--color-warning-border);
+    color: var(--color-warning-text);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
     font-size: 0.85rem;
   }
   #coverage-badge.visible { display: block; }
@@ -48,17 +116,72 @@
     width: 20rem;
     flex: none;
     overflow-y: auto;
-    padding: 1.5rem;
+    padding: var(--space-5);
     box-sizing: border-box;
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border-subtle);
   }
-  #search-status { font-size: 0.85rem; color: #505a5f; }
-  .council-sidebar__heading { font-size: 1rem; margin-bottom: 0.25rem; }
-  details { border-bottom: 1px solid #b1b4b6; padding: 0.5rem 0; }
-  summary { cursor: pointer; font-weight: 600; padding: 0.25rem 0; }
-  details ul { list-style: none; margin: 0.5rem 0 0.5rem 1rem; padding: 0; }
-  details li { padding: 0.15rem 0; }
-  details a { color: #1d70b8; text-decoration: underline; }
-  details a[aria-current="page"] { font-weight: 600; text-decoration: none; }
+  #search-status { font-size: 0.85rem; color: var(--color-text-muted); }
+  .council-sidebar__heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin: var(--space-5) 0 var(--space-2);
+  }
+  details { border-bottom: 1px solid var(--color-border-subtle); padding: var(--space-2) 0; }
+  summary { cursor: pointer; font-weight: 600; padding: var(--space-1) 0; color: var(--color-text); }
+  details ul { list-style: none; margin: var(--space-2) 0 var(--space-2) var(--space-4); padding: 0; }
+  details li { padding: var(--space-1) 0; }
+  details a { color: var(--color-accent); text-decoration: none; }
+  details a:hover { text-decoration: underline; }
+  details a[aria-current="page"] { font-weight: 600; color: var(--color-text); }
+
+  /* Leaflet ships its own light-mode chrome for the zoom control — the
+     basemap tiles stay as-is (it's imagery, not themeable), but the
+     control buttons should match the rest of the UI. */
+  .leaflet-bar, .leaflet-bar a {
+    background: var(--color-surface) !important;
+    border-color: var(--color-border-subtle) !important;
+    color: var(--color-text) !important;
+  }
+  .leaflet-bar a:hover { background: var(--color-surface-hover) !important; }
+
+  /* accessible-autocomplete (GOV.UK pattern) ships light-mode CSS with no
+     theming hooks besides class names — override with !important since
+     its own stylesheet loads after this block via CDN link order. */
+  .autocomplete__wrapper { font-family: var(--font-sans); }
+  .autocomplete__input {
+    background: var(--color-bg-elevated) !important;
+    color: var(--color-text) !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--radius-sm) !important;
+  }
+  .autocomplete__menu {
+    background: var(--color-bg-elevated) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text) !important;
+  }
+  .autocomplete__option {
+    background: var(--color-bg-elevated) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border-subtle) !important;
+  }
+  /* The vendor CSS hardcodes a light-grey background on odd rows for
+     zebra-striping (accessible-autocomplete.min.css: .autocomplete__option
+     --odd { background-color: #f3f2f1 }) — flattened to match the other
+     rows instead of carrying that striping into the dark theme. */
+  .autocomplete__option--odd { background: var(--color-bg-elevated) !important; }
+  .autocomplete__option--no-results {
+    background: var(--color-bg-elevated) !important;
+    color: var(--color-text-faint) !important;
+  }
+  .autocomplete__option--focused,
+  .autocomplete__option:hover {
+    background: var(--color-accent) !important;
+    color: var(--color-accent-text) !important;
+  }
+  .autocomplete__hint { color: var(--color-text-faint) !important; }
 </style>
 {% endblock %}
 
@@ -78,6 +201,7 @@
       data-manifest-url="{% static 'councils/geo/manifest.json' %}"
       data-spend-url="{% if council %}{% url 'council-spend' slug=council.slug %}{% endif %}"
       data-coverage-url="{{ coverage_url|default:'' }}"
+      data-selected-slug="{% if council %}{{ council.slug }}{% endif %}"
     ></div>
   </main>
 </div>
