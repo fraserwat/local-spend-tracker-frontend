@@ -2,8 +2,11 @@
   "use strict";
 
   var container = document.getElementById("council-search-container");
+  var input = document.getElementById("council-search");
   var status = document.getElementById("search-status");
-  if (!container) return;
+  var resultsList = document.getElementById("council-search-results");
+  var regionBrowse = document.getElementById("council-region-browse");
+  if (!container || !input || !resultsList || !regionBrowse) return;
 
   var indexUrl = container.getAttribute("data-index-url");
 
@@ -15,58 +18,57 @@
     return councilUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
   }
 
-  if (typeof accessibleAutocomplete === "undefined") {
-    // CDN blocked or failed to load -- the region-group <details> below
-    // still work with zero JS, so search is the only thing degrading here.
-    setStatus("Search is unavailable right now. Browse by region below instead.");
-    return;
-  }
-
   fetch(indexUrl)
     .then(function (response) {
       if (!response.ok) throw new Error("index fetch failed: " + response.status);
       return response.json();
     })
     .then(function (councils) {
-      // accessible-autocomplete's built-in array-source filter calls
-      // .toLowerCase() directly on each item, so it only works for plain
-      // strings. A custom `source` function instead lets suggestions carry
-      // the full council object (including slug) through to onConfirm --
-      // a name-keyed lookup would silently collide if two councils ever
-      // share a display name (not true of today's 32, but a real risk once
-      // this scales towards England's ~300 councils, where duplicate
-      // district names across different counties are common).
-      function filterCouncils(query, populateResults) {
+      // council-index.json is generated pre-sorted by name (see
+      // generate_council_index), so filtering preserves alphabetical order
+      // without the results needing a sort step here.
+      function render(query) {
         var needle = query.toLowerCase();
-        populateResults(
-          councils.filter(function (council) {
-            return council.name.toLowerCase().indexOf(needle) !== -1;
-          })
+        var matches = councils.filter(function (council) {
+          return council.name.toLowerCase().indexOf(needle) !== -1;
+        });
+
+        // The region groups and the search results both live in the same
+        // sidebar slot -- showing both at once (or opening a dropdown on
+        // top of them) is what made the list look like it was pushing
+        // itself down the page. Swap one for the other instead of stacking
+        // them.
+        if (!query) {
+          resultsList.hidden = true;
+          resultsList.textContent = "";
+          regionBrowse.hidden = false;
+          setStatus("");
+          return;
+        }
+
+        regionBrowse.hidden = true;
+        resultsList.hidden = false;
+        resultsList.textContent = "";
+        matches.forEach(function (council) {
+          var li = document.createElement("li");
+          var a = document.createElement("a");
+          a.href = councilUrl(council.slug);
+          a.textContent = council.name;
+          li.appendChild(a);
+          resultsList.appendChild(li);
+        });
+        setStatus(
+          matches.length === 1 ? "1 council found" : matches.length + " councils found"
         );
       }
 
-      accessibleAutocomplete({
-        element: container,
-        id: "council-search",
-        placeholder: "Start typing a council name",
-        source: filterCouncils,
-        templates: {
-          inputValue: function (council) {
-            return council ? council.name : "";
-          },
-          suggestion: function (council) {
-            return council && council.name ? council.name : council;
-          },
-        },
-        onConfirm: function (confirmed) {
-          if (confirmed && confirmed.slug) {
-            window.location.href = councilUrl(confirmed.slug);
-          }
-        },
+      input.addEventListener("input", function () {
+        render(input.value.trim());
       });
     })
     .catch(function (error) {
       setStatus("Search is unavailable right now. Browse by region below instead.");
+      input.disabled = true;
       // eslint-disable-next-line no-console
       console.error("council-index fetch failed", error);
     });

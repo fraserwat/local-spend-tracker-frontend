@@ -7,49 +7,46 @@ fragment renders identically either way, aside from which link (if any)
 gets aria-current="page".
 {% endcomment %}
 <div class="council-sidebar">
-  <div id="council-search-container" data-index-url="{% static 'councils/data/council-index.json' %}"></div>
-  <p id="search-status"></p>
+  <div id="council-search-container" data-index-url="{% static 'councils/data/council-index.json' %}">
+    <input type="text" id="council-search" autocomplete="off" placeholder="Start typing a council name" aria-describedby="search-status">
+  </div>
+  <p id="search-status" aria-live="polite"></p>
   <noscript>
     <p>Search needs JavaScript. Browse by region below instead.</p>
   </noscript>
 
-  <h2 class="council-sidebar__heading">Browse by region</h2>
-  {% regroup councils by get_region_display as region_groups %}
-  {% for group in region_groups %}
-  <details>
-    {# A council with a blank/invalid region (shouldn't happen via the app's #}
-    {# own onboarding paths, but `choices` isn't DB-enforced) would otherwise #}
-    {# render an unlabelled, inaccessible <summary> -- fall back to a plain #}
-    {# label instead of silently dropping it from view. #}
-    <summary>{{ group.grouper|default:"Unknown region" }}</summary>
-    <ul>
-      {% for council in group.list %}
-      <li><a href="{% url 'council-detail' slug=council.slug %}"{% if council.slug == selected_slug %} aria-current="page"{% endif %}>{{ council.name }}</a></li>
-      {% endfor %}
-    </ul>
-  </details>
-  {% empty %}
-  <p>No councils available yet.</p>
-  {% endfor %}
+  {# Search results replace this list in place (see picker.js) rather than #}
+  {# opening a dropdown under the input -- keeps the sidebar's height fixed #}
+  {# instead of one section pushing another down the page as you type. #}
+  <ul id="council-search-results" hidden></ul>
+
+  <div id="council-region-browse">
+    <h2 class="council-sidebar__heading">Browse by region</h2>
+    {% regroup councils by get_region_display as region_groups %}
+    {% for group in region_groups %}
+    <details>
+      {# A council with a blank/invalid region (shouldn't happen via the app's #}
+      {# own onboarding paths, but `choices` isn't DB-enforced) would otherwise #}
+      {# render an unlabelled, inaccessible <summary> -- fall back to a plain #}
+      {# label instead of silently dropping it from view. #}
+      <summary>{{ group.grouper|default:"Unknown region" }}</summary>
+      <ul>
+        {% for council in group.list %}
+        <li><a href="{% url 'council-detail' slug=council.slug %}"{% if council.slug == selected_slug %} aria-current="page"{% endif %}>{{ council.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% empty %}
+    <p>No councils available yet.</p>
+    {% endfor %}
+  </div>
 </div>
 
 <script>
   // Placeholder path built from the same "council-detail" named route the
   // region-group links use via the url template tag, not a hardcoded
-  // "/council/" string -- the search widget doesn't know the slug until a
-  // suggestion is confirmed, so the placeholder is swapped in client-side
-  // instead.
+  // "/council/" string -- search results don't know the slug until the
+  // index loads, so the placeholder is swapped in client-side instead.
   var councilUrlTemplate = "{% url 'council-detail' slug='__SLUG__' %}";
 </script>
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/accessible-autocomplete@3.0.1/dist/accessible-autocomplete.min.css"
-  integrity="sha384-tm2lkBj7LRznflL/jGlXy/p8q+F2u49L5GXWaZZj2FlYy97QB8SUbC4yVGVz2PQc"
-  crossorigin="anonymous"
-/>
-<script
-  src="https://unpkg.com/accessible-autocomplete@3.0.1/dist/accessible-autocomplete.min.js"
-  integrity="sha384-1OflYz7DmKfj0jIJ8DiQC510AbUslTNMYmhRucfm1Eg057frmHHYejk7+YJZZCwX"
-  crossorigin="anonymous"
-></script>
 <script src="{% static 'councils/js/picker.js' %}"></script>
