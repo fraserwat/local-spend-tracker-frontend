@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // just needs to reassign these, not rebuild every handler.
   let selectedSlugState = null;
   let selectedLayer = null;
-  let spendUrl = mapEl.dataset.spendUrl || "";
   let coveragePromise = Promise.resolve(null);
 
   // slug -> parsed GeoJSON. Populated on first fetch (idle-outline load or a
@@ -104,29 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return L.geoJSON(geojson, {
       style: SELECTED_STYLE,
       onEachFeature: (feature, featureLayer) => {
-        featureLayer.on("click", (event) => {
-          // Stops the click reaching map's own handler below, so
-          // inside/outside clicks are mutually exclusive.
-          L.DomEvent.stopPropagation(event);
-          // Same destination as the "view spend" link shown before any
-          // click -- clicking the boundary is just a faster path there,
-          // not a different action. Reads `spendUrl` live (not a captured
-          // parameter) so this stays correct across switches.
-          if (spendUrl) {
-            statusEl.innerHTML = "";
-            const link = document.createElement("a");
-            link.href = spendUrl;
-            link.className = "spend-cta";
-            link.textContent = `View ${feature.properties.name} Spend`;
-            statusEl.appendChild(link);
-          } else {
-            statusEl.textContent = `clicked inside: ${feature.properties.name}`;
-          }
-        });
         featureLayer.on("mouseover", () => {
-          // Reads `coveragePromise` live, same reasoning as `spendUrl`
-          // above -- a switch reassigns it without needing to rebuild
-          // this handler.
+          // Reads `coveragePromise` live (not a captured parameter) so a
+          // switch reassigning it doesn't need this handler rebuilt.
           coveragePromise.then((coverage) => {
             if (!coverage || !coverage.has_data_quality_issue) return;
             badgeEl.textContent = coverage.detail_text;
@@ -187,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
     badgeEl.classList.remove("visible");
     demoteSelectedToIdle();
 
-    spendUrl = councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
     coveragePromise = coverageUrl
       ? fetch(coverageUrl)
           .then((response) => (response.ok ? response.json() : null))
@@ -234,7 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
     badgeEl.classList.remove("visible");
     demoteSelectedToIdle();
     selectedSlugState = null;
-    spendUrl = "";
     coveragePromise = Promise.resolve(null);
 
     if (prefersReducedMotion) {
@@ -315,10 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("boundary fetch failed", error);
       });
   }
-
-  map.on("click", () => {
-    statusEl.textContent = "clicked outside";
-  });
 
   window.councilMap = { renderSelectedCouncil, showIdleState };
 });
