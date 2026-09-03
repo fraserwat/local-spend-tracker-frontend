@@ -32,15 +32,14 @@
 
   --color-error: #d9553a;
 
-  /* Oxidized-iron alarm tones for genuinely alarming call-outs (data
-     quality problems, etc) -- deliberately NOT the honey-bronze warning
-     family above, which reads as "heads up" rather than "something's
-     wrong". Built from --color-error, not a fresh hue, so it still reads
-     as a variant of the app's one "problem" color rather than a third
-     unrelated palette. */
-  --color-alarm-bg: #3d1912;
-  --color-alarm-border: #d9553a;
-  --color-alarm-text: #ffb8a3;
+  /* Bright alarm tones for genuinely alarming call-outs (data quality
+     problems, etc) -- deliberately NOT the honey-bronze warning family
+     above, which reads as "heads up" rather than "something's wrong".
+     Same hue as --color-error, just pushed to full saturation/brightness
+     for a vivid, modern floating bubble instead of a dark bordered box. */
+  --color-alarm-bg: #e5341f;
+  --color-alarm-glow: #ff5a3c;
+  --color-alarm-text: #fff4f1;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
