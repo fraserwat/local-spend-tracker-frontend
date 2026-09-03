@@ -96,11 +96,11 @@
       filter: drop-shadow(0 0 8px rgba(62, 205, 212, 0.95)) drop-shadow(0 0 16px rgba(62, 205, 212, 0.6));
     }
   }
-  /* Oxidized iron, not honey bronze -- a data quality problem needs to
-     read as alarming, not as the same "heads up" tone as the CTA/warning
-     chrome elsewhere on this page. Thicker border plus a rust-tinted glow
-     (echoing the selected-boundary glow's own shadow layering) make it a
-     genuine note of interest rather than a quiet inline hint. */
+  /* Bright red floating bubble, not honey bronze -- a data quality
+     problem needs to read as alarming, not as the same "heads up" tone as
+     the CTA/warning chrome elsewhere on this page. No hard border; a
+     saturated fill plus soft glow shadow reads as a modern bubble instead
+     of a boxed-in alert. */
   #coverage-badge {
     display: none;
     position: absolute;
@@ -109,11 +109,11 @@
     z-index: 1000;
     max-width: 22rem;
     background: var(--color-alarm-bg);
-    border: 2px solid var(--color-alarm-border);
+    border: none;
     color: var(--color-alarm-text);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm), 0 0 12px rgba(217, 85, 58, 0.45);
+    padding: var(--space-3) var(--space-4);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 24px rgba(255, 90, 60, 0.55);
     font-size: 0.85rem;
     font-weight: 600;
   }
@@ -162,8 +162,8 @@
   details ul, #council-search-results { list-style: none; margin: var(--space-2) 0 var(--space-2) 0; padding: 0; }
   details ul { margin-left: var(--space-4); }
   details li, #council-search-results li { padding: var(--space-1) 0; }
-  details a, #council-search-results a { color: var(--color-accent); text-decoration: none; }
-  details a:hover, #council-search-results a:hover { text-decoration: underline; }
+  details a, #council-search-results a { color: var(--color-text); text-decoration: none; }
+  details a:hover, #council-search-results a:hover { color: #ffffff; text-decoration: none; }
   details a[aria-current="page"] { font-weight: 600; color: var(--color-text); }
 
   /* Leaflet ships its own light-mode chrome for the zoom control — the
