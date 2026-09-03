@@ -37,7 +37,7 @@
      above, which reads as "heads up" rather than "something's wrong".
      Same hue as --color-error, just pushed to full saturation/brightness
      for a vivid, modern floating bubble instead of a dark bordered box. */
-  --color-alarm-bg: #e5341f;
+  --color-alarm-bg: #c73e1d;
   --color-alarm-glow: #ff5a3c;
   --color-alarm-text: #fff4f1;
 
