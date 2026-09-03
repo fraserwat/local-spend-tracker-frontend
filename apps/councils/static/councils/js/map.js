@@ -100,22 +100,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function buildSelectedLayer(geojson) {
-    return L.geoJSON(geojson, {
-      style: SELECTED_STYLE,
-      onEachFeature: (feature, featureLayer) => {
-        featureLayer.on("mouseover", () => {
-          // Reads `coveragePromise` live (not a captured parameter) so a
-          // switch reassigning it doesn't need this handler rebuilt.
-          coveragePromise.then((coverage) => {
-            if (!coverage || !coverage.has_data_quality_issue) return;
-            badgeEl.textContent = coverage.detail_text;
-            badgeEl.classList.add("visible");
-          });
-        });
-        featureLayer.on("mouseout", () => {
-          badgeEl.classList.remove("visible");
-        });
-      },
+    return L.geoJSON(geojson, { style: SELECTED_STYLE });
+  }
+
+  // Shows the coverage badge once `promise` resolves, for as long as the
+  // council it describes stays selected -- not just while the boundary is
+  // hovered. `promise` is captured at call time (rather than reading
+  // `coveragePromise` live) so a fast council switch that reassigns
+  // `coveragePromise` before this one resolves doesn't paint a stale
+  // council's badge over the new selection.
+  function applyCoverageBadge(promise) {
+    promise.then((coverage) => {
+      if (promise !== coveragePromise) return;
+      if (!coverage || !coverage.has_data_quality_issue) return;
+      badgeEl.textContent = coverage.detail_text;
+      badgeEl.classList.add("visible");
     });
   }
 
@@ -171,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .then((response) => (response.ok ? response.json() : null))
           .catch(() => null)
       : Promise.resolve(null);
+    applyCoverageBadge(coveragePromise);
 
     if (idleLayersBySlug.has(slug)) {
       map.removeLayer(idleLayersBySlug.get(slug));
@@ -272,6 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .then((response) => (response.ok ? response.json() : null))
           .catch(() => null)
       : Promise.resolve(null);
+    applyCoverageBadge(coveragePromise);
 
     fetch(geojsonUrl)
       .then((response) => {
