@@ -18,6 +18,14 @@
   --color-accent-hover: #6bbdc2;
   --color-accent-text: #0b2426;
 
+  /* Warm complement to the teal accent -- reserved for high-affordance
+     CTAs that need to visually detach from teal-tinted surfaces (e.g. a
+     button sitting on top of a teal map boundary), not for general accent
+     use where teal already reads clearly. */
+  --color-cta: #e9b44c;
+  --color-cta-hover: #f0c470;
+  --color-cta-text: #2b1d02;
+
   --color-warning-bg: #3a2f14;
   --color-warning-border: #e9b44c;
   --color-warning-text: #f2cd82;

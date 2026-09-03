@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const manifestUrl = mapEl.dataset.manifestUrl;
   const spendUrl = mapEl.dataset.spendUrl;
   const coverageUrl = mapEl.dataset.coverageUrl;
+  const selectedSlug = mapEl.dataset.selectedSlug;
 
   // Locks pan/zoom to the UK — maxBoundsViscosity 1.0 makes the bounds
   // fully solid (no rubber-band drag past the edge).
@@ -40,13 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ).addTo(map);
 
-  // No council selected yet (the "/" landing state) -- draw every council
-  // with a fetched boundary as a faint outline, clickable straight through
-  // to that council's page (same "council-detail" route the sidebar links
-  // use, via the councilUrlTemplate global set in _council_sidebar.html).
-  if (!geojsonUrl) {
-    if (!manifestUrl) return;
-
+  // Every council with a fetched boundary gets drawn as a faint idle
+  // outline, on the landing page AND on a specific council's page -- a
+  // selected council needs its neighbours visible for geographic context,
+  // not to float alone on a blank basemap. The selected slug (if any) is
+  // skipped here since it gets the bold "selected" treatment below instead.
+  // Idle outlines are clickable straight through to that council's page
+  // (same "council-detail" route the sidebar links use, via the
+  // councilUrlTemplate global set in _council_sidebar.html).
+  if (manifestUrl) {
     fetch(manifestUrl)
       .then((response) => {
         if (!response.ok) throw new Error("manifest fetch failed: " + response.status);
@@ -55,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((manifest) => {
         const baseUrl = manifestUrl.replace(/[^/]+$/, "");
         Object.values(manifest.councils).forEach((entry) => {
+          if (entry.slug === selectedSlug) return;
+
           fetch(baseUrl + entry.file)
             .then((response) => response.json())
             .then((geojson) => {
@@ -81,9 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // eslint-disable-next-line no-console
         console.error("manifest fetch failed", error);
       });
-
-    return;
   }
+
+  if (!geojsonUrl) return;
 
   // Fetched once up front (not per hover) so the first hover shows the
   // badge immediately instead of waiting on a network round-trip. A
@@ -102,7 +107,16 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((geojson) => {
       const layer = L.geoJSON(geojson, {
-        style: { color: "#50a2a7", weight: 3, fillOpacity: 0.22 },
+        // Brighter/more saturated than the base accent (#50a2a7) on
+        // purpose -- a selected map feature needs to read as unmistakably
+        // "on" at a glance, not just tinted. The className hook is what
+        // the pulsing glow in main.html's <style> block targets.
+        style: {
+          color: "#3ecdd4",
+          weight: 3,
+          fillOpacity: 0.14,
+          className: "council-boundary--selected",
+        },
         onEachFeature: (feature, featureLayer) => {
           featureLayer.on("click", (event) => {
             // Stops the click reaching map's own handler below, so
@@ -115,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
               statusEl.innerHTML = "";
               const link = document.createElement("a");
               link.href = spendUrl;
+              link.className = "spend-cta";
               link.textContent = `View ${feature.properties.name} Spend`;
               statusEl.appendChild(link);
             } else {
