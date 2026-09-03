@@ -38,10 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
   ).addTo(map);
 
   // No council selected yet (the "/" landing state) -- draw every council
-  // with a fetched boundary as a faint, non-interactive outline so there's
-  // a visible affordance for "these are the clickable areas", clearly
-  // lighter than the selected-council style below. No inside/outside click
-  // tracking applies yet since no single council is in focus.
+  // with a fetched boundary as a faint outline, clickable straight through
+  // to that council's page (same "council-detail" route the sidebar links
+  // use, via the councilUrlTemplate global set in _council_sidebar.html).
   if (!geojsonUrl) {
     if (!manifestUrl) return;
 
@@ -57,8 +56,16 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((response) => response.json())
             .then((geojson) => {
               L.geoJSON(geojson, {
-                interactive: false,
                 style: { color: "#8a94a6", weight: 2, fillOpacity: 0.04, dashArray: "4 4" },
+                onEachFeature: (feature, featureLayer) => {
+                  featureLayer.on("click", (event) => {
+                    L.DomEvent.stopPropagation(event);
+                    window.location.href = councilUrlTemplate.replace(
+                      "__SLUG__",
+                      encodeURIComponent(entry.slug)
+                    );
+                  });
+                },
               }).addTo(map);
             })
             .catch((error) => {
