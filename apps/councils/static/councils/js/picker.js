@@ -3,7 +3,17 @@
 
   var container = document.getElementById("council-search-container");
   var status = document.getElementById("search-status");
+  var regionBrowse = document.getElementById("council-region-browse");
   if (!container) return;
+
+  // The region groups and the search suggestions both live in the same
+  // sidebar slot -- showing both at once is what made the list look like
+  // it was pushing itself down the page. Swap one for the other based on
+  // whether there's a live query, rather than stacking them.
+  function toggleRegionBrowse(query) {
+    if (!regionBrowse) return;
+    regionBrowse.hidden = query.length > 0;
+  }
 
   var indexUrl = container.getAttribute("data-index-url");
 
@@ -50,6 +60,11 @@
         id: "council-search",
         placeholder: "Start typing a council name",
         source: filterCouncils,
+        // Suggestions only replace "Browse by region" once there's
+        // something to filter by -- an empty query would otherwise match
+        // every council (see filterCouncils' indexOf) and swap the region
+        // list out on focus alone, before the user's typed anything.
+        minLength: 1,
         templates: {
           inputValue: function (council) {
             return council ? council.name : "";
@@ -63,6 +78,15 @@
             window.location.href = councilUrl(confirmed.slug);
           }
         },
+      });
+
+      // accessible-autocomplete re-creates its <input> on init, so the
+      // listener has to be delegated from the (stable) container rather
+      // than attached directly to the input element.
+      container.addEventListener("input", function (event) {
+        if (event.target && event.target.id === "council-search") {
+          toggleRegionBrowse(event.target.value.trim());
+        }
       });
     })
     .catch(function (error) {

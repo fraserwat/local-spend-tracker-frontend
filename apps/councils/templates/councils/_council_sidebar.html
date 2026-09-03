@@ -13,24 +13,26 @@ gets aria-current="page".
     <p>Search needs JavaScript. Browse by region below instead.</p>
   </noscript>
 
-  <h2 class="council-sidebar__heading">Browse by region</h2>
-  {% regroup councils by get_region_display as region_groups %}
-  {% for group in region_groups %}
-  <details>
-    {# A council with a blank/invalid region (shouldn't happen via the app's #}
-    {# own onboarding paths, but `choices` isn't DB-enforced) would otherwise #}
-    {# render an unlabelled, inaccessible <summary> -- fall back to a plain #}
-    {# label instead of silently dropping it from view. #}
-    <summary>{{ group.grouper|default:"Unknown region" }}</summary>
-    <ul>
-      {% for council in group.list %}
-      <li><a href="{% url 'council-detail' slug=council.slug %}"{% if council.slug == selected_slug %} aria-current="page"{% endif %}>{{ council.name }}</a></li>
-      {% endfor %}
-    </ul>
-  </details>
-  {% empty %}
-  <p>No councils available yet.</p>
-  {% endfor %}
+  <div id="council-region-browse">
+    <h2 class="council-sidebar__heading">Browse by region</h2>
+    {% regroup councils by get_region_display as region_groups %}
+    {% for group in region_groups %}
+    <details>
+      {# A council with a blank/invalid region (shouldn't happen via the app's #}
+      {# own onboarding paths, but `choices` isn't DB-enforced) would otherwise #}
+      {# render an unlabelled, inaccessible <summary> -- fall back to a plain #}
+      {# label instead of silently dropping it from view. #}
+      <summary>{{ group.grouper|default:"Unknown region" }}</summary>
+      <ul>
+        {% for council in group.list %}
+        <li><a href="{% url 'council-detail' slug=council.slug %}"{% if council.slug == selected_slug %} aria-current="page"{% endif %}>{{ council.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% empty %}
+    <p>No councils available yet.</p>
+    {% endfor %}
+  </div>
 </div>
 
 <script>
