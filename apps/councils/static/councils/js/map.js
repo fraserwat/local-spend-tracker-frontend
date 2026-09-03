@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((geojson) => {
               L.geoJSON(geojson, {
                 interactive: false,
-                style: { color: "#8a94a6", weight: 3, fillOpacity: 0.04, dashArray: "4 4" },
+                style: { color: "#8a94a6", weight: 2, fillOpacity: 0.04, dashArray: "4 4" },
               }).addTo(map);
             })
             .catch((error) => {
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((geojson) => {
       const layer = L.geoJSON(geojson, {
-        style: { color: "#1a5276", weight: 4, fillOpacity: 0.15 },
+        style: { color: "#0f3d5c", weight: 3, fillOpacity: 0.22 },
         onEachFeature: (feature, featureLayer) => {
           featureLayer.on("click", (event) => {
             // Stops the click reaching map's own handler below, so
