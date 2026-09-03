@@ -3,7 +3,7 @@ import json
 import pytest
 from django.core.management import CommandError, call_command
 
-from apps.councils.models import Council, Region
+from apps.councils.models import Council, CouncilCoverage, Region
 
 
 @pytest.mark.django_db
@@ -24,6 +24,42 @@ def test_generate_council_index_matches_db_state(tmp_path):
         assert row["name"] == council.name
         assert row["region"] == council.region
         assert row["region_display"] == Region(council.region).label
+        assert row["has_coverage"] == hasattr(council, "coverage")
+
+
+@pytest.mark.django_db
+def test_generate_council_index_has_coverage_true_for_council_with_coverage_row(tmp_path):
+    council = Council.objects.create(
+        name="Covered Test Council",
+        slug="covered-test-council",
+        gss_code="E99999997",
+        region=Region.LONDON,
+    )
+    CouncilCoverage.objects.create(council=council)
+    output_path = tmp_path / "council-index.json"
+
+    call_command("generate_council_index", output=str(output_path))
+
+    rows = json.loads(output_path.read_text())
+    row = next(row for row in rows if row["slug"] == "covered-test-council")
+    assert row["has_coverage"] is True
+
+
+@pytest.mark.django_db
+def test_generate_council_index_has_coverage_false_for_council_without_coverage_row(tmp_path):
+    Council.objects.create(
+        name="Uncovered Test Council",
+        slug="uncovered-test-council",
+        gss_code="E99999996",
+        region=Region.LONDON,
+    )
+    output_path = tmp_path / "council-index.json"
+
+    call_command("generate_council_index", output=str(output_path))
+
+    rows = json.loads(output_path.read_text())
+    row = next(row for row in rows if row["slug"] == "uncovered-test-council")
+    assert row["has_coverage"] is False
 
 
 @pytest.mark.django_db

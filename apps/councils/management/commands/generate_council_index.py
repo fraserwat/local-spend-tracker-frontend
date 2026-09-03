@@ -40,7 +40,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, output, force, **options):
-        councils = Council.objects.filter(is_active=True).order_by("name")
+        councils = (
+            Council.objects.filter(is_active=True).select_related("coverage").order_by("name")
+        )
         rows = []
         for council in councils:
             try:
@@ -56,6 +58,10 @@ class Command(BaseCommand):
                     "slug": council.slug,
                     "region": council.region,
                     "region_display": region_display,
+                    # Lets the client-side council switch skip the per-council
+                    # coverage fetch entirely for councils with no CouncilCoverage
+                    # row yet, instead of firing a fetch that's known to 404.
+                    "has_coverage": hasattr(council, "coverage"),
                 }
             )
 

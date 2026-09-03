@@ -32,7 +32,7 @@ gets aria-current="page".
       <summary>{{ group.grouper|default:"Unknown region" }}</summary>
       <ul>
         {% for council in group.list %}
-        <li><a href="{% url 'council-detail' slug=council.slug %}"{% if council.slug == selected_slug %} aria-current="page"{% endif %}>{{ council.name }}</a></li>
+        <li><a href="{% url 'council-detail' slug=council.slug %}" data-slug="{{ council.slug }}"{% if council.slug == selected_slug %} aria-current="page"{% endif %}>{{ council.name }}</a></li>
         {% endfor %}
       </ul>
     </details>
@@ -43,10 +43,14 @@ gets aria-current="page".
 </div>
 
 <script>
-  // Placeholder path built from the same "council-detail" named route the
-  // region-group links use via the url template tag, not a hardcoded
-  // "/council/" string -- search results don't know the slug until the
-  // index loads, so the placeholder is swapped in client-side instead.
+  // Placeholder paths built from the same named routes the region-group
+  // links / server-rendered map data-attributes use via the url template
+  // tag, not hardcoded strings -- client-side code doesn't know the target
+  // slug until a switch happens, so the placeholder is swapped in there
+  // instead.
   var councilUrlTemplate = "{% url 'council-detail' slug='__SLUG__' %}";
+  var councilSpendUrlTemplate = "{% url 'council-spend' slug='__SLUG__' %}";
+  var councilCoverageUrlTemplate = "{% url 'council-coverage' slug='__SLUG__' %}";
 </script>
+<script src="{% static 'councils/js/council-data.js' %}"></script>
 <script src="{% static 'councils/js/picker.js' %}"></script>
