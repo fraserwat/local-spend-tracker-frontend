@@ -26,14 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   function announce(message) {
-    // Clearing first, then setting on the next frame, forces the change to
+    // Clearing first, then setting on a later tick, forces the change to
     // register as a fresh update even if two switches in a row would
     // otherwise produce the same text -- an unchanged aria-live region
-    // doesn't get re-announced.
+    // doesn't get re-announced. setTimeout rather than requestAnimationFrame
+    // since this only needs to outlast a synchronous DOM write, not sync
+    // with a paint -- rAF can stall indefinitely in a backgrounded/
+    // non-rendering tab.
     announcerEl.textContent = "";
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       announcerEl.textContent = message;
-    });
+    }, 0);
   }
 
   function setAriaCurrent(slug) {
