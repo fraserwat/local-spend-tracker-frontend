@@ -12,35 +12,36 @@
 />
 <style>
   html, body, #app { height: 100%; margin: 0; }
-  body { font-family: system-ui, sans-serif; color: #0b0c0c; }
-  .layout { display: flex; align-items: stretch; height: 100%; }
+  .layout { display: flex; align-items: stretch; height: 100%; background: var(--color-bg); }
   .main-panel { flex: 1; min-width: 0; position: relative; }
   #map { height: 100%; width: 100%; }
   #status {
     position: absolute;
-    top: 1rem;
+    top: var(--space-4);
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    background: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
     font-size: 0.9rem;
   }
+  #status a { color: var(--color-accent); font-weight: 600; }
   #coverage-badge {
     display: none;
     position: absolute;
-    bottom: 1rem;
-    left: 1rem;
+    bottom: var(--space-4);
+    left: var(--space-4);
     z-index: 1000;
     max-width: 22rem;
-    background: #fff3cd;
-    border: 1px solid #d4a017;
-    color: #6b4a00;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    background: var(--color-warning-bg);
+    border: 1px solid var(--color-warning-border);
+    color: var(--color-warning-text);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
     font-size: 0.85rem;
   }
   #coverage-badge.visible { display: block; }
@@ -48,17 +49,59 @@
     width: 20rem;
     flex: none;
     overflow-y: auto;
-    padding: 1.5rem;
+    padding: var(--space-5);
     box-sizing: border-box;
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border-subtle);
   }
-  #search-status { font-size: 0.85rem; color: #505a5f; }
-  .council-sidebar__heading { font-size: 1rem; margin-bottom: 0.25rem; }
-  details { border-bottom: 1px solid #b1b4b6; padding: 0.5rem 0; }
-  summary { cursor: pointer; font-weight: 600; padding: 0.25rem 0; }
-  details ul { list-style: none; margin: 0.5rem 0 0.5rem 1rem; padding: 0; }
-  details li { padding: 0.15rem 0; }
-  details a { color: #1d70b8; text-decoration: underline; }
-  details a[aria-current="page"] { font-weight: 600; text-decoration: none; }
+  #search-status { font-size: 0.85rem; color: var(--color-text-muted); }
+  .council-sidebar__heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin: var(--space-5) 0 var(--space-2);
+  }
+  details { border-bottom: 1px solid var(--color-border-subtle); padding: var(--space-2) 0; }
+  summary { cursor: pointer; font-weight: 600; padding: var(--space-1) 0; color: var(--color-text); }
+  details ul { list-style: none; margin: var(--space-2) 0 var(--space-2) var(--space-4); padding: 0; }
+  details li { padding: var(--space-1) 0; }
+  details a { color: var(--color-accent); text-decoration: none; }
+  details a:hover { text-decoration: underline; }
+  details a[aria-current="page"] { font-weight: 600; color: var(--color-text); }
+
+  /* Leaflet ships its own light-mode chrome for the zoom control — the
+     basemap tiles stay as-is (it's imagery, not themeable), but the
+     control buttons should match the rest of the UI. */
+  .leaflet-bar, .leaflet-bar a {
+    background: var(--color-surface) !important;
+    border-color: var(--color-border-subtle) !important;
+    color: var(--color-text) !important;
+  }
+  .leaflet-bar a:hover { background: var(--color-surface-hover) !important; }
+
+  /* accessible-autocomplete (GOV.UK pattern) ships light-mode CSS with no
+     theming hooks besides class names — override with !important since
+     its own stylesheet loads after this block via CDN link order. */
+  .autocomplete__wrapper { font-family: var(--font-sans); }
+  .autocomplete__input {
+    background: var(--color-bg-elevated) !important;
+    color: var(--color-text) !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--radius-sm) !important;
+  }
+  .autocomplete__menu {
+    background: var(--color-bg-elevated) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text) !important;
+  }
+  .autocomplete__option { color: var(--color-text) !important; }
+  .autocomplete__option--focused,
+  .autocomplete__option:hover {
+    background: var(--color-accent) !important;
+    color: var(--color-accent-text) !important;
+  }
+  .autocomplete__hint { color: var(--color-text-faint) !important; }
 </style>
 {% endblock %}
 

@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((response) => response.json())
             .then((geojson) => {
               L.geoJSON(geojson, {
-                style: { color: "#8a94a6", weight: 2, fillOpacity: 0.04, dashArray: "4 4" },
+                style: { color: "#8b8da3", weight: 2, fillOpacity: 0.04, dashArray: "4 4" },
                 onEachFeature: (feature, featureLayer) => {
                   featureLayer.on("click", (event) => {
                     L.DomEvent.stopPropagation(event);
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((geojson) => {
       const layer = L.geoJSON(geojson, {
-        style: { color: "#0f3d5c", weight: 3, fillOpacity: 0.22 },
+        style: { color: "#50a2a7", weight: 3, fillOpacity: 0.22 },
         onEachFeature: (feature, featureLayer) => {
           featureLayer.on("click", (event) => {
             // Stops the click reaching map's own handler below, so

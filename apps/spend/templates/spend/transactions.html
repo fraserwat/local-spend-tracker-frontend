@@ -4,23 +4,54 @@
 
 {% block extra_head %}
 <style>
-  body { font-family: system-ui, sans-serif; color: #0b0c0c; margin: 1.5rem; }
-  h1 { font-size: 1.3rem; }
-  .filters { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem; }
-  .filters label { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; }
-  .filters input[disabled] { color: #6f777b; }
-  .errorlist { color: #d4351c; list-style: none; padding: 0; margin: 0 0 1rem; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #b1b4b6; font-size: 0.9rem; }
-  th a { color: #1d70b8; text-decoration: none; }
-  th a:hover { text-decoration: underline; }
+  body { margin: var(--space-5); }
+  h1 { font-size: 1.4rem; margin-bottom: var(--space-4); }
+  .back-link {
+    display: inline-block;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+  .back-link:hover { color: var(--color-accent); }
+
+  .filters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; margin-bottom: var(--space-5); }
+  .filters label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-1);
+  }
+
+  .errorlist { color: var(--color-error); list-style: none; padding: 0; margin: 0 0 var(--space-4); font-size: 0.85rem; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+  }
+  th, td { text-align: left; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border-subtle); font-size: 0.85rem; }
+  th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  th a { color: var(--color-text-muted); text-decoration: none; }
+  th a:hover { color: var(--color-accent); }
+  tbody tr:hover { background: var(--color-surface-hover); }
   .amount { text-align: right; font-variant-numeric: tabular-nums; }
-  .pagination { margin-top: 1rem; display: flex; gap: 1rem; }
+  .pagination { margin-top: var(--space-4); display: flex; gap: var(--space-4); font-size: 0.85rem; }
 </style>
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'council-detail' slug=council.slug %}">&larr; back to map</a>
+<a class="back-link" href="{% url 'council-detail' slug=council.slug %}">&larr; back to map</a>
 <h1>{{ council.name }} — spend</h1>
 
 {% if form.errors %}
@@ -57,7 +88,7 @@
   <input type="hidden" name="sort" value="{{ sort }}">
   <input type="hidden" name="dir" value="{{ dir }}">
   <button type="submit">Filter</button>
-  <button type="submit" name="export" value="csv">Export CSV</button>
+  <button type="submit" name="export" value="csv" class="button-secondary">Export CSV</button>
 </form>
 
 <table>

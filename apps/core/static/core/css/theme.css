@@ -1,0 +1,106 @@
+/* Shared design tokens + base element styles for every template that
+   extends core/base.html. Keep page-specific layout in each template's
+   own <style> block; put anything reused across pages here instead. */
+
+:root {
+  --color-bg: #24262f;
+  --color-bg-elevated: #2f3140;
+  --color-surface: #4e5166;
+  --color-surface-hover: #5a5d75;
+  --color-border: #6b6e87;
+  --color-border-subtle: #3d3f4f;
+
+  --color-text: #f2efe6;
+  --color-text-muted: #b8bacb;
+  --color-text-faint: #8b8da3;
+
+  --color-accent: #50a2a7;
+  --color-accent-hover: #6bbdc2;
+  --color-accent-text: #0b2426;
+
+  --color-warning-bg: #3a2f14;
+  --color-warning-border: #e9b44c;
+  --color-warning-text: #f2cd82;
+
+  --color-error: #d9553a;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  --radius-sm: 3px;
+  --radius-md: 4px;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--color-accent);
+}
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+button, input[type="submit"] {
+  font-family: inherit;
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+button:hover, input[type="submit"]:hover {
+  background: var(--color-accent-hover);
+}
+
+button.button-secondary {
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+button.button-secondary:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+input, select {
+  font-family: inherit;
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.85rem;
+}
+input[disabled] {
+  color: var(--color-text-faint);
+  background: var(--color-border-subtle);
+}
+input:focus, select:focus, button:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
