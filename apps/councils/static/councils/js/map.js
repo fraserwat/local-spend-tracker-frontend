@@ -11,7 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     maxBounds: ukBounds,
     maxBoundsViscosity: 1.0,
     minZoom: 8,
+    zoomControl: false,
   }).setView([54.5, -3], 8);
+  L.control.zoom({ position: "bottomright" }).addTo(map);
 
   // Esri World Light Gray Canvas: minimal no-key basemap built for overlay
   // maps — keeps borough polygons legible instead of competing with full
