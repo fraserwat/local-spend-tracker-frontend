@@ -49,7 +49,9 @@
 {% block content %}
 <div class="layout">
   <main class="main-panel">
-    <div id="status">{% if council %}click the map{% else %}select a council to see its boundary{% endif %}</div>
+    <div id="status">
+      {% if council %}click the map — <a href="{% url 'council-spend' slug=council.slug %}">view spend</a>{% else %}select a council to see its boundary{% endif %}
+    </div>
     <div id="map" data-geojson-url="{% if geojson_static_path %}{% static geojson_static_path %}{% endif %}"></div>
   </main>
   <aside>

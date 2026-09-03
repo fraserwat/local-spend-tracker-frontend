@@ -1,0 +1,93 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ council.name }} spend — Local Spend Tracker{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { font-family: system-ui, sans-serif; color: #0b0c0c; margin: 1.5rem; }
+  h1 { font-size: 1.3rem; }
+  .filters { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem; }
+  .filters label { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; }
+  .filters input[disabled] { color: #6f777b; }
+  .errorlist { color: #d4351c; list-style: none; padding: 0; margin: 0 0 1rem; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #b1b4b6; font-size: 0.9rem; }
+  th a { color: #1d70b8; text-decoration: none; }
+  th a:hover { text-decoration: underline; }
+  .amount { text-align: right; font-variant-numeric: tabular-nums; }
+  .pagination { margin-top: 1rem; display: flex; gap: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'council-detail' slug=council.slug %}">&larr; back to map</a>
+<h1>{{ council.name }} — spend</h1>
+
+{% if form.errors %}
+<ul class="errorlist">
+  {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+<form class="filters" method="get">
+  <div>
+    <label for="{{ form.date_from.id_for_label }}">From</label>
+    {{ form.date_from }}
+  </div>
+  <div>
+    <label for="{{ form.date_to.id_for_label }}">To</label>
+    {{ form.date_to }}
+  </div>
+  <div>
+    <label for="{{ form.amount_min.id_for_label }}">Min £</label>
+    {{ form.amount_min }}
+  </div>
+  <div>
+    <label for="{{ form.amount_max.id_for_label }}">Max £</label>
+    {{ form.amount_max }}
+  </div>
+  <div>
+    <label for="{{ form.q.id_for_label }}">Recipient</label>
+    {{ form.q }}
+  </div>
+  <div>
+    <label for="{{ form.category.id_for_label }}">Category (Coming Soon)</label>
+    {{ form.category }}
+  </div>
+  <input type="hidden" name="sort" value="{{ sort }}">
+  <input type="hidden" name="dir" value="{{ dir }}">
+  <button type="submit">Filter</button>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th><a href="{{ sort_links.date }}">Date</a></th>
+      <th><a href="{{ sort_links.beneficiary_name }}">Beneficiary</a></th>
+      <th class="amount"><a href="{{ sort_links.amount_gbp }}">Amount (£)</a></th>
+      <th>Directorate</th>
+      <th>Category</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for txn in transactions %}
+    <tr>
+      <td>{{ txn.date }}</td>
+      <td>{{ txn.beneficiary_name }}</td>
+      <td class="amount">{{ txn.amount_gbp }}</td>
+      <td>{{ txn.directorate }}</td>
+      <td>{{ txn.category }}</td>
+      <td>{{ txn.description }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No transactions match these filters.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="pagination">
+  {% if previous_link %}<a href="{{ previous_link }}">&larr; Previous</a>{% endif %}
+  {% if next_link %}<a href="{{ next_link }}">Next &rarr;</a>{% endif %}
+</div>
+{% endblock %}

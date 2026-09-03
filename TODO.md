@@ -12,7 +12,7 @@ Each phase is independently buildable and has a concrete verification step — s
   *Verify:* loaded row count matches parquet's true count exactly; spot-check 3 rows against Polars directly; re-run loader, confirm identical count and no duplicates.
 - [x] **Phase 3 — One boundary + minimal map.** Fetch Haringey's boundary, bare Leaflet page with UK-locked bounds.
   *Verify:* polygon sits correctly in north London at correct scale; click-inside fires, click-outside doesn't; can't pan/zoom off the UK.
-- [ ] **Phase 4 — One council's Spend View + API, end-to-end.** `spend/selectors.py`, server-rendered sortable/filterable table for Haringey, Category filter disabled, `GET /api/v1/councils/haringey/transactions/`.
+- [x] **Phase 4 — One council's Spend View + API, end-to-end.** `spend/selectors.py`, server-rendered sortable/filterable table for Haringey, Category filter disabled, `GET /api/v1/councils/haringey/transactions/`.
   *Verify:* filtered counts/totals cross-checked against an equivalent Polars query; sort columns toggle correctly on both HTML and API; `connection.queries` confirms parameterized queries; `EXPLAIN ANALYZE` confirms index usage, not sequential scan.
 - [ ] **Phase 5 — CSV export.** Streaming, filtered, rate-limited; one `services/export.py` used by both the HTML view and the API export action.
   *Verify:* unfiltered export row count matches DB/parquet exactly; process memory stays flat across a ~275K-row export; 6th rapid request gets throttled.
