@@ -49,13 +49,7 @@ REGION_BY_CODE = {
 # Councils where the sibling repo's R2 slug diverges from
 # normalize_slug(slugify(ONS name)) by more than the usual hyphen<->underscore
 # swap apps.spend.services.r2.normalize_slug() handles -- set explicitly here
-# so reload_from_r2 finds their data later without a loader change. Verified
-# by diffing this command's ONS pull against a live list_councils() call.
-#
-# Isles of Scilly (E06000053) needs no entry here: its default slug
-# ("isles-of-scilly") is already correct, the mismatch was on the R2 side
-# (still hyphenated instead of underscored) and is handled centrally by
-# apps.spend.services.r2.normalize_slug()'s own SLUG_OVERRIDES.
+# so reload_from_r2 finds their data without a loader change.
 SLUG_OVERRIDES = {
     "E06000010": "kingston-upon-hull",  # ONS: "Kingston upon Hull, City of"
     "E06000019": "herefordshire",  # ONS: "Herefordshire, County of"
