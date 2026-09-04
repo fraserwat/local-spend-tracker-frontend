@@ -2,12 +2,10 @@ from django.core.management.base import BaseCommand, CommandError
 
 from apps.councils.models import CouncilCoverage
 
-# Hand-transcribed from the sibling data repo's README.md, "Coverage &
-# date-quality caveats" table (local-big-con-nationwide/README.md), which is
-# hand-written prose, not machine-readable -- see docs/ARCHITECTURE.md's data
-# model section and Open risk #7. Every loaded council must have an explicit
-# entry here, even a clean one, so this stays a verified transcription
-# rather than a silent model default standing in for "checked, no issue".
+# Hand-transcribed from local-big-con-nationwide/README.md's "Coverage &
+# date-quality caveats" table (hand-written prose, not machine-readable).
+# Every loaded council needs an explicit entry, even a clean one, so this
+# stays a verified transcription rather than a silent "no issue" default.
 #
 # has_data_quality_issue, detail_text
 COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {

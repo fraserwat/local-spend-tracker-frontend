@@ -1,7 +1,5 @@
-// Shared council-index.json loader -- picker.js (search) and
-// council-switch.js (in-page switching) both need the same council list.
-// Whichever loads first triggers the single fetch; the other reuses the
-// same promise instead of firing a second request.
+// Shared council-index.json loader for picker.js and council-switch.js --
+// whichever loads first triggers the fetch, the other reuses the promise.
 window.CouncilIndex = (function () {
   "use strict";
 
@@ -15,9 +13,8 @@ window.CouncilIndex = (function () {
           return response.json();
         })
         .catch(function (error) {
-          // A transient failure shouldn't poison the cache forever -- clear
-          // it so the next load() call retries instead of replaying the
-          // same rejected promise to every future caller.
+          // Clear the cache so the next load() retries instead of
+          // replaying this rejection.
           promise = null;
           throw error;
         });

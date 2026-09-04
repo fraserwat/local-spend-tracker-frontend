@@ -20,20 +20,16 @@
 
   CouncilIndex.load(indexUrl)
     .then(function (councils) {
-      // council-index.json is generated pre-sorted by name (see
-      // generate_council_index), so filtering preserves alphabetical order
-      // without the results needing a sort step here.
+      // Pre-sorted by name (see generate_council_index), so filtering
+      // preserves order without a sort step here.
       function render(query) {
         var needle = query.toLowerCase();
         var matches = councils.filter(function (council) {
           return council.name.toLowerCase().indexOf(needle) !== -1;
         });
 
-        // The region groups and the search results both live in the same
-        // sidebar slot -- showing both at once (or opening a dropdown on
-        // top of them) is what made the list look like it was pushing
-        // itself down the page. Swap one for the other instead of stacking
-        // them.
+        // Region groups and search results share one sidebar slot -- swap
+        // rather than stack, or the list pushes itself down the page.
         if (!query) {
           resultsList.hidden = true;
           resultsList.textContent = "";
@@ -49,9 +45,8 @@
           var li = document.createElement("li");
           var a = document.createElement("a");
           a.href = councilUrl(council.slug);
-          // data-slug lets council-switch.js's delegated .council-sidebar
-          // click listener intercept these the same way it does the
-          // region-browse links -- no separate wiring needed here.
+          // Lets council-switch.js's delegated click listener intercept
+          // this the same way as region-browse links.
           a.dataset.slug = council.slug;
           a.textContent = council.name;
           li.appendChild(a);
