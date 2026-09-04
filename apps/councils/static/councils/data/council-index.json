@@ -1,5 +1,47 @@
 [
   {
+    "name": "Adur",
+    "slug": "adur",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Amber Valley",
+    "slug": "amber-valley",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Arun",
+    "slug": "arun",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Ashfield",
+    "slug": "ashfield",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Ashford",
+    "slug": "ashford",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Babergh",
+    "slug": "babergh",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
     "name": "Barking and Dagenham",
     "slug": "barking-and-dagenham",
     "region": "london",
@@ -14,10 +56,136 @@
     "has_coverage": true
   },
   {
+    "name": "Barnsley",
+    "slug": "barnsley",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Basildon",
+    "slug": "basildon",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Basingstoke and Deane",
+    "slug": "basingstoke-and-deane",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Bassetlaw",
+    "slug": "bassetlaw",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Bath and North East Somerset",
+    "slug": "bath-and-north-east-somerset",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Bedford",
+    "slug": "bedford",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
     "name": "Bexley",
     "slug": "bexley",
     "region": "london",
     "region_display": "London",
+    "has_coverage": true
+  },
+  {
+    "name": "Birmingham",
+    "slug": "birmingham",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Blaby",
+    "slug": "blaby",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Blackburn with Darwen",
+    "slug": "blackburn-with-darwen",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Blackpool",
+    "slug": "blackpool",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Bolsover",
+    "slug": "bolsover",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Bolton",
+    "slug": "bolton",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Boston",
+    "slug": "boston",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Bournemouth, Christchurch and Poole",
+    "slug": "bournemouth-christchurch-poole",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Bracknell Forest",
+    "slug": "bracknell-forest",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Bradford",
+    "slug": "bradford",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Braintree",
+    "slug": "braintree",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Breckland",
+    "slug": "breckland",
+    "region": "east_of_england",
+    "region_display": "East of England",
     "has_coverage": false
   },
   {
@@ -25,6 +193,34 @@
     "slug": "brent",
     "region": "london",
     "region_display": "London",
+    "has_coverage": true
+  },
+  {
+    "name": "Brentwood",
+    "slug": "brentwood",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Brighton and Hove",
+    "slug": "brighton-and-hove",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Bristol, City of",
+    "slug": "bristol",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Broadland",
+    "slug": "broadland",
+    "region": "east_of_england",
+    "region_display": "East of England",
     "has_coverage": false
   },
   {
@@ -32,6 +228,62 @@
     "slug": "bromley",
     "region": "london",
     "region_display": "London",
+    "has_coverage": true
+  },
+  {
+    "name": "Bromsgrove",
+    "slug": "bromsgrove",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Broxbourne",
+    "slug": "broxbourne",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Broxtowe",
+    "slug": "broxtowe",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Buckinghamshire",
+    "slug": "buckinghamshire",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Burnley",
+    "slug": "burnley",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Bury",
+    "slug": "bury",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Calderdale",
+    "slug": "calderdale",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Cambridge",
+    "slug": "cambridge",
+    "region": "east_of_england",
+    "region_display": "East of England",
     "has_coverage": false
   },
   {
@@ -42,10 +294,220 @@
     "has_coverage": true
   },
   {
+    "name": "Cannock Chase",
+    "slug": "cannock-chase",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Canterbury",
+    "slug": "canterbury",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Castle Point",
+    "slug": "castle-point",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Central Bedfordshire",
+    "slug": "central-bedfordshire",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Charnwood",
+    "slug": "charnwood",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Chelmsford",
+    "slug": "chelmsford",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Cheltenham",
+    "slug": "cheltenham",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Cherwell",
+    "slug": "cherwell",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Cheshire East",
+    "slug": "cheshire-east",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Cheshire West and Chester",
+    "slug": "cheshire-west-and-chester",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Chesterfield",
+    "slug": "chesterfield",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Chichester",
+    "slug": "chichester",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Chorley",
+    "slug": "chorley",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "City of London",
+    "slug": "city-of-london",
+    "region": "london",
+    "region_display": "London",
+    "has_coverage": false
+  },
+  {
+    "name": "Colchester",
+    "slug": "colchester",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Cornwall",
+    "slug": "cornwall",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Cotswold",
+    "slug": "cotswold",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "County Durham",
+    "slug": "durham",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Coventry",
+    "slug": "coventry",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Crawley",
+    "slug": "crawley",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
     "name": "Croydon",
     "slug": "croydon",
     "region": "london",
     "region_display": "London",
+    "has_coverage": true
+  },
+  {
+    "name": "Cumberland",
+    "slug": "cumberland",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Dacorum",
+    "slug": "dacorum",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Darlington",
+    "slug": "darlington",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Dartford",
+    "slug": "dartford",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Derby",
+    "slug": "derby",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Derbyshire Dales",
+    "slug": "derbyshire-dales",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Doncaster",
+    "slug": "doncaster",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Dorset",
+    "slug": "dorset",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Dover",
+    "slug": "dover",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Dudley",
+    "slug": "dudley",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
     "has_coverage": false
   },
   {
@@ -53,6 +515,83 @@
     "slug": "ealing",
     "region": "london",
     "region_display": "London",
+    "has_coverage": true
+  },
+  {
+    "name": "East Cambridgeshire",
+    "slug": "east-cambridgeshire",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "East Devon",
+    "slug": "east-devon",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "East Hampshire",
+    "slug": "east-hampshire",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "East Hertfordshire",
+    "slug": "east-hertfordshire",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "East Lindsey",
+    "slug": "east-lindsey",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "East Riding of Yorkshire",
+    "slug": "east-riding-of-yorkshire",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "East Staffordshire",
+    "slug": "east-staffordshire",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "East Suffolk",
+    "slug": "east-suffolk",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Eastbourne",
+    "slug": "eastbourne",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Eastleigh",
+    "slug": "eastleigh",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Elmbridge",
+    "slug": "elmbridge",
+    "region": "south_east",
+    "region_display": "South East",
     "has_coverage": false
   },
   {
@@ -63,10 +602,122 @@
     "has_coverage": false
   },
   {
+    "name": "Epping Forest",
+    "slug": "epping-forest",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Epsom and Ewell",
+    "slug": "epsom-and-ewell",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Erewash",
+    "slug": "erewash",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Exeter",
+    "slug": "exeter",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Fareham",
+    "slug": "fareham",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Fenland",
+    "slug": "fenland",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Folkestone and Hythe",
+    "slug": "folkestone-hythe",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Forest of Dean",
+    "slug": "forest-of-dean",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Fylde",
+    "slug": "fylde",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Gateshead",
+    "slug": "gateshead",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Gedling",
+    "slug": "gedling",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Gloucester",
+    "slug": "gloucester",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Gosport",
+    "slug": "gosport",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Gravesham",
+    "slug": "gravesham",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Great Yarmouth",
+    "slug": "great-yarmouth",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
     "name": "Greenwich",
     "slug": "greenwich",
     "region": "london",
     "region_display": "London",
+    "has_coverage": true
+  },
+  {
+    "name": "Guildford",
+    "slug": "guildford",
+    "region": "south_east",
+    "region_display": "South East",
     "has_coverage": false
   },
   {
@@ -74,7 +725,14 @@
     "slug": "hackney",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Halton",
+    "slug": "halton",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
   },
   {
     "name": "Hammersmith and Fulham",
@@ -84,25 +742,88 @@
     "has_coverage": false
   },
   {
+    "name": "Harborough",
+    "slug": "harborough",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
     "name": "Haringey",
     "slug": "haringey",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Harlow",
+    "slug": "harlow",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
   },
   {
     "name": "Harrow",
     "slug": "harrow",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Hart",
+    "slug": "hart",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Hartlepool",
+    "slug": "hartlepool",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Hastings",
+    "slug": "hastings",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Havant",
+    "slug": "havant",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
   },
   {
     "name": "Havering",
     "slug": "havering",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Herefordshire, County of",
+    "slug": "herefordshire",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Hertsmere",
+    "slug": "hertsmere",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "High Peak",
+    "slug": "high-peak",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
   },
   {
     "name": "Hillingdon",
@@ -112,24 +833,87 @@
     "has_coverage": false
   },
   {
+    "name": "Hinckley and Bosworth",
+    "slug": "hinckley-and-bosworth",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Horsham",
+    "slug": "horsham",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
     "name": "Hounslow",
     "slug": "hounslow",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Huntingdonshire",
+    "slug": "huntingdonshire",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Hyndburn",
+    "slug": "hyndburn",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Ipswich",
+    "slug": "ipswich",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Isle of Wight",
+    "slug": "isle-of-wight",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Isles of Scilly",
+    "slug": "isles-of-scilly",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
   },
   {
     "name": "Islington",
     "slug": "islington",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
   },
   {
     "name": "Kensington and Chelsea",
     "slug": "kensington-and-chelsea",
     "region": "london",
     "region_display": "London",
+    "has_coverage": false
+  },
+  {
+    "name": "King's Lynn and West Norfolk",
+    "slug": "kings-lynn-and-west-norfolk",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Kingston upon Hull, City of",
+    "slug": "kingston-upon-hull",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
     "has_coverage": false
   },
   {
@@ -140,10 +924,52 @@
     "has_coverage": false
   },
   {
+    "name": "Kirklees",
+    "slug": "kirklees",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Knowsley",
+    "slug": "knowsley",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
     "name": "Lambeth",
     "slug": "lambeth",
     "region": "london",
     "region_display": "London",
+    "has_coverage": false
+  },
+  {
+    "name": "Lancaster",
+    "slug": "lancaster",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Leeds",
+    "slug": "leeds",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Leicester",
+    "slug": "leicester",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Lewes",
+    "slug": "lewes",
+    "region": "south_east",
+    "region_display": "South East",
     "has_coverage": false
   },
   {
@@ -154,32 +980,613 @@
     "has_coverage": false
   },
   {
+    "name": "Lichfield",
+    "slug": "lichfield",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Lincoln",
+    "slug": "lincoln",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Liverpool",
+    "slug": "liverpool",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Luton",
+    "slug": "luton",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Maidstone",
+    "slug": "maidstone",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Maldon",
+    "slug": "maldon",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Malvern Hills",
+    "slug": "malvern-hills",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Manchester",
+    "slug": "manchester",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Mansfield",
+    "slug": "mansfield",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Medway",
+    "slug": "medway",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Melton",
+    "slug": "melton",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
     "name": "Merton",
     "slug": "merton",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Mid Devon",
+    "slug": "mid-devon",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Mid Suffolk",
+    "slug": "mid-suffolk",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Mid Sussex",
+    "slug": "mid-sussex",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Middlesbrough",
+    "slug": "middlesbrough",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Milton Keynes",
+    "slug": "milton-keynes",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Mole Valley",
+    "slug": "mole-valley",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "New Forest",
+    "slug": "new-forest",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Newark and Sherwood",
+    "slug": "newark-and-sherwood",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Newcastle upon Tyne",
+    "slug": "newcastle-upon-tyne",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Newcastle-under-Lyme",
+    "slug": "newcastle-under-lyme",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
   },
   {
     "name": "Newham",
     "slug": "newham",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "North Devon",
+    "slug": "north-devon",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "North East Derbyshire",
+    "slug": "north-east-derbyshire",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "North East Lincolnshire",
+    "slug": "north-east-lincolnshire",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "North Hertfordshire",
+    "slug": "north-hertfordshire",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "North Kesteven",
+    "slug": "north-kesteven",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "North Lincolnshire",
+    "slug": "north-lincolnshire",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "North Norfolk",
+    "slug": "north-norfolk",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "North Northamptonshire",
+    "slug": "north-northamptonshire",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "North Somerset",
+    "slug": "north-somerset",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "North Tyneside",
+    "slug": "north-tyneside",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "North Warwickshire",
+    "slug": "north-warwickshire",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "North West Leicestershire",
+    "slug": "north-west-leicestershire",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "North Yorkshire",
+    "slug": "north-yorkshire",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Northumberland",
+    "slug": "northumberland",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Norwich",
+    "slug": "norwich",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Nottingham",
+    "slug": "nottingham",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Nuneaton and Bedworth",
+    "slug": "nuneaton-and-bedworth",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Oadby and Wigston",
+    "slug": "oadby-and-wigston",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Oldham",
+    "slug": "oldham",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Oxford",
+    "slug": "oxford",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Pendle",
+    "slug": "pendle",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Peterborough",
+    "slug": "peterborough",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Plymouth",
+    "slug": "plymouth",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Portsmouth",
+    "slug": "portsmouth",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Preston",
+    "slug": "preston",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Reading",
+    "slug": "reading",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
   },
   {
     "name": "Redbridge",
     "slug": "redbridge",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Redcar and Cleveland",
+    "slug": "redcar-and-cleveland",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Redditch",
+    "slug": "redditch",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Reigate and Banstead",
+    "slug": "reigate-and-banstead",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Ribble Valley",
+    "slug": "ribble-valley",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
   },
   {
     "name": "Richmond upon Thames",
     "slug": "richmond-upon-thames",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Rochdale",
+    "slug": "rochdale",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Rochford",
+    "slug": "rochford",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Rossendale",
+    "slug": "rossendale",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Rother",
+    "slug": "rother",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Rotherham",
+    "slug": "rotherham",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Rugby",
+    "slug": "rugby",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Runnymede",
+    "slug": "runnymede",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Rushcliffe",
+    "slug": "rushcliffe",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Rushmoor",
+    "slug": "rushmoor",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Rutland",
+    "slug": "rutland",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Salford",
+    "slug": "salford",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Sandwell",
+    "slug": "sandwell",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Sefton",
+    "slug": "sefton",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Sevenoaks",
+    "slug": "sevenoaks",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Sheffield",
+    "slug": "sheffield",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Shropshire",
+    "slug": "shropshire",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Slough",
+    "slug": "slough",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Solihull",
+    "slug": "solihull",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Somerset",
+    "slug": "somerset",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "South Cambridgeshire",
+    "slug": "south-cambridgeshire",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "South Derbyshire",
+    "slug": "south-derbyshire",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "South Gloucestershire",
+    "slug": "south-gloucestershire",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "South Hams",
+    "slug": "south-hams",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "South Holland",
+    "slug": "south-holland",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "South Kesteven",
+    "slug": "south-kesteven",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "South Norfolk",
+    "slug": "south-norfolk",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "South Oxfordshire",
+    "slug": "south-oxfordshire",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "South Ribble",
+    "slug": "south-ribble",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "South Staffordshire",
+    "slug": "south-staffordshire",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "South Tyneside",
+    "slug": "south-tyneside",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Southampton",
+    "slug": "southampton",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Southend-on-Sea",
+    "slug": "southend-on-sea",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
   },
   {
     "name": "Southwark",
@@ -189,18 +1596,263 @@
     "has_coverage": false
   },
   {
+    "name": "Spelthorne",
+    "slug": "spelthorne",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "St Albans",
+    "slug": "st-albans",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "St. Helens",
+    "slug": "st-helens",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Stafford",
+    "slug": "stafford",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Staffordshire Moorlands",
+    "slug": "staffordshire-moorlands",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Stevenage",
+    "slug": "stevenage",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Stockport",
+    "slug": "stockport",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Stockton-on-Tees",
+    "slug": "stockton-on-tees",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Stoke-on-Trent",
+    "slug": "stoke-on-trent",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Stratford-on-Avon",
+    "slug": "stratford-on-avon",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Stroud",
+    "slug": "stroud",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Sunderland",
+    "slug": "sunderland",
+    "region": "north_east",
+    "region_display": "North East",
+    "has_coverage": false
+  },
+  {
+    "name": "Surrey Heath",
+    "slug": "surrey-heath",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
     "name": "Sutton",
     "slug": "sutton",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Swale",
+    "slug": "swale",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Swindon",
+    "slug": "swindon",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Tameside",
+    "slug": "tameside",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Tamworth",
+    "slug": "tamworth",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Tandridge",
+    "slug": "tandridge",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Teignbridge",
+    "slug": "teignbridge",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Telford and Wrekin",
+    "slug": "telford-and-wrekin",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Tendring",
+    "slug": "tendring",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Test Valley",
+    "slug": "test-valley",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Tewkesbury",
+    "slug": "tewkesbury",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Thanet",
+    "slug": "thanet",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Three Rivers",
+    "slug": "three-rivers",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Thurrock",
+    "slug": "thurrock",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Tonbridge and Malling",
+    "slug": "tonbridge-and-malling",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Torbay",
+    "slug": "torbay",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Torridge",
+    "slug": "torridge",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
   },
   {
     "name": "Tower Hamlets",
     "slug": "tower-hamlets",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Trafford",
+    "slug": "trafford",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Tunbridge Wells",
+    "slug": "tunbridge-wells",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Uttlesford",
+    "slug": "uttlesford",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Vale of White Horse",
+    "slug": "vale-of-white-horse",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Wakefield",
+    "slug": "wakefield",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
+  },
+  {
+    "name": "Walsall",
+    "slug": "walsall",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
   },
   {
     "name": "Waltham Forest",
@@ -214,13 +1866,209 @@
     "slug": "wandsworth",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Warrington",
+    "slug": "warrington",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Warwick",
+    "slug": "warwick",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Watford",
+    "slug": "watford",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "Waverley",
+    "slug": "waverley",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Wealden",
+    "slug": "wealden",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Welwyn Hatfield",
+    "slug": "welwyn-hatfield",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
+  },
+  {
+    "name": "West Berkshire",
+    "slug": "west-berkshire",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "West Devon",
+    "slug": "west-devon",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "West Lancashire",
+    "slug": "west-lancashire",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "West Lindsey",
+    "slug": "west-lindsey",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "West Northamptonshire",
+    "slug": "west-northamptonshire",
+    "region": "east_midlands",
+    "region_display": "East Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "West Oxfordshire",
+    "slug": "west-oxfordshire",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "West Suffolk",
+    "slug": "west-suffolk",
+    "region": "east_of_england",
+    "region_display": "East of England",
+    "has_coverage": false
   },
   {
     "name": "Westminster",
     "slug": "westminster",
     "region": "london",
     "region_display": "London",
-    "has_coverage": true
+    "has_coverage": false
+  },
+  {
+    "name": "Westmorland and Furness",
+    "slug": "westmorland-and-furness",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Wigan",
+    "slug": "wigan",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Wiltshire",
+    "slug": "wiltshire",
+    "region": "south_west",
+    "region_display": "South West",
+    "has_coverage": false
+  },
+  {
+    "name": "Winchester",
+    "slug": "winchester",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Windsor and Maidenhead",
+    "slug": "windsor-and-maidenhead",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Wirral",
+    "slug": "wirral",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Woking",
+    "slug": "woking",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Wokingham",
+    "slug": "wokingham",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Wolverhampton",
+    "slug": "wolverhampton",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Worcester",
+    "slug": "worcester",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Worthing",
+    "slug": "worthing",
+    "region": "south_east",
+    "region_display": "South East",
+    "has_coverage": false
+  },
+  {
+    "name": "Wychavon",
+    "slug": "wychavon",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "Wyre",
+    "slug": "wyre",
+    "region": "north_west",
+    "region_display": "North West",
+    "has_coverage": false
+  },
+  {
+    "name": "Wyre Forest",
+    "slug": "wyre-forest",
+    "region": "west_midlands",
+    "region_display": "West Midlands",
+    "has_coverage": false
+  },
+  {
+    "name": "York",
+    "slug": "york",
+    "region": "yorkshire_humber",
+    "region_display": "Yorkshire and the Humber",
+    "has_coverage": false
   }
 ]
