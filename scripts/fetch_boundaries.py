@@ -49,6 +49,7 @@ COORDINATE_PRECISION_DEGREES = 1e-6
 
 GEO_DIR = BASE_DIR / "apps" / "councils" / "static" / "councils" / "geo"
 MANIFEST_PATH = GEO_DIR / "manifest.json"
+BUNDLE_FILENAME = "all-councils.geojson"
 
 
 def fetch_boundary(gss_code: str) -> dict:
@@ -106,7 +107,7 @@ def write_council_boundary(council: Council) -> dict:
     }
 
 
-def update_manifest(entries: list[dict]) -> None:
+def update_manifest(entries: list[dict]) -> dict:
     manifest = {"schema_version": 1, "councils": {}}
     if MANIFEST_PATH.exists():
         manifest = json.loads(MANIFEST_PATH.read_text())
@@ -114,7 +115,20 @@ def update_manifest(entries: list[dict]) -> None:
         manifest.setdefault("councils", {})
     for entry in entries:
         manifest["councils"][entry["slug"]] = entry
+    manifest["bundle_file"] = BUNDLE_FILENAME
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    return manifest
+
+
+def write_bundle(manifest: dict) -> None:
+    """Combine every council's boundary into one FeatureCollection for map.js's idle outlines."""
+    features = []
+    for entry in sorted(manifest["councils"].values(), key=lambda e: e["slug"]):
+        council_path = GEO_DIR / entry["file"]
+        feature_collection = json.loads(council_path.read_text())
+        features.extend(feature_collection["features"])
+    bundle = {"type": "FeatureCollection", "features": features}
+    (GEO_DIR / BUNDLE_FILENAME).write_text(json.dumps(bundle, separators=(",", ":")))
 
 
 def main():
@@ -134,9 +148,11 @@ def main():
         raise SystemExit(f"no Council found for slug(s): {', '.join(sorted(missing))}")
 
     entries = [write_council_boundary(council) for council in councils]
-    update_manifest(entries)
+    manifest = update_manifest(entries)
+    write_bundle(manifest)
     for entry in entries:
         print(f"wrote {entry['file']} ({entry['name']}, {entry['gss_code']})")
+    print(f"wrote {BUNDLE_FILENAME} ({len(manifest['councils'])} councils bundled)")
 
 
 if __name__ == "__main__":
