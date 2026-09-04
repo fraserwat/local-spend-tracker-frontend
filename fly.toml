@@ -43,9 +43,11 @@ console_command = 'python manage.py shell'
       Host = 'local-spend-tracker-frontend.fly.dev'
 
 [[vm]]
-  # 512mb was tight for 3 gunicorn workers each holding a Django + psycopg
-  # connection; 1gb gives real headroom rather than risking OOM under a
-  # concurrent multi-minute CSV export.
-  memory = '1gb'
+  # Bumped from shared-cpu-1x/1gb for the England-wide reload_from_r2
+  # backfill -- that job runs on this same machine (weekly-reload.yml SSHes
+  # in), and 1 shared CPU was the likely bottleneck on the COPY/psycopg
+  # side, not just Neon. Revisit scaling back down once the backfill's done
+  # and only the steady-state weekly diff-reload remains.
+  memory = '2gb'
   cpu_kind = 'shared'
-  cpus = 1
+  cpus = 4

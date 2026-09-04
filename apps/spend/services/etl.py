@@ -6,18 +6,18 @@ giving concurrent readers an old-or-new snapshot (Postgres MVCC) and making
 repeat runs converge to the same state rather than accumulating duplicates.
 """
 
+import io
 from datetime import date as date_cls
-from decimal import Decimal
-from itertools import batched
 from pathlib import Path
 from typing import cast
 
 import polars as pl
 from django.db import connection, transaction
 from django.utils import timezone
+from psycopg import sql
 
 from apps.councils.models import Council, CouncilCoverage
-from apps.spend.models import AMOUNT_DECIMAL_PLACES, DataLoadRun, SpendTransaction
+from apps.spend.models import AMOUNT_DECIMAL_PLACES, DataLoadRun
 from apps.spend.services.r2 import normalize_slug
 
 # Fixed column contract enforced by the data repo's harmonise() step
@@ -34,7 +34,15 @@ EXPECTED_COLUMNS = {
     "DESCRIPTION",
 }
 
-BATCH_SIZE = 5000
+STAGING_COLUMNS = (
+    "date",
+    "beneficiary_name",
+    "amount_gbp",
+    "directorate",
+    "category",
+    "sub_category",
+    "description",
+)
 
 
 class LoadError(Exception):
@@ -52,23 +60,6 @@ def _validate(df_columns: set[str], council_names: set[str], expected_council_na
         )
 
 
-def _to_transaction(row: dict, council: Council) -> SpendTransaction:
-    amount: float = row["AMOUNT_GBP"]
-    date: date_cls = row["DATE"]
-    return SpendTransaction(
-        council=council,
-        date=date,
-        beneficiary_name=row["BENEFICIARY_NAME"],
-        # str() before Decimal avoids binary float artifacts (e.g. 8249.13
-        # stored as 8249.129999999999) that Decimal(float) would preserve.
-        amount_gbp=Decimal(str(round(amount, AMOUNT_DECIMAL_PLACES))),
-        directorate=row["DIRECTORATE"] or "",
-        category=row["CATEGORY"] or "",
-        sub_category=row["SUB_CATEGORY"] or "",
-        description=row["DESCRIPTION"] or "",
-    )
-
-
 def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
     """Full-replace load of `council`'s SpendTransactions from `source_path`.
 
@@ -83,6 +74,12 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
         # Upstream DATE dtype varies (Date vs Datetime) -- normalize once so
         # downstream code always sees plain datetime.date values.
         df = df.with_columns(pl.col("DATE").cast(pl.Date))
+        # Round once here rather than per-row in Python -- write_csv's
+        # float_precision below then formats every value to exactly this
+        # many decimal places, avoiding the binary float artifacts (e.g.
+        # 8249.13 -> 8249.129999999999) a naive float->Decimal conversion
+        # would otherwise preserve.
+        df = df.with_columns(pl.col("AMOUNT_GBP").round(AMOUNT_DECIMAL_PLACES))
         # Source repo's COUNCIL_NAME/filenames use underscores; Django's
         # slugify produces hyphens for multi-word councils (e.g.
         # tower-hamlets vs tower_hamlets) -- normalize before comparing.
@@ -92,18 +89,83 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
             normalize_slug(council.slug),
         )
 
+        row_count = len(df)
+        csv_buf = io.StringIO()
+        df.select(
+            [
+                "DATE",
+                "BENEFICIARY_NAME",
+                "AMOUNT_GBP",
+                "DIRECTORATE",
+                "CATEGORY",
+                "SUB_CATEGORY",
+                "DESCRIPTION",
+            ]
+        ).write_csv(csv_buf, include_header=False, float_precision=AMOUNT_DECIMAL_PLACES)
+        csv_buf.seek(0)
+
         with transaction.atomic():
             with connection.cursor() as cursor:
                 cursor.execute("SELECT pg_try_advisory_xact_lock(%s)", [council.id])
                 if not cursor.fetchone()[0]:
                     raise LoadError(f"load already in progress for council_id={council.id}")
 
-            SpendTransaction.objects.filter(council=council).delete()
+                # Council-scoped staging table name: reload_from_r2 runs
+                # councils sequentially today, but this avoids a collision
+                # footgun if that ever changes. sql.Identifier (not an
+                # f-string) so the table name is always safely quoted, not
+                # string-interpolated into the query.
+                staging_table = sql.Identifier(f"staging_spend_transaction_{council.id}")
+                cursor.execute(sql.SQL("DROP TABLE IF EXISTS {}").format(staging_table))
+                cursor.execute(
+                    sql.SQL(
+                        """
+                        CREATE UNLOGGED TABLE {} (
+                            date date,
+                            beneficiary_name text,
+                            amount_gbp numeric(14,2),
+                            directorate text,
+                            category text,
+                            sub_category text,
+                            description text
+                        )
+                        """
+                    ).format(staging_table)
+                )
 
-            row_count = 0
-            for batch in batched(df.iter_rows(named=True), BATCH_SIZE, strict=False):
-                SpendTransaction.objects.bulk_create(_to_transaction(row, council) for row in batch)
-                row_count += len(batch)
+                raw_conn = connection.connection
+                copy_stmt = sql.SQL("COPY {} ({}) FROM STDIN WITH (FORMAT csv)").format(
+                    staging_table,
+                    sql.SQL(", ").join(sql.Identifier(col) for col in STAGING_COLUMNS),
+                )
+                with (
+                    raw_conn.cursor() as raw_cursor,
+                    raw_cursor.copy(copy_stmt) as copy,
+                ):
+                    copy.write(csv_buf.read())
+
+                cursor.execute(
+                    "DELETE FROM spend_spendtransaction WHERE council_id = %s", [council.id]
+                )
+                cursor.execute(
+                    sql.SQL(
+                        """
+                        INSERT INTO spend_spendtransaction
+                            (council_id, date, beneficiary_name, amount_gbp,
+                             directorate, category, sub_category, description)
+                        SELECT %s, date,
+                               COALESCE(beneficiary_name, ''),
+                               amount_gbp,
+                               COALESCE(directorate, ''),
+                               COALESCE(category, ''),
+                               COALESCE(sub_category, ''),
+                               COALESCE(description, '')
+                        FROM {}
+                        """
+                    ).format(staging_table),
+                    [council.id],
+                )
+                cursor.execute(sql.SQL("DROP TABLE {}").format(staging_table))
 
             dates = df["DATE"]
             CouncilCoverage.objects.update_or_create(
