@@ -52,5 +52,5 @@ gets aria-current="page".
   var councilSpendUrlTemplate = "{% url 'council-spend' slug='__SLUG__' %}";
   var councilCoverageUrlTemplate = "{% url 'council-coverage' slug='__SLUG__' %}";
 </script>
-<script src="{% static 'councils/js/council-data.js' %}"></script>
-<script src="{% static 'councils/js/picker.js' %}"></script>
+<script src="{% static 'councils/js/council-data.js' %}" defer></script>
+<script src="{% static 'councils/js/picker.js' %}" defer></script>
