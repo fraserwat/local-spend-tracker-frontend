@@ -2,6 +2,38 @@
    extends core/base.html. Keep page-specific layout in each template's
    own <style> block; put anything reused across pages here instead. */
 
+/* Self-hosted Inter -- avoids a render-blocking Google Fonts request.
+   Relative paths, not {% static %} (Django doesn't template .css files);
+   WhiteNoise still hashes these url()s at collectstatic time in prod. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/inter-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/inter-700.woff2") format("woff2");
+}
+
 :root {
   --color-bg: #24262f;
   --color-bg-elevated: #2f3140;

@@ -1,6 +1,6 @@
 # Roadmap
 
-Each step is independently buildable with a concrete verification step — see `docs/ARCHITECTURE.md` for design rationale.
+Each phase is independently buildable and has a concrete verification step — see `docs/ARCHITECTURE.md` for full design rationale.
 
 **Target scope is all of England** (~300 local authorities, Wales/Scotland/Northern Ireland excluded — see `docs/ARCHITECTURE.md`). Phase 1 builds and verifies the whole pipeline against London's 32 boroughs as a pilot batch. Phases 2–4 are where that pilot becomes the real thing: nationwide scale, entity resolution, and an insourcing feasibility model.
 
@@ -30,7 +30,8 @@ Everything built so far: the pilot-scale map + spend-table serving layer.
   *Verify:* `check --deploy` clean; no unexpected `|safe`/raw SQL; XSS test passes; throttles hold; `pip-audit` clean.
 - [ ] **Step 10 — Scale to all 32 London boroughs (pilot completion).** Repeat reference/boundary/load/coverage for the remaining 28.
   *Verify:* reconciliation script matches DB against parquet for all 32 exactly; full map renders 32 gap-free, hoverable polygons.
-- [ ] **Step 11 — Deployment & data-refresh runbook.** Dockerfile/gunicorn, managed Postgres with backups, documented refresh runbook, scheduled reconciliation. Also: far-future `Cache-Control` on static GeoJSON (WhiteNoise or CDN) — no config exists yet, so the idle-outline bundle currently re-fetches on every repeat visit.
+- [ ] **Step 11 — Deployment & data-refresh runbook.** Dockerfile/gunicorn, managed Postgres with backups, documented refresh runbook, scheduled reconciliation. 
+  - `GZipMiddleware` + WhiteNoise (hashed, pre-compressed static storage in prod) landed ahead of the rest of this phase, plus self-hosted Leaflet/Inter (no more unpkg/Google Fonts CDN dependency) — done, from a client-performance audit.
   *Verify:* from-scratch deploy migrates, loads all 32, serves both screens + API with `DEBUG=False`; reconciliation job reports clean.
 - [ ] **Step 12 — Design refresh.** Current UI is functional, but looks "off". Before Phase 2 puts ~300 councils' worth of load on it:
   - **Colour Palette Overhaul** - I'm not a designer by trade but I could surely do something passable with a bit of research? 
