@@ -18,10 +18,23 @@ from botocore.config import Config
 from botocore.exceptions import ClientError
 from django.conf import settings
 
+# R2 keys that don't follow the hyphen -> underscore convention every other
+# council does -- a data-quality exception in the sibling repo, not
+# something the general hyphen -> underscore swap below can produce (it
+# only ever inserts underscores, never removes one). Checked before the
+# normal swap. Isles of Scilly (Council.slug "isles-of-scilly") is
+# published to R2 still hyphenated; confirmed live via list_councils().
+SLUG_OVERRIDES = {
+    "isles-of-scilly": "isles-of-scilly",
+}
+
 
 def normalize_slug(slug: str) -> str:
     """Django Council.slug is hyphenated; R2/the sibling repo use
-    underscores (e.g. "east-suffolk" -> "east_suffolk")."""
+    underscores (e.g. "east-suffolk" -> "east_suffolk"), except for the
+    handful of councils in SLUG_OVERRIDES."""
+    if slug in SLUG_OVERRIDES:
+        return SLUG_OVERRIDES[slug]
     return slug.replace("-", "_")
 
 

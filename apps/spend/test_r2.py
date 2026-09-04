@@ -165,6 +165,9 @@ def test_fetch_manifest_raises_on_invalid_json(s3_client):
         ("haringey", "haringey"),
         ("tower-hamlets", "tower_hamlets"),
         ("east-suffolk", "east_suffolk"),
+        # R2 published this one still hyphenated -- the general swap would
+        # produce "isles_of_scilly", which doesn't exist in the bucket.
+        ("isles-of-scilly", "isles-of-scilly"),
     ],
 )
 def test_normalize_slug(slug, expected):
