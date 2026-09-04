@@ -14,6 +14,7 @@ from typing import cast
 import polars as pl
 from django.db import connection, transaction
 from django.utils import timezone
+from psycopg import sql
 
 from apps.councils.models import Council, CouncilCoverage
 from apps.spend.models import AMOUNT_DECIMAL_PLACES, DataLoadRun
@@ -111,30 +112,35 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
 
                 # Council-scoped staging table name: reload_from_r2 runs
                 # councils sequentially today, but this avoids a collision
-                # footgun if that ever changes.
-                staging_table = f"staging_spend_transaction_{council.id}"
-                cursor.execute(f"DROP TABLE IF EXISTS {staging_table}")
+                # footgun if that ever changes. sql.Identifier (not an
+                # f-string) so the table name is always safely quoted, not
+                # string-interpolated into the query.
+                staging_table = sql.Identifier(f"staging_spend_transaction_{council.id}")
+                cursor.execute(sql.SQL("DROP TABLE IF EXISTS {}").format(staging_table))
                 cursor.execute(
-                    f"""
-                    CREATE UNLOGGED TABLE {staging_table} (
-                        date date,
-                        beneficiary_name text,
-                        amount_gbp numeric(14,2),
-                        directorate text,
-                        category text,
-                        sub_category text,
-                        description text
-                    )
-                    """
+                    sql.SQL(
+                        """
+                        CREATE UNLOGGED TABLE {} (
+                            date date,
+                            beneficiary_name text,
+                            amount_gbp numeric(14,2),
+                            directorate text,
+                            category text,
+                            sub_category text,
+                            description text
+                        )
+                        """
+                    ).format(staging_table)
                 )
 
                 raw_conn = connection.connection
+                copy_stmt = sql.SQL("COPY {} ({}) FROM STDIN WITH (FORMAT csv)").format(
+                    staging_table,
+                    sql.SQL(", ").join(sql.Identifier(col) for col in STAGING_COLUMNS),
+                )
                 with (
                     raw_conn.cursor() as raw_cursor,
-                    raw_cursor.copy(
-                        f"COPY {staging_table} ({', '.join(STAGING_COLUMNS)}) "
-                        "FROM STDIN WITH (FORMAT csv)"
-                    ) as copy,
+                    raw_cursor.copy(copy_stmt) as copy,
                 ):
                     copy.write(csv_buf.read())
 
@@ -142,22 +148,24 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
                     "DELETE FROM spend_spendtransaction WHERE council_id = %s", [council.id]
                 )
                 cursor.execute(
-                    f"""
-                    INSERT INTO spend_spendtransaction
-                        (council_id, date, beneficiary_name, amount_gbp,
-                         directorate, category, sub_category, description)
-                    SELECT %s, date,
-                           COALESCE(beneficiary_name, ''),
-                           amount_gbp,
-                           COALESCE(directorate, ''),
-                           COALESCE(category, ''),
-                           COALESCE(sub_category, ''),
-                           COALESCE(description, '')
-                    FROM {staging_table}
-                    """,
+                    sql.SQL(
+                        """
+                        INSERT INTO spend_spendtransaction
+                            (council_id, date, beneficiary_name, amount_gbp,
+                             directorate, category, sub_category, description)
+                        SELECT %s, date,
+                               COALESCE(beneficiary_name, ''),
+                               amount_gbp,
+                               COALESCE(directorate, ''),
+                               COALESCE(category, ''),
+                               COALESCE(sub_category, ''),
+                               COALESCE(description, '')
+                        FROM {}
+                        """
+                    ).format(staging_table),
                     [council.id],
                 )
-                cursor.execute(f"DROP TABLE {staging_table}")
+                cursor.execute(sql.SQL("DROP TABLE {}").format(staging_table))
 
             dates = df["DATE"]
             CouncilCoverage.objects.update_or_create(
