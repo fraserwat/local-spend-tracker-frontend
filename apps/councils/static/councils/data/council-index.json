@@ -39,7 +39,7 @@
     "slug": "camden",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Croydon",
@@ -74,7 +74,7 @@
     "slug": "hackney",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Hammersmith and Fulham",
@@ -95,14 +95,14 @@
     "slug": "harrow",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Havering",
     "slug": "havering",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Hillingdon",
@@ -116,14 +116,14 @@
     "slug": "hounslow",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Islington",
     "slug": "islington",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Kensington and Chelsea",
@@ -158,7 +158,7 @@
     "slug": "merton",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Newham",
@@ -179,7 +179,7 @@
     "slug": "richmond-upon-thames",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Southwark",
@@ -193,14 +193,14 @@
     "slug": "sutton",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Tower Hamlets",
     "slug": "tower-hamlets",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Waltham Forest",
@@ -214,13 +214,13 @@
     "slug": "wandsworth",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   },
   {
     "name": "Westminster",
     "slug": "westminster",
     "region": "london",
     "region_display": "London",
-    "has_coverage": false
+    "has_coverage": true
   }
 ]

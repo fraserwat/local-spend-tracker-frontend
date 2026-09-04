@@ -40,13 +40,15 @@ class LoadError(Exception):
     """Raised for any failure during a load; DataLoadRun is marked failed first."""
 
 
-def _validate(df_columns: set[str], council_names: set[str], slug: str) -> None:
+def _validate(df_columns: set[str], council_names: set[str], expected_council_name: str) -> None:
     if df_columns != EXPECTED_COLUMNS:
         missing = EXPECTED_COLUMNS - df_columns
         extra = df_columns - EXPECTED_COLUMNS
         raise LoadError(f"column mismatch: missing={missing or None} extra={extra or None}")
-    if council_names != {slug}:
-        raise LoadError(f"expected COUNCIL_NAME=={{{slug!r}}}, found {council_names}")
+    if council_names != {expected_council_name}:
+        raise LoadError(
+            f"expected COUNCIL_NAME=={{{expected_council_name!r}}}, found {council_names}"
+        )
 
 
 def _to_transaction(row: dict, council: Council) -> SpendTransaction:
@@ -80,7 +82,14 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
         # Upstream DATE dtype varies (Date vs Datetime) -- normalize once so
         # downstream code always sees plain datetime.date values.
         df = df.with_columns(pl.col("DATE").cast(pl.Date))
-        _validate(set(df.columns), set(df["COUNCIL_NAME"].unique().to_list()), council.slug)
+        # Source repo's COUNCIL_NAME/filenames use underscores; Django's
+        # slugify produces hyphens for multi-word councils (e.g.
+        # tower-hamlets vs tower_hamlets) -- normalize before comparing.
+        _validate(
+            set(df.columns),
+            set(df["COUNCIL_NAME"].unique().to_list()),
+            council.slug.replace("-", "_"),
+        )
 
         with transaction.atomic():
             with connection.cursor() as cursor:

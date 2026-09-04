@@ -33,7 +33,11 @@ class Command(BaseCommand):
         if not source_dir:
             raise CommandError("--source-dir not given and settings.SPEND_SOURCE_DIR not set")
 
-        source_path = Path(source_dir) / f"{slug}.parquet"
+        # Sibling repo's curated filenames use underscores (its own
+        # naming convention); Django's slugify produces hyphens. Only
+        # single-word slugs have been loaded so far, so this mismatch
+        # was latent until multi-word boroughs (e.g. tower-hamlets).
+        source_path = Path(source_dir) / f"{slug.replace('-', '_')}.parquet"
         if not source_path.exists():
             raise CommandError(f"source file not found: {source_path}")
 

@@ -9,12 +9,100 @@
       "slug": "barnet",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "brent": {
+      "file": "brent.geojson",
+      "gss_code": "E09000005",
+      "name": "Brent",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "brent",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bromley": {
+      "file": "bromley.geojson",
+      "gss_code": "E09000006",
+      "name": "Bromley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bromley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "camden": {
+      "file": "camden.geojson",
+      "gss_code": "E09000007",
+      "name": "Camden",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "camden",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "ealing": {
+      "file": "ealing.geojson",
+      "gss_code": "E09000009",
+      "name": "Ealing",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "ealing",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hackney": {
+      "file": "hackney.geojson",
+      "gss_code": "E09000012",
+      "name": "Hackney",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hackney",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "haringey": {
       "file": "haringey.geojson",
       "gss_code": "E09000014",
       "name": "Haringey",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "haringey",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "harrow": {
+      "file": "harrow.geojson",
+      "gss_code": "E09000015",
+      "name": "Harrow",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "harrow",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "havering": {
+      "file": "havering.geojson",
+      "gss_code": "E09000016",
+      "name": "Havering",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "havering",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hounslow": {
+      "file": "hounslow.geojson",
+      "gss_code": "E09000018",
+      "name": "Hounslow",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hounslow",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "islington": {
+      "file": "islington.geojson",
+      "gss_code": "E09000019",
+      "name": "Islington",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "islington",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "lewisham": {
+      "file": "lewisham.geojson",
+      "gss_code": "E09000023",
+      "name": "Lewisham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "lewisham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "merton": {
+      "file": "merton.geojson",
+      "gss_code": "E09000024",
+      "name": "Merton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "merton",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "newham": {
@@ -31,6 +119,46 @@
       "name": "Redbridge",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "redbridge",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "richmond-upon-thames": {
+      "file": "richmond-upon-thames.geojson",
+      "gss_code": "E09000027",
+      "name": "Richmond upon Thames",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "richmond-upon-thames",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "sutton": {
+      "file": "sutton.geojson",
+      "gss_code": "E09000029",
+      "name": "Sutton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "sutton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tower-hamlets": {
+      "file": "tower-hamlets.geojson",
+      "gss_code": "E09000030",
+      "name": "Tower Hamlets",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tower-hamlets",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wandsworth": {
+      "file": "wandsworth.geojson",
+      "gss_code": "E09000032",
+      "name": "Wandsworth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wandsworth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "westminster": {
+      "file": "westminster.geojson",
+      "gss_code": "E09000033",
+      "name": "Westminster",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "westminster",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     }
   },

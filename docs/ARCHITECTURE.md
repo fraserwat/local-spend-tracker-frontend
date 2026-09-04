@@ -68,6 +68,7 @@ local-spend-tracker-frontend/
       templates/core/base.html      # shared chrome, DeepMind-style CSS shell
       static/core/js/{map,filters}.js  # filters.js progressively enhances by calling apps/api endpoints
   scripts/fetch_boundaries.py       # ONS Open Geography -> simplified per-council GeoJSON
+  scripts/reconcile_spend.py        # per-council row-count/amount check: DB vs source parquet
 ```
 
 ## API layer
