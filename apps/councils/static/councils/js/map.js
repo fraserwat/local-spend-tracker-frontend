@@ -73,15 +73,16 @@ document.addEventListener("DOMContentLoaded", () => {
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const IDLE_STYLE = { color: "#8b8da3", weight: 2, fillOpacity: 0.04, dashArray: "4 4" };
-  // Solid mid-grey fill at a real opacity, with a crisp border a shade
-  // darker -- the basemap's sea tile is near-white, so a faint/translucent
-  // fill here would read as the coastline fading out rather than as a
-  // deliberately greyed-out nation.
+  // Fill matches the basemap's on-screen sea tone (#d9d9d9 -- the Esri
+  // Light Gray tile composited at its 0.3 layer opacity) at full opacity,
+  // so the landmass reads as flattened into the sea rather than as a
+  // heavy grey blob competing for attention. The border carries all the
+  // "this is a distinct, clickable region" signal.
   const NATION_STYLE = {
     color: "#6b6e87",
     weight: 1.5,
-    fillColor: "#8b8da3",
-    fillOpacity: 0.65,
+    fillColor: "#d9d9d9",
+    fillOpacity: 1,
     className: "nation-boundary",
   };
   const SELECTED_STYLE = {

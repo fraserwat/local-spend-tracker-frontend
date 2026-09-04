@@ -142,10 +142,9 @@
   }
   #nation-note.visible { display: block; }
 
-  /* Grey fill for the non-England nations -- opaque and bordered enough
-     to read as deliberately "greyed out" against the pale basemap,
-     rather than fading toward the sea's near-white tile colour and
-     looking like the coastline is dissolving. */
+  /* Fill colour/opacity for the non-England nations lives in map.js's
+     NATION_STYLE (matches the basemap's sea tone, deliberately) -- this
+     just needs the pointer cursor for click affordance. */
   .nation-boundary {
     cursor: pointer;
   }
