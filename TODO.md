@@ -86,4 +86,5 @@ Estimates whether, and when, bringing an outsourced council service back in-hous
 ## Explicitly parked (not on this roadmap)
 
 - Magic-link (passwordless) login — `accounts.User` is in place for this, but no login flow is built.
+- Separate a Neon dev branch from `production`. As of Step 5, local dev's `.env` points `DATABASE_URL` straight at Neon's `production` branch pooled connection — there is no isolated dev/test database yet. Known consequence: `apps/spend/test_etl.py::test_concurrent_load_rejected` fails when run against the pooled connection (Neon's pooler resets session state between transactions, so the test's session-scoped `pg_advisory_lock` simulation doesn't hold — the real production guard, `pg_try_advisory_xact_lock`, is transaction-scoped and unaffected). CI is unaffected (runs against local docker-compose Postgres, no pooler). Do this alongside the passwordless login work at the end of Phase 1/start of Phase 2.
 
