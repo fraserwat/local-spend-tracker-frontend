@@ -26,7 +26,7 @@ Everything built so far: the pilot-scale map + spend-table serving layer.
   *Verify:* badge appears only for Redbridge, with matching detail text.
 - [x] **Step 8 — Shared sidebar/navigation.** Search typeahead (`accessible-autocomplete` against static `council-index.json`) plus region-grouped `<details>` browse; dormant `view=consultancy` hook.
   *Verify:* live filter + keyboard nav work; region groups degrade to plain links with JS disabled.
-- [x] **Step 9 — Security hardening pass.** Full pass over `docs/ARCHITECTURE.md`'s security plan; Django → 5.2.17 LTS, DRF → 3.17.2 (stale pins, 9 known CVEs, none exploitable here); 120/min baseline throttle on every `/api/v1/` endpoint.
+- [x] **Step 9 — Security hardening pass.** Full pass over `docs/ARCHITECTURE.md`'s security plan; Django → 5.2.17 LTS, DRF → 3.17.2 (stale pins, none exploitable here); 120/min baseline throttle on every `/api/v1/` endpoint.
   *Verify:* `check --deploy` clean; no unexpected `|safe`/raw SQL; XSS test passes; throttles hold; `pip-audit` clean.
 - [ ] **Step 10 — Scale to all 32 London boroughs (pilot completion).** Superseded by Step 11's `reload_from_r2`: frontend pulls directly from R2, no local checkout of `local-big-con-nationwide` needed. Re-checked live against R2 on 2026-09-04 via `manifest/{slug}.json`: only **2 boroughs missing curated parquet** — Barking & Dagenham, Enfield.
   *Verify:* reconciliation script matches DB against parquet for every loaded council exactly; full map renders 32 gap-free polygons (interactive for every council with real R2 data, outline-only for the 2 still missing).
@@ -49,7 +49,7 @@ Turning the 32-borough pilot into all of England. Sibling repo `local-big-con-na
 - [ ] **Step 1 — Backend & API scaling.** Reference-data onboarding is bulk now, not one-at-a-time: `onboard_english_councils` pulls GSS code + region for every English LAD from ONS Open Geography, diffs against the DB — replaces the old hand-written-migration-per-borough pattern. Still open: an **ETL backfill** for the 264 councils this added (`reload_from_r2` already handles it, deferred pending a Neon cost/runtime decision at volume). Also open: a **generated (not hand-typed) `CouncilCoverage` fixture** (ARCHITECTURE Open risk #7) — hand-transcription doesn't scale past the pilot, so 289 of 296 councils have no coverage row, by design. Benchmark `bulk_create` vs `COPY` at real per-council row counts (275K–415K): not done.
   *Verify:* a batch run onboards N councils in one pass (done); coverage fixture is generated, not hand-typed (not done); load throughput benchmarked and documented (not done).
 - [x] **Step 2 — Populate the English council map.** All 296 English LADs (districts + unitaries, ONS `LAD25_RGN25_EN_LU_v2`) have a `Council` row (GSS code, name, region) and a fetched boundary; 22 lack R2 spend data, render outline-only — same non-interactive treatment proven on the 12 previously-missing London boroughs. PR #36's GeoJSON idle-outline bundling keeps this to one request total (5.1MB raw / 1.6MB gzipped for all 296) regardless of council count. Onboarding command: `apps/councils/management/commands/onboard_english_councils.py`; rerun `scripts/fetch_boundaries.py` (no args) after to pick up new boundaries.
-  *Verify:* map renders every loaded council gap-free (confirmed in a real browser); idle-outline bundle stays at 1 request no matter how many councils are loaded (confirmed).
+  *Verify:* map renders every loaded council gap-free; idle-outline bundle stays at 1 request no matter how many councils are loaded.
 
 ---
 
