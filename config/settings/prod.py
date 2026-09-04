@@ -13,6 +13,18 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 if not ALLOWED_HOSTS:
     raise ImproperlyConfigured("DJANGO_ALLOWED_HOSTS must be set in production.")
 
+CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
+
+# Fly terminates TLS at its edge and forwards plain HTTP internally with
+# X-Forwarded-Proto set -- without this, is_secure() never returns True and
+# SECURE_SSL_REDIRECT redirect-loops every request.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Fly's health check hits /healthz directly over the internal network,
+# bypassing the edge entirely (no X-Forwarded-Proto) -- redirect it to
+# https would just make the checker see a 301 instead of the 200 it wants.
+SECURE_REDIRECT_EXEMPT = [r"^healthz$"]
+
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True

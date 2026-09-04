@@ -1,0 +1,13 @@
+.venv
+staticfiles
+__pycache__
+*.pyc
+.git
+.claude
+.github
+docs
+tests
+*.md
+.env
+.env.example
+docker-compose.yml

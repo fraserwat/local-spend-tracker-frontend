@@ -9,6 +9,7 @@ repo's write-scoped publishing credentials.
 
 import hashlib
 import json
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -16,6 +17,12 @@ import boto3
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from django.conf import settings
+
+
+def normalize_slug(slug: str) -> str:
+    """Django Council.slug is hyphenated; R2/the sibling repo use
+    underscores (e.g. "east-suffolk" -> "east_suffolk")."""
+    return slug.replace("-", "_")
 
 
 class R2Error(Exception):
@@ -72,6 +79,33 @@ def list_councils() -> list[str]:
     return sorted(slugs)
 
 
+def _download_manifest(client, bucket: str, slug: str, dest_dir: Path) -> dict:
+    manifest_path = dest_dir / f"{slug}.manifest.json"
+
+    try:
+        client.download_file(bucket, f"manifest/{slug}.json", str(manifest_path))
+    except ClientError as exc:
+        raise R2Error(f"manifest not found for slug={slug!r}") from exc
+
+    try:
+        return json.loads(manifest_path.read_text())
+    except json.JSONDecodeError as exc:
+        raise R2Error(f"manifest for slug={slug!r} is not valid JSON") from exc
+
+
+def fetch_manifest(slug: str) -> dict:
+    """Download and parse manifest/{slug}.json only -- no parquet download,
+    no sha256 verification (there's nothing downloaded yet to verify).
+
+    Cheap enough to call once per council on every diff check; use
+    fetch_council() when the data itself is actually needed.
+    """
+    _, _, _, bucket = _require_config()
+    client = _client()
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        return _download_manifest(client, bucket, slug, Path(tmp_dir))
+
+
 def fetch_council(slug: str, dest_dir: Path) -> FetchedCouncil:
     """Download manifest/{slug}.json and curated/{slug}.parquet into
     dest_dir, verify the parquet's sha256 against the manifest.
@@ -83,24 +117,14 @@ def fetch_council(slug: str, dest_dir: Path) -> FetchedCouncil:
     _, _, _, bucket = _require_config()
     client = _client()
 
-    manifest_path = dest_dir / f"{slug}.manifest.json"
-    parquet_path = dest_dir / f"{slug}.parquet"
-
-    try:
-        client.download_file(bucket, f"manifest/{slug}.json", str(manifest_path))
-    except ClientError as exc:
-        raise R2Error(f"manifest not found for slug={slug!r}") from exc
-
-    try:
-        manifest = json.loads(manifest_path.read_text())
-    except json.JSONDecodeError as exc:
-        raise R2Error(f"manifest for slug={slug!r} is not valid JSON") from exc
+    manifest = _download_manifest(client, bucket, slug, dest_dir)
 
     try:
         expected_sha256 = manifest["curated"]["sha256"]
     except (KeyError, TypeError) as exc:
         raise R2Error(f"manifest for slug={slug!r} missing curated.sha256") from exc
 
+    parquet_path = dest_dir / f"{slug}.parquet"
     try:
         client.download_file(bucket, f"curated/{slug}.parquet", str(parquet_path))
     except ClientError as exc:

@@ -18,6 +18,7 @@ from django.utils import timezone
 
 from apps.councils.models import Council, CouncilCoverage
 from apps.spend.models import AMOUNT_DECIMAL_PLACES, DataLoadRun, SpendTransaction
+from apps.spend.services.r2 import normalize_slug
 
 # Fixed column contract enforced by the data repo's harmonise() step
 # (src/ingest/harmonise.py:TARGET_COLUMNS) -- always exactly these 8
@@ -88,7 +89,7 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
         _validate(
             set(df.columns),
             set(df["COUNCIL_NAME"].unique().to_list()),
-            council.slug.replace("-", "_"),
+            normalize_slug(council.slug),
         )
 
         with transaction.atomic():

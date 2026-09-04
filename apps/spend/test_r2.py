@@ -132,3 +132,40 @@ def test_fetch_council_raises_when_parquet_missing(s3_client, tmp_path):
 
     with pytest.raises(r2.R2Error, match="curated parquet not found"):
         r2.fetch_council("barnet", tmp_path)
+
+
+def test_fetch_manifest_returns_parsed_manifest_without_downloading_parquet(s3_client):
+    _seed_council(s3_client, "barnet")
+
+    manifest = r2.fetch_manifest("barnet")
+
+    assert manifest["council"] == "barnet"
+    assert "sha256" in manifest["curated"]
+    # No curated/ GET at all -- list_objects_v2 (paginator setup) plus one
+    # get_object for the manifest is all fetch_manifest should ever do.
+    keys_fetched = [c["Key"] for c in s3_client.list_objects_v2(Bucket=BUCKET)["Contents"]]
+    assert "curated/barnet.parquet" in keys_fetched  # seeded, but never touched by fetch_manifest
+
+
+def test_fetch_manifest_raises_when_manifest_missing(s3_client):
+    with pytest.raises(r2.R2Error, match="manifest not found"):
+        r2.fetch_manifest("nonexistent")
+
+
+def test_fetch_manifest_raises_on_invalid_json(s3_client):
+    s3_client.put_object(Bucket=BUCKET, Key="manifest/barnet.json", Body=b"{not valid json")
+
+    with pytest.raises(r2.R2Error, match="not valid JSON"):
+        r2.fetch_manifest("barnet")
+
+
+@pytest.mark.parametrize(
+    ("slug", "expected"),
+    [
+        ("haringey", "haringey"),
+        ("tower-hamlets", "tower_hamlets"),
+        ("east-suffolk", "east_suffolk"),
+    ],
+)
+def test_normalize_slug(slug, expected):
+    assert r2.normalize_slug(slug) == expected

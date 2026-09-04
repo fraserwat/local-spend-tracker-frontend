@@ -118,6 +118,8 @@ def test_command_from_r2_loads_council(s3_client):
     call_command("load_council_spend", "tower-hamlets", "--from-r2", stdout=StringIO())
 
     assert SpendTransaction.objects.filter(council=council).count() == 1
+    run = DataLoadRun.objects.get(council=council)
+    assert run.source_sha256 == hashlib.sha256(_curated_parquet_bytes("tower_hamlets")).hexdigest()
 
 
 @pytest.mark.django_db

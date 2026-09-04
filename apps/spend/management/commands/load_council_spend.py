@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from apps.councils.models import Council
 from apps.spend.services.etl import EXPECTED_COLUMNS, load_council_spend
-from apps.spend.services.r2 import R2Error, fetch_council
+from apps.spend.services.r2 import R2Error, fetch_council, normalize_slug
 
 
 class Command(BaseCommand):
@@ -52,7 +52,7 @@ class Command(BaseCommand):
         # naming convention); Django's slugify produces hyphens. Only
         # single-word slugs have been loaded so far, so this mismatch
         # was latent until multi-word boroughs (e.g. tower-hamlets).
-        source_path = Path(source_dir) / f"{slug.replace('-', '_')}.parquet"
+        source_path = Path(source_dir) / f"{normalize_slug(slug)}.parquet"
         if not source_path.exists():
             raise CommandError(f"source file not found: {source_path}")
 
@@ -69,7 +69,7 @@ class Command(BaseCommand):
     def _handle_from_r2(self, council, slug, dry_run):
         # Same hyphen->underscore normalization as --source-dir: R2 object
         # keys use the sibling repo's own filename stems (underscored).
-        r2_slug = slug.replace("-", "_")
+        r2_slug = normalize_slug(slug)
         with tempfile.TemporaryDirectory() as tmp_dir:
             try:
                 fetched = fetch_council(r2_slug, Path(tmp_dir))
@@ -90,4 +90,6 @@ class Command(BaseCommand):
             # Load while the temp dir (and its parquet file) is still alive --
             # load_council_spend reads it directly, no separate copy.
             run = load_council_spend(council, fetched.parquet_path)
+            run.source_sha256 = fetched.manifest["curated"]["sha256"]
+            run.save(update_fields=["source_sha256"])
             self.stdout.write(self.style.SUCCESS(f"loaded {run.row_count} rows for {council.name}"))
