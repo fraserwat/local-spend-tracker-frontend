@@ -44,6 +44,10 @@ STAGING_COLUMNS = (
     "description",
 )
 
+# Rows per CSV chunk streamed into COPY -- bounds peak memory regardless of
+# council size, rather than building one string for the whole dataset.
+BATCH_SIZE = 100_000
+
 
 class LoadError(Exception):
     """Raised for any failure during a load; DataLoadRun is marked failed first."""
@@ -90,8 +94,11 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
         )
 
         row_count = len(df)
-        csv_buf = io.StringIO()
-        df.select(
+        # Bournemouth, Christchurch and Poole (~3.8M rows, the largest
+        # single council) OOM-killed the process when the whole CSV was
+        # built as one in-memory string -- iter_slices keeps peak memory
+        # bounded to one batch regardless of council size.
+        csv_batches = df.select(
             [
                 "DATE",
                 "BENEFICIARY_NAME",
@@ -101,8 +108,7 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
                 "SUB_CATEGORY",
                 "DESCRIPTION",
             ]
-        ).write_csv(csv_buf, include_header=False, float_precision=AMOUNT_DECIMAL_PLACES)
-        csv_buf.seek(0)
+        ).iter_slices(BATCH_SIZE)
 
         with transaction.atomic():
             with connection.cursor() as cursor:
@@ -142,7 +148,12 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
                     raw_conn.cursor() as raw_cursor,
                     raw_cursor.copy(copy_stmt) as copy,
                 ):
-                    copy.write(csv_buf.read())
+                    for batch in csv_batches:
+                        buf = io.StringIO()
+                        batch.write_csv(
+                            buf, include_header=False, float_precision=AMOUNT_DECIMAL_PLACES
+                        )
+                        copy.write(buf.getvalue())
 
                 cursor.execute(
                     "DELETE FROM spend_spendtransaction WHERE council_id = %s", [council.id]
