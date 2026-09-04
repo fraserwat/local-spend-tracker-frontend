@@ -32,11 +32,9 @@ Everything built so far: the pilot-scale map + spend-table serving layer.
   *Verify:* reconciliation script matches DB against parquet for all 32 exactly; full map renders 32 gap-free, hoverable polygons.
 - [ ] **Step 11 — Deployment & data-refresh runbook.** Dockerfile/gunicorn, managed Postgres with backups, documented refresh runbook, scheduled reconciliation. Also: far-future `Cache-Control` on static GeoJSON (WhiteNoise or CDN) — no config exists yet, so the idle-outline bundle currently re-fetches on every repeat visit.
   *Verify:* from-scratch deploy migrates, loads all 32, serves both screens + API with `DEBUG=False`; reconciliation job reports clean.
-- [ ] **Step 12 — Design refresh.** Current UI is functional, not audited. Before Phase 2 puts ~300 councils' worth of load on it:
-  - Align more formally to the **GOV.UK Design System** — already borrowing `accessible-autocomplete`; public-sector transparency data for a UK audience is exactly what it's built for, and it de-risks a lot of the accessibility work below by construction.
+- [ ] **Step 12 — Design refresh.** Current UI is functional, but looks "off". Before Phase 2 puts ~300 councils' worth of load on it:
+  - **Colour Palette Overhaul** - I'm not a designer by trade but I could surely do something passable with a bit of research? 
   - **WCAG 2.2 AA audit** — contrast, keyboard nav, screen-reader labels are already partially handled (`prefers-reduced-motion`, `aria-live`) but not formally checked end-to-end.
-  - **Mobile/responsive audit** — the fixed 20rem sidebar + map layout (`main.html`) is desktop-first; hasn't been tested at phone width.
-  - **Data-table UX at scale** — 275K–415K rows per council; sticky headers, loading states, and filter affordances haven't been stress-tested against real row counts.
   - **Consistent empty/error/loading states** across all screens, not handled ad hoc per view.
   *Verify:* Lighthouse/axe pass on all three screens; manual mobile walkthrough; one round of real user feedback before Phase 2 lands.
 
@@ -85,4 +83,3 @@ Estimates whether, and when, bringing an outsourced council service back in-hous
 
 - Magic-link (passwordless) login — `accounts.User` is in place for this, but no login flow is built.
 
-*(By-consultancy spend aggregation and cross-council comparison, both previously parked here, are now Phase 3 — see Steps 3–4.)*
