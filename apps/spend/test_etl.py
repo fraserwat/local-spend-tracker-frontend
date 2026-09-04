@@ -63,6 +63,18 @@ def test_load_maps_fields_and_backfills_nulls(council, tmp_path):
 
 
 @pytest.mark.django_db
+def test_load_avoids_binary_float_artifacts(council, tmp_path):
+    """8249.13 has no exact binary float representation -- a naive
+    Decimal(float) conversion would store 8249.129999999999 instead."""
+    source = _write_parquet(tmp_path, "testborough", [_row(AMOUNT_GBP=8249.13)])
+
+    load_council_spend(council, source)
+
+    txn = SpendTransaction.objects.get(council=council)
+    assert txn.amount_gbp == Decimal("8249.13")
+
+
+@pytest.mark.django_db
 def test_load_handles_date_typed_column(council, tmp_path):
     """Upstream DATE column may be pl.Date (no time component) rather than
     pl.Datetime -- both are valid outputs of the harmonise() step."""
