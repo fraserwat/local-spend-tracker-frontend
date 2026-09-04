@@ -9,6 +9,7 @@ dependencies = [
     "psycopg[binary]>=3.2,<3.3",
     "django-environ>=0.11,<0.12",
     "polars>=1.0",
+    "whitenoise>=6.11,<6.12",
 ]
 
 [dependency-groups]
