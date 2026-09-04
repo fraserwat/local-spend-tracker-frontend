@@ -10,8 +10,7 @@ from apps.councils.models import Council
 
 from .models import SpendTransaction
 
-# Explicit allow-list, never a raw field name from the query string straight
-# into .order_by() — see docs/ARCHITECTURE.md's Frontend section.
+# Explicit allow-list, never a raw field name into .order_by().
 SORT_FIELDS = {
     "date": "date",
     "beneficiary_name": "beneficiary_name",
@@ -33,11 +32,10 @@ def get_council_transactions(
 ) -> QuerySet[SpendTransaction]:
     """Filtered, ordered transactions for one council.
 
-    Not sliced — callers paginate (keyset, not offset; see spend/pagination.py).
-    `sort` must be a key in SORT_FIELDS; invalid values fall back to the
-    default rather than raising, since this reads directly from query params.
-    `id` is always appended as a tiebreaker so the ordering is total, which
-    keyset pagination requires to stay stable page to page.
+    Not sliced — callers keyset-paginate (spend/pagination.py). Invalid
+    `sort` values fall back to the default rather than raising, since this
+    reads directly from query params. `id` is always the tiebreaker so
+    ordering stays total/stable across pages.
     """
     qs = SpendTransaction.objects.filter(council=council)
 
@@ -50,13 +48,9 @@ def get_council_transactions(
     if amount_max is not None:
         qs = qs.filter(amount_gbp__lte=amount_max)
     if q:
-        # Plain icontains compiles to UPPER(x) LIKE UPPER(%s) on Postgres,
-        # which the beneficiary_name trigram GIN index (migration 0002)
-        # can't use -- confirmed by EXPLAIN, it falls back to a full-table
-        # seq scan. iregex on an escaped literal compiles to the `~*`
-        # operator instead, which pg_trgm does index -- same
-        # case-insensitive substring match, verified index-backed via
-        # EXPLAIN (Bitmap Index Scan on the trgm index).
+        # icontains compiles to UPPER(x) LIKE UPPER(%s), which the trigram
+        # GIN index can't use (EXPLAIN: full seq scan). iregex compiles to
+        # `~*`, which pg_trgm does index (EXPLAIN: Bitmap Index Scan).
         qs = qs.filter(beneficiary_name__iregex=re.escape(q))
 
     field = SORT_FIELDS.get(sort, SORT_FIELDS[DEFAULT_SORT])

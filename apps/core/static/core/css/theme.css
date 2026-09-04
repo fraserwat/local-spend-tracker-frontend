@@ -41,6 +41,13 @@
   --color-alarm-glow: #ff5a3c;
   --color-alarm-text: #fff4f1;
 
+  /* Same bubble treatment as alarm, but blue -- for "no data" notes
+     rather than problems. Bright #48acf0 kept as the glow, darker fill
+     for contrast (same split as --color-alarm-glow/-bg). */
+  --color-info-bg: #0d68a5;
+  --color-info-glow: #48acf0;
+  --color-info-text: #eaf6ff;
+
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
   --space-1: 0.25rem;

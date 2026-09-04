@@ -1,14 +1,10 @@
-// Orchestrates in-page council switching: history/URL, page <title>, the
-// #status prompt, sidebar aria-current, focus, and a screen-reader
-// announcement. map.js owns the camera/boundary side of a switch
-// (window.councilMap); this file owns everything else and calls into that.
+// Orchestrates in-page council switching: history/URL, <title>, #status,
+// sidebar aria-current, focus, screen-reader announcement. map.js owns the
+// camera/boundary side (window.councilMap); this owns everything else.
 //
-// Progressive enhancement: every entry point here is reached either by
-// intercepting a real <a href> click (preventDefault, then this takes over)
-// or by another script (map.js's idle-outline click, picker.js's search
-// confirm) already carrying the same window.councilSwitch-with-fallback
-// pattern. If this script fails to load, those real hrefs/hard navigations
-// are exactly what fires instead -- no separate no-JS code path needed.
+// Progressive enhancement: every entry point intercepts a real <a href> or
+// another script's window.councilSwitch-with-fallback call. If this script
+// fails to load, those real hrefs/hard navigations fire instead.
 document.addEventListener("DOMContentLoaded", () => {
   const sidebarEl = document.querySelector(".council-sidebar");
   const statusEl = document.getElementById("status");
@@ -18,28 +14,21 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("council-search-container")
     .getAttribute("data-index-url");
 
-  // Turns the "{slug}" placeholder route template into a matcher for
-  // popstate, so parsing stays coupled to the real route pattern instead of
+  // Derives the popstate matcher from the real route template, instead of
   // a second hardcoded regex.
   const councilRouteRegex = new RegExp(
     "^" + councilUrlTemplate.replace("__SLUG__", "([^/]+)") + "$"
   );
 
-  // Bumped by every showCouncil()/showPicker() call. A showCouncil() call's
-  // async CouncilIndex.load().then() captures the value current at its own
-  // call time -- if a later call has since bumped it, this one is stale and
-  // must not touch document.title/statusEl/headingEl, which by now belong
-  // to whatever the later call rendered.
+  // Bumped on every showCouncil()/showPicker() call; a stale async
+  // CouncilIndex.load().then() compares against this before touching
+  // document.title/statusEl/headingEl.
   let switchGeneration = 0;
 
   function announce(message) {
-    // Clearing first, then setting on a later tick, forces the change to
-    // register as a fresh update even if two switches in a row would
-    // otherwise produce the same text -- an unchanged aria-live region
-    // doesn't get re-announced. setTimeout rather than requestAnimationFrame
-    // since this only needs to outlast a synchronous DOM write, not sync
-    // with a paint -- rAF can stall indefinitely in a backgrounded/
-    // non-rendering tab.
+    // Clear-then-set-on-a-later-tick forces a re-announce even for
+    // identical text (an unchanged aria-live region stays silent).
+    // setTimeout, not rAF, since rAF can stall in a backgrounded tab.
     announcerEl.textContent = "";
     setTimeout(() => {
       announcerEl.textContent = message;
@@ -71,9 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const row = CouncilIndex.findBySlug(rows, slug);
         if (!row) {
-          // Not in the preloaded index (stale cache, or a slug that doesn't
-          // exist) -- a real navigation lets the server 404 it properly
-          // rather than this script guessing at a degraded in-page state.
+          // Not in the index -- real navigation lets the server 404 it.
           window.location.href = targetUrl;
           return;
         }
@@ -101,9 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       })
       .catch(() => {
-        // CouncilIndex.load() rejected (network blip, etc.) -- fall back to
-        // a real navigation, same as the "slug not found" branch above,
-        // instead of leaving the click silently swallowed.
+        // Index load failed -- fall back to a real navigation.
         if (generation !== switchGeneration) return;
         window.location.href = targetUrl;
       });
@@ -127,8 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   sidebarEl.addEventListener("click", (event) => {
-    // Preserve middle-click / cmd-click / ctrl-click "open in new tab" on
-    // the real sidebar links -- only a plain left click gets intercepted.
+    // Only a plain left click is intercepted -- preserves open-in-new-tab.
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
       return;
     }

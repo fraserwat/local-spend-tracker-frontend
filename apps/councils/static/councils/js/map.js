@@ -2,68 +2,85 @@ document.addEventListener("DOMContentLoaded", () => {
   const mapEl = document.getElementById("map");
   const statusEl = document.getElementById("status");
   const badgeEl = document.getElementById("coverage-badge");
+  const nationNoteEl = document.getElementById("nation-note");
   const geojsonUrl = mapEl.dataset.geojsonUrl;
   const manifestUrl = mapEl.dataset.manifestUrl;
+  const nationsUrl = mapEl.dataset.nationsUrl;
   const initialSelectedSlug = mapEl.dataset.selectedSlug || null;
 
-  // Mutable "current selection" state -- read by the selected layer's own
-  // event handlers (via closure, not as a build-time parameter) so a switch
-  // just needs to reassign these, not rebuild every handler.
+  // No equivalent of England's Transparency Code in these nations, so no
+  // comparable itemised spend data. Static copy, not model-backed.
+  const NATION_NOTES = {
+    scotland:
+      "Scotland has no equivalent of England's Local Government " +
+      "Transparency Code 2015 -- itemised spend disclosure is voluntary. " +
+      "Of 32 councils surveyed, only 6 publish anything close to " +
+      "transaction-level data, at inconsistent thresholds and via " +
+      "inconsistent channels.",
+    wales:
+      "Wales has no equivalent of England's Local Government Transparency " +
+      "Code 2015 either. Of 22 councils surveyed, only 3 publish a " +
+      "spend-over-£500 register -- one council's own FOI response " +
+      "confirmed Welsh authorities aren't required to.",
+    "northern-ireland":
+      "Northern Ireland has no equivalent statutory duty to publish " +
+      "itemised spend. All 11 district councils were surveyed and none " +
+      "publish a spend-over-£500 register, so it's out of scope entirely.",
+  };
+
+  // Closure state read by the selected layer's own event handlers, so a
+  // switch just reassigns these instead of rebuilding every handler.
   let selectedSlugState = null;
   let selectedLayer = null;
   let coveragePromise = Promise.resolve(null);
 
-  // Bumped at the top of every renderSelectedCouncil()/showIdleState() call.
-  // Each call's async .then/.catch captures the value current at its own
-  // call time -- if a newer call has since bumped it, this one is stale and
-  // must not touch selectedLayer/selectedSlugState/the camera, which by now
-  // belong to whatever the newer call rendered. Without this, a slow fetch
-  // for an earlier switch can resolve after a faster later one and overwrite
-  // its result, orphaning the newer layer on the map.
+  // Bumped on every renderSelectedCouncil()/showIdleState() call; a stale
+  // async callback compares against this before touching selectedLayer/
+  // selectedSlugState/the camera, so a slow-resolving earlier switch can't
+  // clobber a faster later one.
   let renderGeneration = 0;
 
-  // slug -> parsed GeoJSON. Populated on first fetch (idle-outline load or a
-  // selected-boundary load, whichever happens first for that council) and
-  // never evicted, so switching back to a previously-seen council is a
-  // zero-network layer rebuild.
+  // slug -> parsed GeoJSON, populated on first fetch and never evicted, so
+  // re-selecting a council is a zero-network layer rebuild.
   const boundaryCache = new Map();
-  // slug -> the idle-styled L.geoJSON layer currently on the map for that
-  // council. The selected council's slug is never a key here -- it's
-  // removed the moment that council is promoted, and re-added the moment
-  // something else is promoted in its place.
+  // slug -> idle-styled layer currently on the map. Never has the selected
+  // council's slug as a key -- removed on promotion, re-added on demotion.
   const idleLayersBySlug = new Map();
-  // slug -> manifest entry ({file, gss_code, name, ...}), keyed the same way
-  // manifest.json itself is -- lets a switch look up any council's boundary
-  // file without a second manifest fetch. Populated once the manifest
-  // request resolves; a switch to a slug fetched before that happens (or if
-  // the manifest fetch fails outright) degrades the same way a genuinely
-  // missing boundary file does.
+  // slug -> manifest entry, so a switch can look up any council's boundary
+  // file without a second manifest fetch.
   let manifestEntriesBySlug = null;
   let manifestBaseUrl = "";
 
   const prefersReducedMotion =
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const IDLE_STYLE = { color: "#8b8da3", weight: 2, fillOpacity: 0.04, dashArray: "4 4" };
+  // Darker + more opaque than before so idle councils read as clickable.
+  const IDLE_STYLE = { color: "#6b6e87", weight: 2, fillOpacity: 0.14, dashArray: "4 4" };
+  // Fill matches the basemap's sea tone (#d9d9d9) so the nation flattens
+  // into the background. Border is a distinct slate-violet (not
+  // IDLE_STYLE's grey) so it doesn't read as a real council.
+  const NATION_STYLE = {
+    color: "#6a5f8f",
+    weight: 1.5,
+    opacity: 0.55,
+    fillColor: "#d9d9d9",
+    fillOpacity: 1,
+    className: "nation-boundary",
+  };
   const SELECTED_STYLE = {
     color: "#3ecdd4",
     weight: 3,
     fillOpacity: 0.14,
-    // Brighter/more saturated than the base accent (#50a2a7) on purpose --
-    // a selected map feature needs to read as unmistakably "on" at a
-    // glance, not just tinted. This className is what the pulsing glow in
-    // main.html's <style> block targets.
+    // Brighter than the base accent (#50a2a7) so "selected" reads as
+    // unmistakably on. Targeted by the pulsing glow in main.html.
     className: "council-boundary--selected",
   };
 
-  // Locks pan/zoom to the UK — maxBoundsViscosity 1.0 makes the bounds
-  // fully solid (no rubber-band drag past the edge).
+  // maxBoundsViscosity 1.0 makes the UK bounds solid (no rubber-band drag).
   const ukBounds = L.latLngBounds([49.8, -8.7], [60.9, 1.8]);
 
-  // Roughly the geographic midpoint of England (nr. Fenny Drayton,
-  // Leicestershire) -- England is the actual target scope (~300 councils),
-  // London is only the pilot batch, so the default view shouldn't be
-  // London-centric.
+  // England's midpoint, not London's -- England is the target scope
+  // (~300 councils), London is just the pilot batch.
   const englandMidpoint = [52.5, -1.3];
 
   const map = L.map(mapEl, {
@@ -74,12 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }).setView(englandMidpoint, 8);
   L.control.zoom({ position: "bottomright" }).addTo(map);
 
-  // Esri World Light Gray Canvas: minimal no-key basemap built for overlay
-  // maps — keeps borough polygons legible instead of competing with full
-  // OSM street/POI detail. (CartoDB's anonymous tile endpoint now requires
-  // an API key, so that's not an option without signing up for one.)
-  // Faded (opacity < 1) so street/building detail doesn't compete with a
-  // council boundary once zoomed in close enough for that detail to render.
+  // Esri World Light Gray Canvas, no API key required (CartoDB's anonymous
+  // endpoint now needs one). Faded so its detail doesn't compete with a
+  // council boundary at high zoom.
   L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
     {
@@ -88,6 +102,44 @@ document.addEventListener("DOMContentLoaded", () => {
       attribution: "&copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
     }
   ).addTo(map);
+
+  function showNationNote(slug) {
+    // Shares a corner with #coverage-badge -- only one visible at a time.
+    badgeEl.classList.remove("visible");
+    nationNoteEl.textContent = NATION_NOTES[slug] || "";
+    nationNoteEl.classList.add("visible");
+  }
+
+  function hideNationNote() {
+    nationNoteEl.classList.remove("visible");
+  }
+
+  // Static overlay, independent of any council selection.
+  if (nationsUrl) {
+    fetch(nationsUrl)
+      .then((response) => {
+        if (!response.ok) throw new Error("nations fetch failed: " + response.status);
+        return response.json();
+      })
+      .then((geojson) => {
+        L.geoJSON(geojson, {
+          style: NATION_STYLE,
+          onEachFeature: (feature, featureLayer) => {
+            featureLayer.on("click", (event) => {
+              L.DomEvent.stopPropagation(event);
+              showNationNote(feature.properties.slug);
+            });
+          },
+        }).addTo(map);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error("nations fetch failed", error);
+      });
+  }
+
+  // Click elsewhere on the map dismisses the note.
+  map.on("click", hideNationNote);
 
   function buildIdleLayer(geojson, slug) {
     return L.geoJSON(geojson, {
@@ -112,12 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return L.geoJSON(geojson, { style: SELECTED_STYLE });
   }
 
-  // Shows the coverage badge once `promise` resolves, for as long as the
-  // council it describes stays selected -- not just while the boundary is
-  // hovered. `promise` is captured at call time (rather than reading
-  // `coveragePromise` live) so a fast council switch that reassigns
-  // `coveragePromise` before this one resolves doesn't paint a stale
-  // council's badge over the new selection.
+  // `promise` is captured at call time, not read live off `coveragePromise`,
+  // so a fast council switch can't paint a stale badge over the new one.
   function applyCoverageBadge(promise) {
     promise.then((coverage) => {
       if (promise !== coveragePromise) return;
@@ -127,10 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Fetch-or-reuse-cached GeoJSON for `slug`, then build it as a selected-
-  // style layer. Rejects if the boundary was never fetched AND isn't in the
-  // manifest (no boundary file exists yet for that council) -- callers
-  // degrade that the same way a fetch failure degrades.
+  // Rejects if uncached and not in the manifest (no boundary file yet) --
+  // callers degrade that the same way as a fetch failure.
   function loadAndRenderCouncilBoundary(slug) {
     if (boundaryCache.has(slug)) {
       return Promise.resolve(buildSelectedLayer(boundaryCache.get(slug)));
@@ -150,9 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Removes the current selection from the map and, if its geometry is
-  // cached, redraws it as an idle outline in its place -- the counterpart
-  // to promoting a council to selected. A no-op when nothing is selected.
+  // Counterpart to promoting a council: redraws it as idle if cached.
   function demoteSelectedToIdle() {
     if (!selectedLayer || !selectedSlugState) return;
     map.removeLayer(selectedLayer);
@@ -164,15 +208,13 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedLayer = null;
   }
 
-  // Switches the map to `slug` without a page reload: demotes the current
-  // selection back to an idle outline, promotes the target (reusing its
-  // idle layer/cached geometry if either already exists), and flies the
-  // camera to the new bounds. `coverageUrl` may be null (council-switch.js
-  // passes null when the preloaded index says this council has no coverage
-  // row, skipping a fetch known to 404).
+  // `coverageUrl` may be null -- council-switch.js passes null when the
+  // preloaded index says this council has no coverage row, skipping a
+  // fetch known to 404.
   function renderSelectedCouncil(slug, coverageUrl) {
     const generation = ++renderGeneration;
     badgeEl.classList.remove("visible");
+    hideNationNote();
     demoteSelectedToIdle();
 
     coveragePromise = coverageUrl
@@ -195,10 +237,8 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedLayer = layer;
         selectedSlugState = slug;
 
-        // Padded well past the selected boundary itself -- fitting tightly
-        // to just this council leaves neighbouring councils off-screen,
-        // making their idle outlines effectively unreachable without the
-        // user manually zooming out first.
+        // Padded past the boundary itself so neighbouring councils stay
+        // on-screen and reachable.
         const bounds = layer.getBounds().pad(0.6);
         if (prefersReducedMotion) {
           map.fitBounds(bounds);
@@ -209,10 +249,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch((error) => {
         if (generation !== renderGeneration) return;
 
-        // Only a handful of councils have a fetched boundary so far (Phase
-        // 7 scales this to the rest) -- a missing file for any other
-        // council is expected, not a bug, so this degrades to a status
-        // message rather than an unhandled rejection.
+        // Not every council has a boundary file yet -- expected, not a
+        // bug, so this degrades to a status message.
         selectedSlugState = slug;
         statusEl.textContent = "boundary data not available yet for this council";
         // eslint-disable-next-line no-console
@@ -220,11 +258,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Counterpart to renderSelectedCouncil for navigating back to "/" -- no
-  // council selected, camera returns to the England-wide default view.
+  // Counterpart to renderSelectedCouncil for navigating back to "/".
   function showIdleState() {
     ++renderGeneration;
     badgeEl.classList.remove("visible");
+    hideNationNote();
     demoteSelectedToIdle();
     selectedSlugState = null;
     coveragePromise = Promise.resolve(null);
@@ -283,11 +321,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Every council with a fetched boundary gets drawn as a faint idle outline
-  // (landing page + council page) so a selected council still shows its
-  // neighbours. Fetched as one combined FeatureCollection (manifest.bundle_file)
-  // instead of one request per council -- 1 request instead of ~300 at England
-  // scale. priority: "low" keeps it behind the selected boundary's own fetch.
+  // Every council gets a faint idle outline so a selected one still has its
+  // neighbours for context. Fetched as one combined FeatureCollection
+  // (manifest.bundle_file) instead of one request per council -- 1 request
+  // instead of ~300 at England scale. priority: "low" keeps it behind the
+  // selected boundary's own fetch.
   if (manifestUrl) {
     fetch(manifestUrl)
       .then((response) => {
@@ -322,13 +360,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (geojsonUrl) {
-    // Fetched once up front (not per hover) so the first hover shows the
-    // badge immediately instead of waiting on a network round-trip. A
-    // missing/failed coverage row (no data loaded yet for this council)
-    // just means the badge never has anything to show -- not an error
-    // state. Initial load always attempts this fetch (unlike a switch,
-    // which can skip it via the preloaded index's has_coverage flag) since
-    // there's no index loaded yet at this point in the page lifecycle.
+    // Fetched up front so the first hover shows the badge without a round
+    // trip. Unlike a switch, always attempted -- no preloaded index yet
+    // to check has_coverage against.
     coveragePromise = mapEl.dataset.coverageUrl
       ? fetch(mapEl.dataset.coverageUrl)
           .then((response) => (response.ok ? response.json() : null))
