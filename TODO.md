@@ -2,7 +2,7 @@
 
 Each step is independently buildable with a concrete verification step — see `docs/ARCHITECTURE.md` for design rationale.
 
-**Target scope is all of England** (~300 local authorities, Wales/Scotland/Northern Ireland excluded — see `docs/ARCHITECTURE.md`). Phase 1 builds and verifies the whole pipeline against London's 32 boroughs as a pilot batch. Phases 2–4 are where that pilot becomes the real thing: nationwide scale, entity resolution, and the insourcing model the underlying research exists to support.
+**Target scope is all of England** (~300 local authorities, Wales/Scotland/Northern Ireland excluded — see `docs/ARCHITECTURE.md`). Phase 1 builds and verifies the whole pipeline against London's 32 boroughs as a pilot batch. Phases 2–4 are where that pilot becomes the real thing: nationwide scale, entity resolution, and an insourcing feasibility model.
 
 ---
 
@@ -55,29 +55,29 @@ Turning the 32-borough pilot into all of England. The sibling `local-big-con-nat
 
 ## Phase 3 — Entity Resolution Layer
 
-Scoped from `entity-resolution-layer-requirements.md` (addendum to the *Exit Capacity* spec). **The resolver itself — the matcher, the curated alias/group data — is out of scope for this repo.** Per the spec (R17) it ships as its own versioned library + data artefact, most naturally living in or alongside the sibling data repo, with mandatory sourcing on every claim (R19) and no ML in v0 (R14: every match has to be explainable in one sentence). This repo's job is to **consume and serve** that artefact, the same relationship it already has to the sibling repo's curated parquet.
+**The resolver itself — the matcher, the curated alias/group data — is out of scope for this repo.** It ships as its own versioned library + data artefact, most naturally living in or alongside the sibling data repo, with mandatory sourcing on every claim and no ML in v0 (every match has to be explainable in one sentence to a non-technical reviewer). This repo's job is to **consume and serve** that artefact, the same relationship it already has to the sibling repo's curated parquet.
 
-- [ ] **Step 1 — Consume the entity-resolution artefact.** New models: `CorporateGroup`, `GroupMembership` (dated interval — `valid_from`/`valid_to`/`sources[]`, never a scalar, per spec R2), `BeneficiaryAlias` (raw string → Companies House number, confidence tier), `ResellerOf`. Import command loads the artefact's `aliases.csv`/`groups.yaml`/`group_membership.csv`.
-  *Verify:* import is idempotent and records the resolver's semantic version per run; rows below the spec's C4/G4 confidence tier are structurally unreachable from any published query — enforced in code, not convention (R6).
-- [ ] **Step 2 — Point-in-time resolution.** `SpendTransaction.beneficiary_name` + transaction date → corporate group. No query path may default to "today" (R3). Both **attribution-at-time** (who got paid, honest measure of the procurement decision) and **attribution-to-current-owner** (who owns that revenue stream now) are computable and separately labelled (R4) — they diverge meaningfully for anyone acquired mid-series.
+- [ ] **Step 1 — Consume the entity-resolution artefact.** New models: `CorporateGroup`, `GroupMembership` (dated interval — `valid_from`/`valid_to`/`sources[]`, never a scalar), `BeneficiaryAlias` (raw string → Companies House number, confidence tier), `ResellerOf`. Import command loads the artefact's `aliases.csv`/`groups.yaml`/`group_membership.csv`.
+  *Verify:* import is idempotent and records the resolver's semantic version per run; rows below a defined low-confidence tier are structurally unreachable from any published query — enforced in code, not convention.
+- [ ] **Step 2 — Point-in-time resolution.** `SpendTransaction.beneficiary_name` + transaction date → corporate group. No query path may default to "today". Both **attribution-at-time** (who got paid, honest measure of the procurement decision) and **attribution-to-current-owner** (who owns that revenue stream now) are computable and separately labelled — they diverge meaningfully for anyone acquired mid-series.
   *Verify:* the same transaction resolves to a different group under each view where a real acquisition occurred in between.
-- [ ] **Step 3 — Cross-council beneficiary view.** The concrete ask: a beneficiary's transactions in one council's table today, a resolved corporate group's total spend across *every loaded council* once this ships. New screen/endpoint aggregating by group. Resolved-share-of-spend banner at the top (never resolved-share-of-strings — R1/R7), unresolved and retained-duplicate amounts stated alongside, not hidden.
+- [ ] **Step 3 — Cross-council beneficiary view.** The concrete ask: a beneficiary's transactions in one council's table today, a resolved corporate group's total spend across *every loaded council* once this ships. New screen/endpoint aggregating by group. Resolved-share-of-spend banner at the top (never resolved-share-of-strings), unresolved and retained-duplicate amounts stated alongside, not hidden.
   *Verify:* aggregate total matches the sum of per-council resolved totals exactly.
 - [ ] **Step 4 — Cross-borough price dispersion.** Same corporate group, same service class, different councils, different unit price. Blocked on `category`/`sub_category` data quality — currently sparse/blank-default in `SpendTransaction` — a usable service-class signal is a precondition, not a nice-to-have.
   *Verify:* one defensible dispersion figure, with confidence intervals, cross-checked by hand against a direct query.
-- [ ] **Step 5 — Data-quality guardrails, end-to-end.** Natural-person payments (`CX-PERSON` per the spec — foster carers, direct-payment recipients, small landlords) never resolve to or display as a company anywhere in the UI or API (R10–12). Retained-duplicate counts surface alongside every aggregate; never silently deduplicated (R8).
+- [ ] **Step 5 — Data-quality guardrails, end-to-end.** Natural-person payments (foster carers, direct-payment recipients, small landlords) never resolve to or display as a company anywhere in the UI or API. Retained-duplicate counts surface alongside every aggregate; never silently deduplicated.
   *Verify:* an individual-recipient row never appears as a resolved company anywhere in the product.
 
 ---
 
 ## Phase 4 — Insourcing Feasibility Model
 
-The actual deliverable per the *Exit Capacity* spec (§6) — explicitly requested in the underlying research, never built. Depends entirely on Phase 3. Squarely outside "frontend serving layer" as currently scoped; likely a separate analytics module rather than another Django view — flag and re-scope properly before starting, don't back into it.
+Estimates whether, and when, bringing an outsourced council service back in-house would cost less than continuing to pay a contractor — a break-even year and an exit-readiness ratio, not a blanket "insource everything" recommendation. Depends entirely on Phase 3. Squarely outside "frontend serving layer" as currently scoped; likely a separate analytics module rather than another Django view — flag and re-scope properly before starting, don't back into it.
 
 - [ ] **Step 1 — Spend-to-contract join.** Ingest Find a Tender / Contracts Finder data, join via the resolved entity from Phase 3. Derives renewal horizons, direct-award flags, framework call-off visibility, exit-clause presence (text search for egress/portability/escrow terms in notice bodies). Endpoints and statutory thresholds need independent verification — several changed at the Procurement Act 2023.
   *Verify:* join rate checked against a hand-verified sample.
-- [ ] **Step 2 — Insourcing feasibility model.** Inputs: current spend by function (this repo's data), FTE equivalents, salary cost (NJC scales + London weighting), recruitment lead time, transition/dual-running cost, contract exit penalties (Step 1) — and **capability ramp time**, the spec's explicitly unmodelled variable. Output: break-even year, sensitivity analysis, `exit_readiness = months_to_expiry / months_to_rebuild_capability`, with an explicit "do not attempt exit" when the ratio is below 1.
-  *Verify:* model reproduces the Barnet 2022 case directionally — ratio below 1, exit not viable on the timeline actually attempted.
+- [ ] **Step 2 — Insourcing feasibility model.** Inputs: current spend by function (this repo's data), FTE equivalents, salary cost (NJC scales + London weighting), recruitment lead time, transition/dual-running cost, contract exit penalties (Step 1) — and **capability ramp time**, the hardest variable to model and the one most plans skip. Output: break-even year, sensitivity analysis, `exit_readiness = months_to_expiry / months_to_rebuild_capability`, with an explicit "do not attempt exit" when the ratio is below 1.
+  *Verify:* model reproduces Barnet's 2022 insourcing attempt directionally — ratio below 1, exit not viable on the timeline actually attempted.
 
 ---
 
