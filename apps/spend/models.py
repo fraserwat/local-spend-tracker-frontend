@@ -61,6 +61,11 @@ class DataLoadRun(models.Model):
     row_count = models.PositiveIntegerField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.RUNNING)
     error_message = models.TextField(blank=True, default="")
+    # The R2 manifest's curated.sha256 at load time -- blank for
+    # --source-dir loads (no manifest to read). Lets reload_from_r2 diff
+    # "has this council's data actually changed" without re-downloading
+    # parquet just to check.
+    source_sha256 = models.CharField(max_length=64, blank=True, default="")
 
     class Meta:
         ordering = ["-started_at"]

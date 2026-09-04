@@ -11,6 +11,7 @@ dependencies = [
     "polars>=1.0",
     "whitenoise>=6.11,<6.12",
     "boto3>=1.43.88,<2.0",
+    "gunicorn>=23,<24",
 ]
 
 [dependency-groups]
