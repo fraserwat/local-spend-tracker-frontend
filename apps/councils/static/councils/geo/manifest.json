@@ -1,4 +1,5 @@
 {
+  "bundle_file": "all-councils.geojson",
   "councils": {
     "barnet": {
       "file": "barnet.geojson",

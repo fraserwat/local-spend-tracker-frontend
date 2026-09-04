@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!entry) {
       return Promise.reject(new Error("no boundary file available for " + slug));
     }
-    return fetch(manifestBaseUrl + entry.file)
+    return fetch(manifestBaseUrl + entry.file, { priority: "high" })
       .then((response) => {
         if (!response.ok) throw new Error("boundary fetch failed: " + response.status);
         return response.json();
@@ -274,9 +274,58 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Every council gets a faint idle outline so a selected one still has
-  // its neighbours for context. Initial slug skipped -- it gets the bold
-  // "selected" treatment below instead.
+  // Shared by the bundle path and the legacy per-file fallback.
+  function addIdleFeature(feature, slug) {
+    if (!slug || slug === initialSelectedSlug || idleLayersBySlug.has(slug)) return;
+    const geojson = { type: "FeatureCollection", features: [feature] };
+    boundaryCache.set(slug, geojson);
+    const layer = buildIdleLayer(geojson, slug);
+    layer.addTo(map);
+    idleLayersBySlug.set(slug, layer);
+  }
+
+  // Builds idle layers in chunks via requestIdleCallback -- at ~300 councils,
+  // building every layer synchronously in one tick would stall the main thread.
+  function scheduleIdleLayerBuild(features) {
+    const CHUNK_SIZE = 25;
+    let index = 0;
+    function processChunk() {
+      const end = Math.min(index + CHUNK_SIZE, features.length);
+      for (; index < end; index++) {
+        const feature = features[index];
+        addIdleFeature(feature, feature.properties && feature.properties.slug);
+      }
+      if (index < features.length) scheduleNext();
+    }
+    function scheduleNext() {
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(processChunk, { timeout: 200 });
+      } else {
+        setTimeout(processChunk, 0);
+      }
+    }
+    scheduleNext();
+  }
+
+  // Fallback for a manifest not yet regenerated with `bundle_file`.
+  function loadIdleOutlinesLegacy(manifest) {
+    Object.values(manifest.councils).forEach((entry) => {
+      if (entry.slug === initialSelectedSlug) return;
+      fetch(manifestBaseUrl + entry.file, { priority: "low" })
+        .then((response) => response.json())
+        .then((geojson) => addIdleFeature(geojson.features[0], entry.slug))
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error("idle outline fetch failed", entry.file, error);
+        });
+    });
+  }
+
+  // Every council gets a faint idle outline so a selected one still has its
+  // neighbours for context. Fetched as one combined FeatureCollection
+  // (manifest.bundle_file) instead of one request per council -- 1 request
+  // instead of ~300 at England scale. priority: "low" keeps it behind the
+  // selected boundary's own fetch.
   if (manifestUrl) {
     fetch(manifestUrl)
       .then((response) => {
@@ -286,22 +335,23 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((manifest) => {
         manifestBaseUrl = manifestUrl.replace(/[^/]+$/, "");
         manifestEntriesBySlug = manifest.councils;
-        Object.values(manifest.councils).forEach((entry) => {
-          if (entry.slug === initialSelectedSlug) return;
 
-          fetch(manifestBaseUrl + entry.file)
-            .then((response) => response.json())
-            .then((geojson) => {
-              boundaryCache.set(entry.slug, geojson);
-              const layer = buildIdleLayer(geojson, entry.slug);
-              layer.addTo(map);
-              idleLayersBySlug.set(entry.slug, layer);
-            })
-            .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.error("idle outline fetch failed", entry.file, error);
-            });
-        });
+        if (!manifest.bundle_file) {
+          loadIdleOutlinesLegacy(manifest);
+          return;
+        }
+
+        fetch(manifestBaseUrl + manifest.bundle_file, { priority: "low" })
+          .then((response) => {
+            if (!response.ok) throw new Error("bundle fetch failed: " + response.status);
+            return response.json();
+          })
+          .then((bundle) => scheduleIdleLayerBuild(bundle.features))
+          .catch((error) => {
+            // eslint-disable-next-line no-console
+            console.error("idle bundle fetch failed, falling back to per-file", error);
+            loadIdleOutlinesLegacy(manifest);
+          });
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -320,7 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
       : Promise.resolve(null);
     applyCoverageBadge(coveragePromise);
 
-    fetch(geojsonUrl)
+    fetch(geojsonUrl, { priority: "high" })
       .then((response) => {
         if (!response.ok) throw new Error("boundary fetch failed: " + response.status);
         return response.json();
