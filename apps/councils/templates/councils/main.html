@@ -27,8 +27,8 @@
     font-size: 0.9rem;
   }
   /* :not(.spend-cta) so this doesn't out-specificity the CTA button's own
-     (deliberately dark-on-teal, for contrast) text color below. */
-  #status a:not(.spend-cta) { color: var(--color-accent); font-weight: 600; }
+     (deliberately dark-on-blue, for contrast) text color below. */
+  #status a:not(.spend-cta) { color: var(--color-link); font-weight: 600; }
 
   /* Once a boundary's been clicked, #status holds nothing but the "View
      X Spend" CTA -- drop the pill chrome and re-center it over the map so
@@ -47,9 +47,9 @@
   a.spend-cta {
     display: inline-block;
     pointer-events: auto;
-    /* Honey bronze, not teal -- this sits directly on top of the teal
-       boundary fill, so it needs to visually detach from that backdrop
-       rather than blend into it. */
+    /* Orange, not blue -- this sits directly on top of the blue boundary
+       fill, so it needs to visually detach from that backdrop rather than
+       blend into it. */
     background: var(--color-cta);
     color: var(--color-cta-text);
     font-weight: 700;
@@ -58,28 +58,37 @@
     border-radius: var(--radius-md);
     text-decoration: none;
     /* Offset-heavy, mostly-black shadow (mimics light from above) plus a
-       thin bronze-tinted layer for cohesion -- a big colored glow here
+       thin orange-tinted layer for cohesion -- a big colored glow here
        reads as fuzzy rather than "elevated, pressable". */
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(233, 180, 76, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(255, 153, 0, 0.3);
     transition: transform 180ms ease-out, box-shadow 180ms ease-out, background 180ms ease-out;
   }
   a.spend-cta:hover {
+    /* Restated, not inherited -- theme.css's generic a:hover has higher
+       specificity (element+pseudo beats a lone class) and would otherwise
+       overwrite this with the blue link-hover color, putting light blue
+       text on an orange button. */
+    color: var(--color-cta-text);
     background: var(--color-cta-hover);
     transform: translateY(-1px) scale(1.03);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(233, 180, 76, 0.45);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(255, 153, 0, 0.4);
   }
 
   /* Selected boundary gets a persistent glow, not a hover-only one -- it
      needs to read as "this is the one you picked" the whole time its page
-     is open. The base (non-animated) rule is the glow's resting state;
-     the pulse is a few cycles of emphasis on arrival, not a permanent
-     loop -- an infinite animation running alongside page content trips
-     WCAG 2.2.2 (pause/stop/hide), so it's capped at 4 iterations here and
-     settles back to the static glow once done. 2s/cycle is also nowhere
-     near SC 2.3.1's 3-flashes-per-second threshold. prefers-reduced-motion
-     skips the animation and goes straight to the static glow. */
+     is open. Kept deliberately quiet -- a hairline-weight stroke (see
+     SELECTED_STYLE in map.js) plus a single soft glow layer, not the
+     heavier double-glow bloom this used to carry; dense dashboards read
+     better with a thin definite edge than a saturated halo. The base
+     (non-animated) rule is the glow's resting state; the pulse is a few
+     cycles of emphasis on arrival, not a permanent loop -- an infinite
+     animation running alongside page content trips WCAG 2.2.2
+     (pause/stop/hide), so it's capped at 4 iterations here and settles
+     back to the static glow once done. 2s/cycle is also nowhere near SC
+     2.3.1's 3-flashes-per-second threshold. prefers-reduced-motion skips
+     the animation and goes straight to the static glow. */
   .leaflet-interactive.council-boundary--selected {
-    filter: drop-shadow(0 0 5px rgba(62, 205, 212, 0.8)) drop-shadow(0 0 11px rgba(62, 205, 212, 0.45));
+    filter: drop-shadow(0 0 3px rgba(0, 172, 230, 0.35));
   }
   @media (prefers-reduced-motion: no-preference) {
     .leaflet-interactive.council-boundary--selected {
@@ -88,18 +97,18 @@
   }
   @keyframes council-pulse {
     0%, 100% {
-      filter: drop-shadow(0 0 5px rgba(62, 205, 212, 0.8)) drop-shadow(0 0 11px rgba(62, 205, 212, 0.45));
+      filter: drop-shadow(0 0 3px rgba(0, 172, 230, 0.35));
     }
     50% {
-      filter: drop-shadow(0 0 8px rgba(62, 205, 212, 0.95)) drop-shadow(0 0 16px rgba(62, 205, 212, 0.6));
+      filter: drop-shadow(0 0 5px rgba(0, 172, 230, 0.55));
     }
   }
-  /* Bright red floating bubble, not honey bronze -- a data quality
-     problem needs to read as alarming, not as the same "heads up" tone as
-     the CTA/warning chrome elsewhere on this page. No hard border; a
-     saturated fill plus soft glow shadow reads as a modern bubble instead
-     of a boxed-in alert. Shares its corner with #nation-note -- map.js
-     keeps them mutually exclusive. */
+  /* Dark card with a saturated border, not a solid-fill floating bubble --
+     reads as "flagged" without competing with the CTA/map for the same
+     saturated-color attention. The warning-sign glyph is CSS-generated
+     (not part of coverage.detail_text) so map.js can keep using
+     textContent for the copy itself. Shares its corner with #nation-note
+     -- map.js keeps them mutually exclusive. */
   #coverage-badge {
     display: none;
     position: absolute;
@@ -108,17 +117,18 @@
     z-index: 1000;
     max-width: 22rem;
     background: var(--color-alarm-bg);
-    border: none;
+    border: 1px solid var(--color-alarm);
     color: var(--color-alarm-text);
     padding: var(--space-3) var(--space-4);
-    border-radius: 14px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 24px rgba(255, 90, 60, 0.55);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
     font-size: 0.85rem;
     font-weight: 600;
   }
   #coverage-badge.visible { display: block; }
+  #coverage-badge::before { content: "\26a0  "; }
 
-  /* Same treatment as #coverage-badge, but blue -- explains absent
+  /* Same card treatment as #coverage-badge, but orange -- explains absent
      data, not a problem with data that exists. */
   #nation-note {
     display: none;
@@ -128,15 +138,16 @@
     z-index: 1000;
     max-width: 22rem;
     background: var(--color-info-bg);
-    border: none;
+    border: 1px solid var(--color-cta);
     color: var(--color-info-text);
     padding: var(--space-3) var(--space-4);
-    border-radius: 14px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 24px rgba(72, 172, 240, 0.55);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
     font-size: 0.85rem;
     font-weight: 600;
   }
   #nation-note.visible { display: block; }
+  #nation-note::before { content: "\2139  "; }
 
   /* Default cursor -- clickable, but shouldn't invite the click. */
   .nation-boundary {

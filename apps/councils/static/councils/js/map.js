@@ -68,11 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
     className: "nation-boundary",
   };
   const SELECTED_STYLE = {
-    color: "#3ecdd4",
+    color: "#00ace6",
     weight: 3,
     fillOpacity: 0.14,
-    // Brighter than the base accent (#50a2a7) so "selected" reads as
-    // unmistakably on. Targeted by the pulsing glow in main.html.
+    // Lighter-tint blue (--color-link), not the base accent (#0099cc), so
+    // "selected" reads as unmistakably on. Targeted by the hairline glow
+    // in main.html.
     className: "council-boundary--selected",
   };
 

@@ -46,39 +46,45 @@
   --color-text-muted: #b8bacb;
   --color-text-faint: #8b8da3;
 
-  --color-accent: #50a2a7;
-  --color-accent-hover: #6bbdc2;
-  --color-accent-text: #0b2426;
+  /* Primary blue -- does most of the work (links, buttons, map boundary
+     fill). Complementary to the orange accent below, so it stays the
+     dominant of the two or the pair vibrates instead of reading as a
+     hierarchy (Chevreul's law of simultaneous contrast). */
+  --color-accent: #0099cc;
+  --color-accent-hover: #00b8f5;
+  --color-accent-text: #04222b;
 
-  /* Warm complement to the teal accent -- reserved for high-affordance
-     CTAs that need to visually detach from teal-tinted surfaces (e.g. a
-     button sitting on top of a teal map boundary), not for general accent
-     use where teal already reads clearly. */
-  --color-cta: #e9b44c;
-  --color-cta-hover: #f0c470;
-  --color-cta-text: #2b1d02;
+  /* Direct text/link use on --color-bg wants more margin than the base
+     fill -- #0099cc clears WCAG AA at only 4.61:1, so links/pills borrow
+     this lighter tint instead (5.77:1) rather than the fill color itself. */
+  --color-link: #00ace6;
 
-  --color-warning-bg: #3a2f14;
-  --color-warning-border: #e9b44c;
-  --color-warning-text: #f2cd82;
+  /* Orange -- the rare pop, reserved for CTAs and the info badge. Kept
+     scarce on purpose: it's blue's complement, so giving it equal real
+     estate would fight the primary color instead of accenting it. */
+  --color-cta: #ff9900;
+  --color-cta-hover: #d68100;
+  --color-cta-text: #1a1005;
 
-  --color-error: #d9553a;
+  /* Direct text use (error copy on --color-bg). Same family as
+     --color-alarm-text below, just without the card chrome. */
+  --color-error: #ff8a80;
 
-  /* Bright alarm tones for genuinely alarming call-outs (data quality
-     problems, etc) -- deliberately NOT the honey-bronze warning family
-     above, which reads as "heads up" rather than "something's wrong".
-     Same hue as --color-error, just pushed to full saturation/brightness
-     for a vivid, modern floating bubble instead of a dark bordered box. */
-  --color-alarm-bg: #c73e1d;
-  --color-alarm-glow: #ff5a3c;
-  --color-alarm-text: #fff4f1;
+  /* Alarm card -- data-quality call-outs. Dark, hue-tinted surface with a
+     saturated border, not a solid-fill bubble: reads as "flagged", not
+     "flashing". Deliberately hue-separated from --color-cta (orange) so
+     an alert and an accent are never confusable, including for red-green
+     colorblind readers. */
+  --color-alarm: #ef4444;
+  --color-alarm-bg: #2b1414;
+  --color-alarm-text: #ff8a80;
 
-  /* Same bubble treatment as alarm, but blue -- for "no data" notes
-     rather than problems. Bright #48acf0 kept as the glow, darker fill
-     for contrast (same split as --color-alarm-glow/-bg). */
-  --color-info-bg: #0d68a5;
-  --color-info-glow: #48acf0;
-  --color-info-text: #eaf6ff;
+  /* Same card treatment as alarm, but orange -- for "no data" notes
+     rather than problems. Reuses --color-cta as its border/icon color on
+     purpose: it's the same accent, just applied to an informational badge
+     instead of a call-to-action. */
+  --color-info-bg: #2b1a05;
+  --color-info-text: #ffcc80;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
@@ -90,8 +96,8 @@
   --space-6: 2rem;
   --space-8: 3rem;
 
-  --radius-sm: 3px;
-  --radius-md: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
@@ -111,7 +117,7 @@ h1, h2, h3 {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-link);
 }
 a:hover {
   color: var(--color-accent-hover);
@@ -135,8 +141,8 @@ button:hover, input[type="submit"]:hover {
 
 button.button-secondary {
   background: transparent;
-  border: 1px solid var(--color-accent);
-  color: var(--color-accent);
+  border: 1px solid var(--color-link);
+  color: var(--color-link);
 }
 button.button-secondary:hover {
   background: var(--color-surface-hover);
