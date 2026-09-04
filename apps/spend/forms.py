@@ -9,9 +9,8 @@ DIR_CHOICES = [("asc", "asc"), ("desc", "desc")]
 class TransactionFilterForm(forms.Form):
     """Validates the plain GET query params the Spend View filters/sorts by.
 
-    A plain form works with no JS (per docs/ARCHITECTURE.md's Frontend
-    section) and gives one place to reject e.g. date_from > date_to instead
-    of silently mis-filtering.
+    Works with no JS, and gives one place to reject e.g. date_from >
+    date_to instead of silently mis-filtering.
     """
 
     date_from = forms.DateField(required=False)

@@ -7,9 +7,8 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-insecure-secret-key-not-for-p
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-# Sibling data repo's curated parquet output, for local dev convenience only.
-# No equivalent default in prod.py — a forgotten --source-dir/env var there
-# must fail loudly, not silently resolve to a path that won't exist.
+# Local dev convenience only -- prod.py has no default, so a forgotten
+# env var there fails loudly instead of resolving to a bogus path.
 SPEND_SOURCE_DIR = env(
     "SPEND_SOURCE_DIR",
     default=str(BASE_DIR.parent / "local-big-con-nationwide" / "data" / "curated"),
