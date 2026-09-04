@@ -72,7 +72,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const prefersReducedMotion =
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const IDLE_STYLE = { color: "#8b8da3", weight: 2, fillOpacity: 0.04, dashArray: "4 4" };
+  // Darker border + real fill opacity (was #8b8da3 @ 0.04, nearly
+  // invisible against the pale basemap) so idle councils read as
+  // clickable rather than as faint background texture. Dashed outline
+  // still marks "idle" vs the selected boundary's solid one.
+  const IDLE_STYLE = { color: "#6b6e87", weight: 2, fillOpacity: 0.14, dashArray: "4 4" };
   // Fill matches the basemap's on-screen sea tone (#d9d9d9 -- the Esri
   // Light Gray tile composited at its 0.3 layer opacity) at full opacity,
   // so the landmass reads as flattened into the sea rather than as a
@@ -130,6 +134,9 @@ document.addEventListener("DOMContentLoaded", () => {
   ).addTo(map);
 
   function showNationNote(slug) {
+    // Both bubbles now share the same corner (see main.html) -- only one
+    // can be visible at a time.
+    badgeEl.classList.remove("visible");
     nationNoteEl.textContent = NATION_NOTES[slug] || "";
     nationNoteEl.classList.add("visible");
   }

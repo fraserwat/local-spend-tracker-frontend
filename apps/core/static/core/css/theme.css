@@ -44,11 +44,13 @@
   /* Informational call-out (e.g. "no data available" notes) -- same
      bubble treatment as the alarm family above, but blue rather than red
      since these aren't warning of a problem with data that exists, just
-     explaining why none does. Bg is light enough that white text fails
-     contrast, so pair it with dark navy text like the teal accent does. */
-  --color-info-bg: #48acf0;
+     explaining why none does. Same hue as the requested #48acf0, pushed
+     darker for the fill so near-white text gets real contrast instead of
+     the washed-out look navy-on-pale-blue had -- the original bright
+     tone lives on as the glow, same role --color-alarm-glow plays. */
+  --color-info-bg: #0d68a5;
   --color-info-glow: #48acf0;
-  --color-info-text: #0b2740;
+  --color-info-text: #eaf6ff;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 

@@ -100,12 +100,14 @@
      problem needs to read as alarming, not as the same "heads up" tone as
      the CTA/warning chrome elsewhere on this page. No hard border; a
      saturated fill plus soft glow shadow reads as a modern bubble instead
-     of a boxed-in alert. */
+     of a boxed-in alert. Shares its corner with #nation-note below --
+     map.js keeps them mutually exclusive (each hides the other on show)
+     so only one bubble ever occupies it at a time. */
   #coverage-badge {
     display: none;
     position: absolute;
-    bottom: var(--space-4);
-    left: var(--space-4);
+    top: var(--space-4);
+    right: var(--space-4);
     z-index: 1000;
     max-width: 22rem;
     background: var(--color-alarm-bg);
@@ -119,11 +121,11 @@
   }
   #coverage-badge.visible { display: block; }
 
-  /* Same rounded-bubble treatment as #coverage-badge, but blue and in the
-     opposite corner -- this explains an absence of data (a devolved
-     nation's councils aren't covered), not a problem with data that
-     exists, so it shouldn't read with the same alarm tone or risk
-     overlapping a coverage badge shown for an already-selected council. */
+  /* Same rounded-bubble treatment as #coverage-badge (and the same
+     corner -- see the note above it), but blue: this explains an
+     absence of data (a devolved nation's councils aren't covered), not
+     a problem with data that exists, so it shouldn't read with the same
+     alarm tone. */
   #nation-note {
     display: none;
     position: absolute;
