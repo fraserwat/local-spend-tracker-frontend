@@ -1,12 +1,220 @@
 {
   "bundle_file": "all-councils.geojson",
   "councils": {
+    "adur": {
+      "file": "adur.geojson",
+      "gss_code": "E07000223",
+      "name": "Adur",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "adur",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "amber-valley": {
+      "file": "amber-valley.geojson",
+      "gss_code": "E07000032",
+      "name": "Amber Valley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "amber-valley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "arun": {
+      "file": "arun.geojson",
+      "gss_code": "E07000224",
+      "name": "Arun",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "arun",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "ashfield": {
+      "file": "ashfield.geojson",
+      "gss_code": "E07000170",
+      "name": "Ashfield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "ashfield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "ashford": {
+      "file": "ashford.geojson",
+      "gss_code": "E07000105",
+      "name": "Ashford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "ashford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "babergh": {
+      "file": "babergh.geojson",
+      "gss_code": "E07000200",
+      "name": "Babergh",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "babergh",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "barking-and-dagenham": {
+      "file": "barking-and-dagenham.geojson",
+      "gss_code": "E09000002",
+      "name": "Barking and Dagenham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "barking-and-dagenham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "barnet": {
       "file": "barnet.geojson",
       "gss_code": "E09000003",
       "name": "Barnet",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "barnet",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "barnsley": {
+      "file": "barnsley.geojson",
+      "gss_code": "E08000038",
+      "name": "Barnsley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "barnsley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "basildon": {
+      "file": "basildon.geojson",
+      "gss_code": "E07000066",
+      "name": "Basildon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "basildon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "basingstoke-and-deane": {
+      "file": "basingstoke-and-deane.geojson",
+      "gss_code": "E07000084",
+      "name": "Basingstoke and Deane",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "basingstoke-and-deane",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bassetlaw": {
+      "file": "bassetlaw.geojson",
+      "gss_code": "E07000171",
+      "name": "Bassetlaw",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bassetlaw",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bath-and-north-east-somerset": {
+      "file": "bath-and-north-east-somerset.geojson",
+      "gss_code": "E06000022",
+      "name": "Bath and North East Somerset",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bath-and-north-east-somerset",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bedford": {
+      "file": "bedford.geojson",
+      "gss_code": "E06000055",
+      "name": "Bedford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bedford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bexley": {
+      "file": "bexley.geojson",
+      "gss_code": "E09000004",
+      "name": "Bexley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bexley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "birmingham": {
+      "file": "birmingham.geojson",
+      "gss_code": "E08000025",
+      "name": "Birmingham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "birmingham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "blaby": {
+      "file": "blaby.geojson",
+      "gss_code": "E07000129",
+      "name": "Blaby",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "blaby",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "blackburn-with-darwen": {
+      "file": "blackburn-with-darwen.geojson",
+      "gss_code": "E06000008",
+      "name": "Blackburn with Darwen",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "blackburn-with-darwen",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "blackpool": {
+      "file": "blackpool.geojson",
+      "gss_code": "E06000009",
+      "name": "Blackpool",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "blackpool",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bolsover": {
+      "file": "bolsover.geojson",
+      "gss_code": "E07000033",
+      "name": "Bolsover",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bolsover",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bolton": {
+      "file": "bolton.geojson",
+      "gss_code": "E08000001",
+      "name": "Bolton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bolton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "boston": {
+      "file": "boston.geojson",
+      "gss_code": "E07000136",
+      "name": "Boston",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "boston",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bournemouth-christchurch-poole": {
+      "file": "bournemouth-christchurch-poole.geojson",
+      "gss_code": "E06000058",
+      "name": "Bournemouth, Christchurch and Poole",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bournemouth-christchurch-poole",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bracknell-forest": {
+      "file": "bracknell-forest.geojson",
+      "gss_code": "E06000036",
+      "name": "Bracknell Forest",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bracknell-forest",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bradford": {
+      "file": "bradford.geojson",
+      "gss_code": "E08000032",
+      "name": "Bradford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bradford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "braintree": {
+      "file": "braintree.geojson",
+      "gss_code": "E07000067",
+      "name": "Braintree",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "braintree",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "breckland": {
+      "file": "breckland.geojson",
+      "gss_code": "E07000143",
+      "name": "Breckland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "breckland",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "brent": {
@@ -17,12 +225,108 @@
       "slug": "brent",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "brentwood": {
+      "file": "brentwood.geojson",
+      "gss_code": "E07000068",
+      "name": "Brentwood",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "brentwood",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "brighton-and-hove": {
+      "file": "brighton-and-hove.geojson",
+      "gss_code": "E06000043",
+      "name": "Brighton and Hove",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "brighton-and-hove",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bristol": {
+      "file": "bristol.geojson",
+      "gss_code": "E06000023",
+      "name": "Bristol, City of",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bristol",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "broadland": {
+      "file": "broadland.geojson",
+      "gss_code": "E07000144",
+      "name": "Broadland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "broadland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "bromley": {
       "file": "bromley.geojson",
       "gss_code": "E09000006",
       "name": "Bromley",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "bromley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bromsgrove": {
+      "file": "bromsgrove.geojson",
+      "gss_code": "E07000234",
+      "name": "Bromsgrove",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bromsgrove",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "broxbourne": {
+      "file": "broxbourne.geojson",
+      "gss_code": "E07000095",
+      "name": "Broxbourne",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "broxbourne",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "broxtowe": {
+      "file": "broxtowe.geojson",
+      "gss_code": "E07000172",
+      "name": "Broxtowe",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "broxtowe",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "buckinghamshire": {
+      "file": "buckinghamshire.geojson",
+      "gss_code": "E06000060",
+      "name": "Buckinghamshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "buckinghamshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "burnley": {
+      "file": "burnley.geojson",
+      "gss_code": "E07000117",
+      "name": "Burnley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "burnley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "bury": {
+      "file": "bury.geojson",
+      "gss_code": "E08000002",
+      "name": "Bury",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "bury",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "calderdale": {
+      "file": "calderdale.geojson",
+      "gss_code": "E08000033",
+      "name": "Calderdale",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "calderdale",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cambridge": {
+      "file": "cambridge.geojson",
+      "gss_code": "E07000008",
+      "name": "Cambridge",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cambridge",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "camden": {
@@ -33,12 +337,492 @@
       "slug": "camden",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "cannock-chase": {
+      "file": "cannock-chase.geojson",
+      "gss_code": "E07000192",
+      "name": "Cannock Chase",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cannock-chase",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "canterbury": {
+      "file": "canterbury.geojson",
+      "gss_code": "E07000106",
+      "name": "Canterbury",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "canterbury",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "castle-point": {
+      "file": "castle-point.geojson",
+      "gss_code": "E07000069",
+      "name": "Castle Point",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "castle-point",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "central-bedfordshire": {
+      "file": "central-bedfordshire.geojson",
+      "gss_code": "E06000056",
+      "name": "Central Bedfordshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "central-bedfordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "charnwood": {
+      "file": "charnwood.geojson",
+      "gss_code": "E07000130",
+      "name": "Charnwood",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "charnwood",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "chelmsford": {
+      "file": "chelmsford.geojson",
+      "gss_code": "E07000070",
+      "name": "Chelmsford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "chelmsford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cheltenham": {
+      "file": "cheltenham.geojson",
+      "gss_code": "E07000078",
+      "name": "Cheltenham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cheltenham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cherwell": {
+      "file": "cherwell.geojson",
+      "gss_code": "E07000177",
+      "name": "Cherwell",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cherwell",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cheshire-east": {
+      "file": "cheshire-east.geojson",
+      "gss_code": "E06000049",
+      "name": "Cheshire East",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cheshire-east",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cheshire-west-and-chester": {
+      "file": "cheshire-west-and-chester.geojson",
+      "gss_code": "E06000050",
+      "name": "Cheshire West and Chester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cheshire-west-and-chester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "chesterfield": {
+      "file": "chesterfield.geojson",
+      "gss_code": "E07000034",
+      "name": "Chesterfield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "chesterfield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "chichester": {
+      "file": "chichester.geojson",
+      "gss_code": "E07000225",
+      "name": "Chichester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "chichester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "chorley": {
+      "file": "chorley.geojson",
+      "gss_code": "E07000118",
+      "name": "Chorley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "chorley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "city-of-london": {
+      "file": "city-of-london.geojson",
+      "gss_code": "E09000001",
+      "name": "City of London",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "city-of-london",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "colchester": {
+      "file": "colchester.geojson",
+      "gss_code": "E07000071",
+      "name": "Colchester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "colchester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cornwall": {
+      "file": "cornwall.geojson",
+      "gss_code": "E06000052",
+      "name": "Cornwall",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cornwall",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cotswold": {
+      "file": "cotswold.geojson",
+      "gss_code": "E07000079",
+      "name": "Cotswold",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cotswold",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "coventry": {
+      "file": "coventry.geojson",
+      "gss_code": "E08000026",
+      "name": "Coventry",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "coventry",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "crawley": {
+      "file": "crawley.geojson",
+      "gss_code": "E07000226",
+      "name": "Crawley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "crawley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "croydon": {
+      "file": "croydon.geojson",
+      "gss_code": "E09000008",
+      "name": "Croydon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "croydon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "cumberland": {
+      "file": "cumberland.geojson",
+      "gss_code": "E06000063",
+      "name": "Cumberland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "cumberland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "dacorum": {
+      "file": "dacorum.geojson",
+      "gss_code": "E07000096",
+      "name": "Dacorum",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "dacorum",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "darlington": {
+      "file": "darlington.geojson",
+      "gss_code": "E06000005",
+      "name": "Darlington",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "darlington",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "dartford": {
+      "file": "dartford.geojson",
+      "gss_code": "E07000107",
+      "name": "Dartford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "dartford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "derby": {
+      "file": "derby.geojson",
+      "gss_code": "E06000015",
+      "name": "Derby",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "derby",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "derbyshire-dales": {
+      "file": "derbyshire-dales.geojson",
+      "gss_code": "E07000035",
+      "name": "Derbyshire Dales",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "derbyshire-dales",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "doncaster": {
+      "file": "doncaster.geojson",
+      "gss_code": "E08000017",
+      "name": "Doncaster",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "doncaster",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "dorset": {
+      "file": "dorset.geojson",
+      "gss_code": "E06000059",
+      "name": "Dorset",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "dorset",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "dover": {
+      "file": "dover.geojson",
+      "gss_code": "E07000108",
+      "name": "Dover",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "dover",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "dudley": {
+      "file": "dudley.geojson",
+      "gss_code": "E08000027",
+      "name": "Dudley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "dudley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "durham": {
+      "file": "durham.geojson",
+      "gss_code": "E06000047",
+      "name": "County Durham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "durham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "ealing": {
       "file": "ealing.geojson",
       "gss_code": "E09000009",
       "name": "Ealing",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "ealing",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-cambridgeshire": {
+      "file": "east-cambridgeshire.geojson",
+      "gss_code": "E07000009",
+      "name": "East Cambridgeshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-cambridgeshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-devon": {
+      "file": "east-devon.geojson",
+      "gss_code": "E07000040",
+      "name": "East Devon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-devon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-hampshire": {
+      "file": "east-hampshire.geojson",
+      "gss_code": "E07000085",
+      "name": "East Hampshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-hampshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-hertfordshire": {
+      "file": "east-hertfordshire.geojson",
+      "gss_code": "E07000242",
+      "name": "East Hertfordshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-hertfordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-lindsey": {
+      "file": "east-lindsey.geojson",
+      "gss_code": "E07000137",
+      "name": "East Lindsey",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-lindsey",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-riding-of-yorkshire": {
+      "file": "east-riding-of-yorkshire.geojson",
+      "gss_code": "E06000011",
+      "name": "East Riding of Yorkshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-riding-of-yorkshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-staffordshire": {
+      "file": "east-staffordshire.geojson",
+      "gss_code": "E07000193",
+      "name": "East Staffordshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-staffordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "east-suffolk": {
+      "file": "east-suffolk.geojson",
+      "gss_code": "E07000244",
+      "name": "East Suffolk",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "east-suffolk",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "eastbourne": {
+      "file": "eastbourne.geojson",
+      "gss_code": "E07000061",
+      "name": "Eastbourne",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "eastbourne",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "eastleigh": {
+      "file": "eastleigh.geojson",
+      "gss_code": "E07000086",
+      "name": "Eastleigh",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "eastleigh",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "elmbridge": {
+      "file": "elmbridge.geojson",
+      "gss_code": "E07000207",
+      "name": "Elmbridge",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "elmbridge",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "enfield": {
+      "file": "enfield.geojson",
+      "gss_code": "E09000010",
+      "name": "Enfield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "enfield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "epping-forest": {
+      "file": "epping-forest.geojson",
+      "gss_code": "E07000072",
+      "name": "Epping Forest",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "epping-forest",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "epsom-and-ewell": {
+      "file": "epsom-and-ewell.geojson",
+      "gss_code": "E07000208",
+      "name": "Epsom and Ewell",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "epsom-and-ewell",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "erewash": {
+      "file": "erewash.geojson",
+      "gss_code": "E07000036",
+      "name": "Erewash",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "erewash",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "exeter": {
+      "file": "exeter.geojson",
+      "gss_code": "E07000041",
+      "name": "Exeter",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "exeter",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "fareham": {
+      "file": "fareham.geojson",
+      "gss_code": "E07000087",
+      "name": "Fareham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "fareham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "fenland": {
+      "file": "fenland.geojson",
+      "gss_code": "E07000010",
+      "name": "Fenland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "fenland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "folkestone-hythe": {
+      "file": "folkestone-hythe.geojson",
+      "gss_code": "E07000112",
+      "name": "Folkestone and Hythe",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "folkestone-hythe",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "forest-of-dean": {
+      "file": "forest-of-dean.geojson",
+      "gss_code": "E07000080",
+      "name": "Forest of Dean",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "forest-of-dean",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "fylde": {
+      "file": "fylde.geojson",
+      "gss_code": "E07000119",
+      "name": "Fylde",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "fylde",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "gateshead": {
+      "file": "gateshead.geojson",
+      "gss_code": "E08000037",
+      "name": "Gateshead",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "gateshead",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "gedling": {
+      "file": "gedling.geojson",
+      "gss_code": "E07000173",
+      "name": "Gedling",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "gedling",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "gloucester": {
+      "file": "gloucester.geojson",
+      "gss_code": "E07000081",
+      "name": "Gloucester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "gloucester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "gosport": {
+      "file": "gosport.geojson",
+      "gss_code": "E07000088",
+      "name": "Gosport",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "gosport",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "gravesham": {
+      "file": "gravesham.geojson",
+      "gss_code": "E07000109",
+      "name": "Gravesham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "gravesham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "great-yarmouth": {
+      "file": "great-yarmouth.geojson",
+      "gss_code": "E07000145",
+      "name": "Great Yarmouth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "great-yarmouth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "greenwich": {
+      "file": "greenwich.geojson",
+      "gss_code": "E09000011",
+      "name": "Greenwich",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "greenwich",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "guildford": {
+      "file": "guildford.geojson",
+      "gss_code": "E07000209",
+      "name": "Guildford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "guildford",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "hackney": {
@@ -49,12 +833,44 @@
       "slug": "hackney",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "halton": {
+      "file": "halton.geojson",
+      "gss_code": "E06000006",
+      "name": "Halton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "halton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hammersmith-and-fulham": {
+      "file": "hammersmith-and-fulham.geojson",
+      "gss_code": "E09000013",
+      "name": "Hammersmith and Fulham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hammersmith-and-fulham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "harborough": {
+      "file": "harborough.geojson",
+      "gss_code": "E07000131",
+      "name": "Harborough",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "harborough",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "haringey": {
       "file": "haringey.geojson",
       "gss_code": "E09000014",
       "name": "Haringey",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "haringey",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "harlow": {
+      "file": "harlow.geojson",
+      "gss_code": "E07000073",
+      "name": "Harlow",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "harlow",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "harrow": {
@@ -65,12 +881,92 @@
       "slug": "harrow",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "hart": {
+      "file": "hart.geojson",
+      "gss_code": "E07000089",
+      "name": "Hart",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hart",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hartlepool": {
+      "file": "hartlepool.geojson",
+      "gss_code": "E06000001",
+      "name": "Hartlepool",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hartlepool",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hastings": {
+      "file": "hastings.geojson",
+      "gss_code": "E07000062",
+      "name": "Hastings",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hastings",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "havant": {
+      "file": "havant.geojson",
+      "gss_code": "E07000090",
+      "name": "Havant",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "havant",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "havering": {
       "file": "havering.geojson",
       "gss_code": "E09000016",
       "name": "Havering",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "havering",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "herefordshire": {
+      "file": "herefordshire.geojson",
+      "gss_code": "E06000019",
+      "name": "Herefordshire, County of",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "herefordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hertsmere": {
+      "file": "hertsmere.geojson",
+      "gss_code": "E07000098",
+      "name": "Hertsmere",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hertsmere",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "high-peak": {
+      "file": "high-peak.geojson",
+      "gss_code": "E07000037",
+      "name": "High Peak",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "high-peak",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hillingdon": {
+      "file": "hillingdon.geojson",
+      "gss_code": "E09000017",
+      "name": "Hillingdon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hillingdon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hinckley-and-bosworth": {
+      "file": "hinckley-and-bosworth.geojson",
+      "gss_code": "E07000132",
+      "name": "Hinckley and Bosworth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hinckley-and-bosworth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "horsham": {
+      "file": "horsham.geojson",
+      "gss_code": "E07000227",
+      "name": "Horsham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "horsham",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "hounslow": {
@@ -81,12 +977,140 @@
       "slug": "hounslow",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "huntingdonshire": {
+      "file": "huntingdonshire.geojson",
+      "gss_code": "E07000011",
+      "name": "Huntingdonshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "huntingdonshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "hyndburn": {
+      "file": "hyndburn.geojson",
+      "gss_code": "E07000120",
+      "name": "Hyndburn",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "hyndburn",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "ipswich": {
+      "file": "ipswich.geojson",
+      "gss_code": "E07000202",
+      "name": "Ipswich",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "ipswich",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "isle-of-wight": {
+      "file": "isle-of-wight.geojson",
+      "gss_code": "E06000046",
+      "name": "Isle of Wight",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "isle-of-wight",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "isles-of-scilly": {
+      "file": "isles-of-scilly.geojson",
+      "gss_code": "E06000053",
+      "name": "Isles of Scilly",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "isles-of-scilly",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "islington": {
       "file": "islington.geojson",
       "gss_code": "E09000019",
       "name": "Islington",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "islington",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "kensington-and-chelsea": {
+      "file": "kensington-and-chelsea.geojson",
+      "gss_code": "E09000020",
+      "name": "Kensington and Chelsea",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "kensington-and-chelsea",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "kings-lynn-and-west-norfolk": {
+      "file": "kings-lynn-and-west-norfolk.geojson",
+      "gss_code": "E07000146",
+      "name": "King's Lynn and West Norfolk",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "kings-lynn-and-west-norfolk",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "kingston-upon-hull": {
+      "file": "kingston-upon-hull.geojson",
+      "gss_code": "E06000010",
+      "name": "Kingston upon Hull, City of",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "kingston-upon-hull",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "kingston-upon-thames": {
+      "file": "kingston-upon-thames.geojson",
+      "gss_code": "E09000021",
+      "name": "Kingston upon Thames",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "kingston-upon-thames",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "kirklees": {
+      "file": "kirklees.geojson",
+      "gss_code": "E08000034",
+      "name": "Kirklees",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "kirklees",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "knowsley": {
+      "file": "knowsley.geojson",
+      "gss_code": "E08000011",
+      "name": "Knowsley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "knowsley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "lambeth": {
+      "file": "lambeth.geojson",
+      "gss_code": "E09000022",
+      "name": "Lambeth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "lambeth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "lancaster": {
+      "file": "lancaster.geojson",
+      "gss_code": "E07000121",
+      "name": "Lancaster",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "lancaster",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "leeds": {
+      "file": "leeds.geojson",
+      "gss_code": "E08000035",
+      "name": "Leeds",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "leeds",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "leicester": {
+      "file": "leicester.geojson",
+      "gss_code": "E06000016",
+      "name": "Leicester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "leicester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "lewes": {
+      "file": "lewes.geojson",
+      "gss_code": "E07000063",
+      "name": "Lewes",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "lewes",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "lewisham": {
@@ -97,12 +1121,180 @@
       "slug": "lewisham",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "lichfield": {
+      "file": "lichfield.geojson",
+      "gss_code": "E07000194",
+      "name": "Lichfield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "lichfield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "lincoln": {
+      "file": "lincoln.geojson",
+      "gss_code": "E07000138",
+      "name": "Lincoln",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "lincoln",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "liverpool": {
+      "file": "liverpool.geojson",
+      "gss_code": "E08000012",
+      "name": "Liverpool",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "liverpool",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "luton": {
+      "file": "luton.geojson",
+      "gss_code": "E06000032",
+      "name": "Luton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "luton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "maidstone": {
+      "file": "maidstone.geojson",
+      "gss_code": "E07000110",
+      "name": "Maidstone",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "maidstone",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "maldon": {
+      "file": "maldon.geojson",
+      "gss_code": "E07000074",
+      "name": "Maldon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "maldon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "malvern-hills": {
+      "file": "malvern-hills.geojson",
+      "gss_code": "E07000235",
+      "name": "Malvern Hills",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "malvern-hills",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "manchester": {
+      "file": "manchester.geojson",
+      "gss_code": "E08000003",
+      "name": "Manchester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "manchester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "mansfield": {
+      "file": "mansfield.geojson",
+      "gss_code": "E07000174",
+      "name": "Mansfield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "mansfield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "medway": {
+      "file": "medway.geojson",
+      "gss_code": "E06000035",
+      "name": "Medway",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "medway",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "melton": {
+      "file": "melton.geojson",
+      "gss_code": "E07000133",
+      "name": "Melton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "melton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "merton": {
       "file": "merton.geojson",
       "gss_code": "E09000024",
       "name": "Merton",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "merton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "mid-devon": {
+      "file": "mid-devon.geojson",
+      "gss_code": "E07000042",
+      "name": "Mid Devon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "mid-devon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "mid-suffolk": {
+      "file": "mid-suffolk.geojson",
+      "gss_code": "E07000203",
+      "name": "Mid Suffolk",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "mid-suffolk",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "mid-sussex": {
+      "file": "mid-sussex.geojson",
+      "gss_code": "E07000228",
+      "name": "Mid Sussex",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "mid-sussex",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "middlesbrough": {
+      "file": "middlesbrough.geojson",
+      "gss_code": "E06000002",
+      "name": "Middlesbrough",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "middlesbrough",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "milton-keynes": {
+      "file": "milton-keynes.geojson",
+      "gss_code": "E06000042",
+      "name": "Milton Keynes",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "milton-keynes",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "mole-valley": {
+      "file": "mole-valley.geojson",
+      "gss_code": "E07000210",
+      "name": "Mole Valley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "mole-valley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "new-forest": {
+      "file": "new-forest.geojson",
+      "gss_code": "E07000091",
+      "name": "New Forest",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "new-forest",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "newark-and-sherwood": {
+      "file": "newark-and-sherwood.geojson",
+      "gss_code": "E07000175",
+      "name": "Newark and Sherwood",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "newark-and-sherwood",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "newcastle-under-lyme": {
+      "file": "newcastle-under-lyme.geojson",
+      "gss_code": "E07000195",
+      "name": "Newcastle-under-Lyme",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "newcastle-under-lyme",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "newcastle-upon-tyne": {
+      "file": "newcastle-upon-tyne.geojson",
+      "gss_code": "E08000021",
+      "name": "Newcastle upon Tyne",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "newcastle-upon-tyne",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "newham": {
@@ -113,12 +1305,252 @@
       "slug": "newham",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "north-devon": {
+      "file": "north-devon.geojson",
+      "gss_code": "E07000043",
+      "name": "North Devon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-devon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-east-derbyshire": {
+      "file": "north-east-derbyshire.geojson",
+      "gss_code": "E07000038",
+      "name": "North East Derbyshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-east-derbyshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-east-lincolnshire": {
+      "file": "north-east-lincolnshire.geojson",
+      "gss_code": "E06000012",
+      "name": "North East Lincolnshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-east-lincolnshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-hertfordshire": {
+      "file": "north-hertfordshire.geojson",
+      "gss_code": "E07000099",
+      "name": "North Hertfordshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-hertfordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-kesteven": {
+      "file": "north-kesteven.geojson",
+      "gss_code": "E07000139",
+      "name": "North Kesteven",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-kesteven",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-lincolnshire": {
+      "file": "north-lincolnshire.geojson",
+      "gss_code": "E06000013",
+      "name": "North Lincolnshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-lincolnshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-norfolk": {
+      "file": "north-norfolk.geojson",
+      "gss_code": "E07000147",
+      "name": "North Norfolk",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-norfolk",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-northamptonshire": {
+      "file": "north-northamptonshire.geojson",
+      "gss_code": "E06000061",
+      "name": "North Northamptonshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-northamptonshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-somerset": {
+      "file": "north-somerset.geojson",
+      "gss_code": "E06000024",
+      "name": "North Somerset",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-somerset",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-tyneside": {
+      "file": "north-tyneside.geojson",
+      "gss_code": "E08000022",
+      "name": "North Tyneside",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-tyneside",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-warwickshire": {
+      "file": "north-warwickshire.geojson",
+      "gss_code": "E07000218",
+      "name": "North Warwickshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-warwickshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-west-leicestershire": {
+      "file": "north-west-leicestershire.geojson",
+      "gss_code": "E07000134",
+      "name": "North West Leicestershire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-west-leicestershire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "north-yorkshire": {
+      "file": "north-yorkshire.geojson",
+      "gss_code": "E06000065",
+      "name": "North Yorkshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "north-yorkshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "northumberland": {
+      "file": "northumberland.geojson",
+      "gss_code": "E06000057",
+      "name": "Northumberland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "northumberland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "norwich": {
+      "file": "norwich.geojson",
+      "gss_code": "E07000148",
+      "name": "Norwich",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "norwich",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "nottingham": {
+      "file": "nottingham.geojson",
+      "gss_code": "E06000018",
+      "name": "Nottingham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "nottingham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "nuneaton-and-bedworth": {
+      "file": "nuneaton-and-bedworth.geojson",
+      "gss_code": "E07000219",
+      "name": "Nuneaton and Bedworth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "nuneaton-and-bedworth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "oadby-and-wigston": {
+      "file": "oadby-and-wigston.geojson",
+      "gss_code": "E07000135",
+      "name": "Oadby and Wigston",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "oadby-and-wigston",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "oldham": {
+      "file": "oldham.geojson",
+      "gss_code": "E08000004",
+      "name": "Oldham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "oldham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "oxford": {
+      "file": "oxford.geojson",
+      "gss_code": "E07000178",
+      "name": "Oxford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "oxford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "pendle": {
+      "file": "pendle.geojson",
+      "gss_code": "E07000122",
+      "name": "Pendle",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "pendle",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "peterborough": {
+      "file": "peterborough.geojson",
+      "gss_code": "E06000031",
+      "name": "Peterborough",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "peterborough",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "plymouth": {
+      "file": "plymouth.geojson",
+      "gss_code": "E06000026",
+      "name": "Plymouth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "plymouth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "portsmouth": {
+      "file": "portsmouth.geojson",
+      "gss_code": "E06000044",
+      "name": "Portsmouth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "portsmouth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "preston": {
+      "file": "preston.geojson",
+      "gss_code": "E07000123",
+      "name": "Preston",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "preston",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "reading": {
+      "file": "reading.geojson",
+      "gss_code": "E06000038",
+      "name": "Reading",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "reading",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "redbridge": {
       "file": "redbridge.geojson",
       "gss_code": "E09000026",
       "name": "Redbridge",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "redbridge",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "redcar-and-cleveland": {
+      "file": "redcar-and-cleveland.geojson",
+      "gss_code": "E06000003",
+      "name": "Redcar and Cleveland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "redcar-and-cleveland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "redditch": {
+      "file": "redditch.geojson",
+      "gss_code": "E07000236",
+      "name": "Redditch",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "redditch",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "reigate-and-banstead": {
+      "file": "reigate-and-banstead.geojson",
+      "gss_code": "E07000211",
+      "name": "Reigate and Banstead",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "reigate-and-banstead",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "ribble-valley": {
+      "file": "ribble-valley.geojson",
+      "gss_code": "E07000124",
+      "name": "Ribble Valley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "ribble-valley",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "richmond-upon-thames": {
@@ -129,12 +1561,508 @@
       "slug": "richmond-upon-thames",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "rochdale": {
+      "file": "rochdale.geojson",
+      "gss_code": "E08000005",
+      "name": "Rochdale",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rochdale",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rochford": {
+      "file": "rochford.geojson",
+      "gss_code": "E07000075",
+      "name": "Rochford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rochford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rossendale": {
+      "file": "rossendale.geojson",
+      "gss_code": "E07000125",
+      "name": "Rossendale",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rossendale",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rother": {
+      "file": "rother.geojson",
+      "gss_code": "E07000064",
+      "name": "Rother",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rother",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rotherham": {
+      "file": "rotherham.geojson",
+      "gss_code": "E08000018",
+      "name": "Rotherham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rotherham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rugby": {
+      "file": "rugby.geojson",
+      "gss_code": "E07000220",
+      "name": "Rugby",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rugby",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "runnymede": {
+      "file": "runnymede.geojson",
+      "gss_code": "E07000212",
+      "name": "Runnymede",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "runnymede",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rushcliffe": {
+      "file": "rushcliffe.geojson",
+      "gss_code": "E07000176",
+      "name": "Rushcliffe",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rushcliffe",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rushmoor": {
+      "file": "rushmoor.geojson",
+      "gss_code": "E07000092",
+      "name": "Rushmoor",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rushmoor",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "rutland": {
+      "file": "rutland.geojson",
+      "gss_code": "E06000017",
+      "name": "Rutland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "rutland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "salford": {
+      "file": "salford.geojson",
+      "gss_code": "E08000006",
+      "name": "Salford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "salford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "sandwell": {
+      "file": "sandwell.geojson",
+      "gss_code": "E08000028",
+      "name": "Sandwell",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "sandwell",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "sefton": {
+      "file": "sefton.geojson",
+      "gss_code": "E08000014",
+      "name": "Sefton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "sefton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "sevenoaks": {
+      "file": "sevenoaks.geojson",
+      "gss_code": "E07000111",
+      "name": "Sevenoaks",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "sevenoaks",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "sheffield": {
+      "file": "sheffield.geojson",
+      "gss_code": "E08000039",
+      "name": "Sheffield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "sheffield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "shropshire": {
+      "file": "shropshire.geojson",
+      "gss_code": "E06000051",
+      "name": "Shropshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "shropshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "slough": {
+      "file": "slough.geojson",
+      "gss_code": "E06000039",
+      "name": "Slough",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "slough",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "solihull": {
+      "file": "solihull.geojson",
+      "gss_code": "E08000029",
+      "name": "Solihull",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "solihull",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "somerset": {
+      "file": "somerset.geojson",
+      "gss_code": "E06000066",
+      "name": "Somerset",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "somerset",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-cambridgeshire": {
+      "file": "south-cambridgeshire.geojson",
+      "gss_code": "E07000012",
+      "name": "South Cambridgeshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-cambridgeshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-derbyshire": {
+      "file": "south-derbyshire.geojson",
+      "gss_code": "E07000039",
+      "name": "South Derbyshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-derbyshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-gloucestershire": {
+      "file": "south-gloucestershire.geojson",
+      "gss_code": "E06000025",
+      "name": "South Gloucestershire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-gloucestershire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-hams": {
+      "file": "south-hams.geojson",
+      "gss_code": "E07000044",
+      "name": "South Hams",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-hams",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-holland": {
+      "file": "south-holland.geojson",
+      "gss_code": "E07000140",
+      "name": "South Holland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-holland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-kesteven": {
+      "file": "south-kesteven.geojson",
+      "gss_code": "E07000141",
+      "name": "South Kesteven",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-kesteven",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-norfolk": {
+      "file": "south-norfolk.geojson",
+      "gss_code": "E07000149",
+      "name": "South Norfolk",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-norfolk",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-oxfordshire": {
+      "file": "south-oxfordshire.geojson",
+      "gss_code": "E07000179",
+      "name": "South Oxfordshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-oxfordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-ribble": {
+      "file": "south-ribble.geojson",
+      "gss_code": "E07000126",
+      "name": "South Ribble",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-ribble",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-staffordshire": {
+      "file": "south-staffordshire.geojson",
+      "gss_code": "E07000196",
+      "name": "South Staffordshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-staffordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "south-tyneside": {
+      "file": "south-tyneside.geojson",
+      "gss_code": "E08000023",
+      "name": "South Tyneside",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "south-tyneside",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "southampton": {
+      "file": "southampton.geojson",
+      "gss_code": "E06000045",
+      "name": "Southampton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "southampton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "southend-on-sea": {
+      "file": "southend-on-sea.geojson",
+      "gss_code": "E06000033",
+      "name": "Southend-on-Sea",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "southend-on-sea",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "southwark": {
+      "file": "southwark.geojson",
+      "gss_code": "E09000028",
+      "name": "Southwark",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "southwark",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "spelthorne": {
+      "file": "spelthorne.geojson",
+      "gss_code": "E07000213",
+      "name": "Spelthorne",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "spelthorne",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "st-albans": {
+      "file": "st-albans.geojson",
+      "gss_code": "E07000240",
+      "name": "St Albans",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "st-albans",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "st-helens": {
+      "file": "st-helens.geojson",
+      "gss_code": "E08000013",
+      "name": "St. Helens",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "st-helens",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "stafford": {
+      "file": "stafford.geojson",
+      "gss_code": "E07000197",
+      "name": "Stafford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "stafford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "staffordshire-moorlands": {
+      "file": "staffordshire-moorlands.geojson",
+      "gss_code": "E07000198",
+      "name": "Staffordshire Moorlands",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "staffordshire-moorlands",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "stevenage": {
+      "file": "stevenage.geojson",
+      "gss_code": "E07000243",
+      "name": "Stevenage",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "stevenage",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "stockport": {
+      "file": "stockport.geojson",
+      "gss_code": "E08000007",
+      "name": "Stockport",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "stockport",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "stockton-on-tees": {
+      "file": "stockton-on-tees.geojson",
+      "gss_code": "E06000004",
+      "name": "Stockton-on-Tees",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "stockton-on-tees",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "stoke-on-trent": {
+      "file": "stoke-on-trent.geojson",
+      "gss_code": "E06000021",
+      "name": "Stoke-on-Trent",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "stoke-on-trent",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "stratford-on-avon": {
+      "file": "stratford-on-avon.geojson",
+      "gss_code": "E07000221",
+      "name": "Stratford-on-Avon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "stratford-on-avon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "stroud": {
+      "file": "stroud.geojson",
+      "gss_code": "E07000082",
+      "name": "Stroud",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "stroud",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "sunderland": {
+      "file": "sunderland.geojson",
+      "gss_code": "E08000024",
+      "name": "Sunderland",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "sunderland",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "surrey-heath": {
+      "file": "surrey-heath.geojson",
+      "gss_code": "E07000214",
+      "name": "Surrey Heath",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "surrey-heath",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "sutton": {
       "file": "sutton.geojson",
       "gss_code": "E09000029",
       "name": "Sutton",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "sutton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "swale": {
+      "file": "swale.geojson",
+      "gss_code": "E07000113",
+      "name": "Swale",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "swale",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "swindon": {
+      "file": "swindon.geojson",
+      "gss_code": "E06000030",
+      "name": "Swindon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "swindon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tameside": {
+      "file": "tameside.geojson",
+      "gss_code": "E08000008",
+      "name": "Tameside",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tameside",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tamworth": {
+      "file": "tamworth.geojson",
+      "gss_code": "E07000199",
+      "name": "Tamworth",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tamworth",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tandridge": {
+      "file": "tandridge.geojson",
+      "gss_code": "E07000215",
+      "name": "Tandridge",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tandridge",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "teignbridge": {
+      "file": "teignbridge.geojson",
+      "gss_code": "E07000045",
+      "name": "Teignbridge",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "teignbridge",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "telford-and-wrekin": {
+      "file": "telford-and-wrekin.geojson",
+      "gss_code": "E06000020",
+      "name": "Telford and Wrekin",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "telford-and-wrekin",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tendring": {
+      "file": "tendring.geojson",
+      "gss_code": "E07000076",
+      "name": "Tendring",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tendring",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "test-valley": {
+      "file": "test-valley.geojson",
+      "gss_code": "E07000093",
+      "name": "Test Valley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "test-valley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tewkesbury": {
+      "file": "tewkesbury.geojson",
+      "gss_code": "E07000083",
+      "name": "Tewkesbury",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tewkesbury",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "thanet": {
+      "file": "thanet.geojson",
+      "gss_code": "E07000114",
+      "name": "Thanet",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "thanet",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "three-rivers": {
+      "file": "three-rivers.geojson",
+      "gss_code": "E07000102",
+      "name": "Three Rivers",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "three-rivers",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "thurrock": {
+      "file": "thurrock.geojson",
+      "gss_code": "E06000034",
+      "name": "Thurrock",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "thurrock",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tonbridge-and-malling": {
+      "file": "tonbridge-and-malling.geojson",
+      "gss_code": "E07000115",
+      "name": "Tonbridge and Malling",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tonbridge-and-malling",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "torbay": {
+      "file": "torbay.geojson",
+      "gss_code": "E06000027",
+      "name": "Torbay",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "torbay",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "torridge": {
+      "file": "torridge.geojson",
+      "gss_code": "E07000046",
+      "name": "Torridge",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "torridge",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
     "tower-hamlets": {
@@ -145,6 +2073,62 @@
       "slug": "tower-hamlets",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "trafford": {
+      "file": "trafford.geojson",
+      "gss_code": "E08000009",
+      "name": "Trafford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "trafford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "tunbridge-wells": {
+      "file": "tunbridge-wells.geojson",
+      "gss_code": "E07000116",
+      "name": "Tunbridge Wells",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "tunbridge-wells",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "uttlesford": {
+      "file": "uttlesford.geojson",
+      "gss_code": "E07000077",
+      "name": "Uttlesford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "uttlesford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "vale-of-white-horse": {
+      "file": "vale-of-white-horse.geojson",
+      "gss_code": "E07000180",
+      "name": "Vale of White Horse",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "vale-of-white-horse",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wakefield": {
+      "file": "wakefield.geojson",
+      "gss_code": "E08000036",
+      "name": "Wakefield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wakefield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "walsall": {
+      "file": "walsall.geojson",
+      "gss_code": "E08000030",
+      "name": "Walsall",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "walsall",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "waltham-forest": {
+      "file": "waltham-forest.geojson",
+      "gss_code": "E09000031",
+      "name": "Waltham Forest",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "waltham-forest",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "wandsworth": {
       "file": "wandsworth.geojson",
       "gss_code": "E09000032",
@@ -153,12 +2137,236 @@
       "slug": "wandsworth",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     },
+    "warrington": {
+      "file": "warrington.geojson",
+      "gss_code": "E06000007",
+      "name": "Warrington",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "warrington",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "warwick": {
+      "file": "warwick.geojson",
+      "gss_code": "E07000222",
+      "name": "Warwick",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "warwick",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "watford": {
+      "file": "watford.geojson",
+      "gss_code": "E07000103",
+      "name": "Watford",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "watford",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "waverley": {
+      "file": "waverley.geojson",
+      "gss_code": "E07000216",
+      "name": "Waverley",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "waverley",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wealden": {
+      "file": "wealden.geojson",
+      "gss_code": "E07000065",
+      "name": "Wealden",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wealden",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "welwyn-hatfield": {
+      "file": "welwyn-hatfield.geojson",
+      "gss_code": "E07000241",
+      "name": "Welwyn Hatfield",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "welwyn-hatfield",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "west-berkshire": {
+      "file": "west-berkshire.geojson",
+      "gss_code": "E06000037",
+      "name": "West Berkshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "west-berkshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "west-devon": {
+      "file": "west-devon.geojson",
+      "gss_code": "E07000047",
+      "name": "West Devon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "west-devon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "west-lancashire": {
+      "file": "west-lancashire.geojson",
+      "gss_code": "E07000127",
+      "name": "West Lancashire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "west-lancashire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "west-lindsey": {
+      "file": "west-lindsey.geojson",
+      "gss_code": "E07000142",
+      "name": "West Lindsey",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "west-lindsey",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "west-northamptonshire": {
+      "file": "west-northamptonshire.geojson",
+      "gss_code": "E06000062",
+      "name": "West Northamptonshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "west-northamptonshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "west-oxfordshire": {
+      "file": "west-oxfordshire.geojson",
+      "gss_code": "E07000181",
+      "name": "West Oxfordshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "west-oxfordshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "west-suffolk": {
+      "file": "west-suffolk.geojson",
+      "gss_code": "E07000245",
+      "name": "West Suffolk",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "west-suffolk",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
     "westminster": {
       "file": "westminster.geojson",
       "gss_code": "E09000033",
       "name": "Westminster",
       "simplify_tolerance_degrees": 0.0002,
       "slug": "westminster",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "westmorland-and-furness": {
+      "file": "westmorland-and-furness.geojson",
+      "gss_code": "E06000064",
+      "name": "Westmorland and Furness",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "westmorland-and-furness",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wigan": {
+      "file": "wigan.geojson",
+      "gss_code": "E08000010",
+      "name": "Wigan",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wigan",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wiltshire": {
+      "file": "wiltshire.geojson",
+      "gss_code": "E06000054",
+      "name": "Wiltshire",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wiltshire",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "winchester": {
+      "file": "winchester.geojson",
+      "gss_code": "E07000094",
+      "name": "Winchester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "winchester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "windsor-and-maidenhead": {
+      "file": "windsor-and-maidenhead.geojson",
+      "gss_code": "E06000040",
+      "name": "Windsor and Maidenhead",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "windsor-and-maidenhead",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wirral": {
+      "file": "wirral.geojson",
+      "gss_code": "E08000015",
+      "name": "Wirral",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wirral",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "woking": {
+      "file": "woking.geojson",
+      "gss_code": "E07000217",
+      "name": "Woking",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "woking",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wokingham": {
+      "file": "wokingham.geojson",
+      "gss_code": "E06000041",
+      "name": "Wokingham",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wokingham",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wolverhampton": {
+      "file": "wolverhampton.geojson",
+      "gss_code": "E08000031",
+      "name": "Wolverhampton",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wolverhampton",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "worcester": {
+      "file": "worcester.geojson",
+      "gss_code": "E07000237",
+      "name": "Worcester",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "worcester",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "worthing": {
+      "file": "worthing.geojson",
+      "gss_code": "E07000229",
+      "name": "Worthing",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "worthing",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wychavon": {
+      "file": "wychavon.geojson",
+      "gss_code": "E07000238",
+      "name": "Wychavon",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wychavon",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wyre": {
+      "file": "wyre.geojson",
+      "gss_code": "E07000128",
+      "name": "Wyre",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wyre",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "wyre-forest": {
+      "file": "wyre-forest.geojson",
+      "gss_code": "E07000239",
+      "name": "Wyre Forest",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "wyre-forest",
+      "source": "LAD_MAY_2025_UK_BGC_V2"
+    },
+    "york": {
+      "file": "york.geojson",
+      "gss_code": "E06000014",
+      "name": "York",
+      "simplify_tolerance_degrees": 0.0002,
+      "slug": "york",
       "source": "LAD_MAY_2025_UK_BGC_V2"
     }
   },
