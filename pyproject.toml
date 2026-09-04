@@ -10,6 +10,7 @@ dependencies = [
     "django-environ>=0.11,<0.12",
     "polars>=1.0",
     "whitenoise>=6.11,<6.12",
+    "boto3>=1.43.88,<2.0",
 ]
 
 [dependency-groups]
@@ -18,6 +19,7 @@ dev = [
     "django-stubs>=6.1.0",
     "djangorestframework-stubs>=3.18.1",
     "geopandas>=1.1.4",
+    "moto[s3]>=5.0",
     "mypy>=2.3.1",
     "pip-audit>=2.10.1",
     "pre-commit>=4.6.2",
@@ -64,6 +66,12 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 # whitenoise ships no stubs and no py.typed marker.
 module = "whitenoise.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# boto3/botocore ship no inline stubs; boto3-stubs is a heavy optional
+# add-on this repo doesn't otherwise need.
+module = ["boto3.*", "botocore.*"]
 ignore_missing_imports = true
 
 [tool.django-stubs]

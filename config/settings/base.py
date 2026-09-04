@@ -63,6 +63,17 @@ DATABASES = {
     )
 }
 
+# R2 (Cloudflare) object storage for curated parquet + manifests, published
+# nightly by the sibling local-big-con-nationwide repo. This repo must hold
+# a separate, read-only-scoped token -- never the sibling's write token.
+# Blank defaults (not a hard env() lookup) so dev/tests don't crash at
+# import time when unset; apps/spend/services/r2.py raises at call time
+# instead, mirroring the sibling repo's fail-loud _credentials() pattern.
+R2_ACCOUNT_ID = env("R2_ACCOUNT_ID", default="")
+R2_ACCESS_KEY_ID = env("R2_ACCESS_KEY_ID", default="")
+R2_SECRET_ACCESS_KEY = env("R2_SECRET_ACCESS_KEY", default="")
+R2_BUCKET = env("R2_BUCKET", default="")
+
 # Must exist before any other app's first migration.
 AUTH_USER_MODEL = "accounts.User"
 
