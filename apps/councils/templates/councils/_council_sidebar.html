@@ -7,6 +7,20 @@ fragment renders identically either way, aside from which link (if any)
 gets aria-current="page".
 {% endcomment %}
 <div class="council-sidebar">
+  <div id="council-detail-slot">
+    <h1 id="council-route-heading" tabindex="-1">{% if council %}{{ council.name }}{% else %}Select a council{% endif %}</h1>
+    <div id="status">
+      {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta">View {{ council.name }} Spend</a>{% else %}select a council to see its boundary{% endif %}
+    </div>
+    <div id="coverage-badge">
+      <div class="badge-heading">&#9888; Source Data Issues</div>
+      <div class="badge-body"></div>
+    </div>
+    <div id="nation-note">
+      <div class="badge-heading">&#8505; No Transparency Data</div>
+      <div class="badge-body"></div>
+    </div>
+  </div>
   <div id="council-search-container" data-index-url="{% static 'councils/data/council-index.json' %}">
     <input type="text" id="council-search" autocomplete="off" placeholder="Start typing a council name" aria-describedby="search-status">
   </div>

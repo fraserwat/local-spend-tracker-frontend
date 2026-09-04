@@ -13,55 +13,47 @@
   .layout { display: flex; align-items: stretch; height: 100%; background: var(--color-bg); }
   .main-panel { flex: 1; min-width: 0; position: relative; }
   #map { height: 100%; width: 100%; }
-  #status {
-    position: absolute;
-    top: var(--space-4);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    background: var(--color-surface);
-    color: var(--color-text);
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    font-size: 0.9rem;
+
+  /* The "selected council" slot -- name, action, status badges -- lives at
+     the top of the sidebar (see _council_sidebar.html), not floating over
+     the map. A button centered on top of an arbitrary polygon has no fixed
+     screen position and occludes the exact geometry it's about; anchoring
+     it to the sidebar's own edge gives it a constant, learnable home and
+     keeps the map a clean data surface. */
+  #council-detail-slot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border-subtle);
   }
-  /* :not(.spend-cta) so this doesn't out-specificity the CTA button's own
-     (deliberately dark-on-blue, for contrast) text color below. */
+  #council-route-heading {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  #status {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
   #status a:not(.spend-cta) { color: var(--color-link); font-weight: 600; }
 
-  /* Once a boundary's been clicked, #status holds nothing but the "View
-     X Spend" CTA -- drop the pill chrome and re-center it over the map so
-     the link itself can become the focal point instead of a small inline
-     text link. pointer-events: none on the container (re-enabled on the
-     link) lets outside-boundary clicks still reach the map underneath. */
-  #status:has(a.spend-cta) {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
-    pointer-events: none;
-  }
   a.spend-cta {
-    display: inline-block;
-    pointer-events: auto;
-    /* Orange, not blue -- this sits directly on top of the blue boundary
-       fill, so it needs to visually detach from that backdrop rather than
-       blend into it. */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    /* Rectangular, matching the sidebar's own radius, not a pill -- it
+       should read as part of the slot's surface, not an object floating
+       above it. No independent shadow for the same reason. */
     background: var(--color-cta);
     color: var(--color-cta-text);
     font-weight: 700;
-    font-size: 1.05rem;
-    padding: var(--space-3) var(--space-6);
+    font-size: 0.95rem;
+    padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-md);
     text-decoration: none;
-    /* Offset-heavy, mostly-black shadow (mimics light from above) plus a
-       thin orange-tinted layer for cohesion -- a big colored glow here
-       reads as fuzzy rather than "elevated, pressable". */
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(255, 153, 0, 0.3);
-    transition: transform 180ms ease-out, box-shadow 180ms ease-out, background 180ms ease-out;
+    transition: background 150ms ease;
   }
   a.spend-cta:hover {
     /* Restated, not inherited -- theme.css's generic a:hover has higher
@@ -70,8 +62,6 @@
        text on an orange button. */
     color: var(--color-cta-text);
     background: var(--color-cta-hover);
-    transform: translateY(-1px) scale(1.03);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(255, 153, 0, 0.4);
   }
 
   /* Selected boundary gets a persistent glow, not a hover-only one -- it
@@ -104,50 +94,48 @@
     }
   }
   /* Dark card with a saturated border, not a solid-fill floating bubble --
-     reads as "flagged" without competing with the CTA/map for the same
-     saturated-color attention. The warning-sign glyph is CSS-generated
-     (not part of coverage.detail_text) so map.js can keep using
-     textContent for the copy itself. Shares its corner with #nation-note
-     -- map.js keeps them mutually exclusive. */
+     reads as "flagged" without competing with the CTA for the same
+     saturated-color attention. Static in the sidebar slot now, not pinned
+     to a map corner, so it never overlaps #nation-note -- map.js still
+     keeps them mutually exclusive since only one is ever relevant at once.
+     The heading is static markup (map.js only ever writes .badge-body),
+     so map.js can keep using textContent for the copy itself. */
   #coverage-badge {
     display: none;
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-    z-index: 1000;
-    max-width: 22rem;
+    width: 100%;
+    box-sizing: border-box;
     background: var(--color-alarm-bg);
     border: 1px solid var(--color-alarm);
     color: var(--color-alarm-text);
-    padding: var(--space-3) var(--space-4);
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-    font-size: 0.85rem;
-    font-weight: 600;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
   }
   #coverage-badge.visible { display: block; }
-  #coverage-badge::before { content: "\26a0  "; }
 
   /* Same card treatment as #coverage-badge, but orange -- explains absent
      data, not a problem with data that exists. */
   #nation-note {
     display: none;
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-    z-index: 1000;
-    max-width: 22rem;
+    width: 100%;
+    box-sizing: border-box;
     background: var(--color-info-bg);
     border: 1px solid var(--color-cta);
     color: var(--color-info-text);
-    padding: var(--space-3) var(--space-4);
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-    font-size: 0.85rem;
-    font-weight: 600;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
   }
   #nation-note.visible { display: block; }
-  #nation-note::before { content: "\2139  "; }
+
+  .badge-heading {
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: var(--space-1);
+  }
+  .badge-body { font-weight: 500; line-height: 1.4; }
 
   /* Default cursor -- clickable, but shouldn't invite the click. */
   .nation-boundary {
@@ -220,13 +208,7 @@
     {% include "councils/_council_sidebar.html" %}
   </aside>
   <main class="main-panel">
-    <h1 id="council-route-heading" class="visually-hidden" tabindex="-1">{% if council %}{{ council.name }}{% else %}Select a council{% endif %}</h1>
     <div id="council-switch-announcer" class="visually-hidden" aria-live="polite" role="status"></div>
-    <div id="status">
-      {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta">View {{ council.name }} Spend</a>{% else %}select a council to see its boundary{% endif %}
-    </div>
-    <div id="coverage-badge"></div>
-    <div id="nation-note"></div>
     <div
       id="map"
       data-geojson-url="{% if geojson_static_path %}{% static geojson_static_path %}{% endif %}"
