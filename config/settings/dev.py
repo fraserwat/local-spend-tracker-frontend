@@ -3,7 +3,12 @@ from .base import BASE_DIR, env
 
 DEBUG = True
 
-SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-insecure-secret-key-not-for-prod")
+# `or` (not just `default=`) so a DJANGO_SECRET_KEY present but blank in
+# .env -- e.g. .env.example copied verbatim, its "fill in" line left as-is
+# -- still falls back here. django-environ's default= only fires when the
+# var is unset, not when it's set to "", so without this a blank key
+# reaches Django as "" and every request 500s on ImproperlyConfigured.
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="") or "dev-insecure-secret-key-not-for-prod"
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
