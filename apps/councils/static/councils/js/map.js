@@ -8,30 +8,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const nationsUrl = mapEl.dataset.nationsUrl;
   const initialSelectedSlug = mapEl.dataset.selectedSlug || null;
 
-  // Scotland, Wales and Northern Ireland have no equivalent of England's
-  // Local Government Transparency Code 2015, so there's no comparable
-  // itemised spend data to show for their councils -- see the sibling
-  // local-big-con-nationwide repo's README for the full per-nation survey
-  // this is summarised from. Static copy, not model-backed, since these
-  // three notes don't change per-request the way council coverage does.
+  // No equivalent of England's Transparency Code in these nations, so no
+  // comparable itemised spend data. Static copy, not model-backed.
   const NATION_NOTES = {
     scotland:
       "Scotland has no equivalent of England's Local Government " +
       "Transparency Code 2015 -- itemised spend disclosure is voluntary. " +
       "Of 32 councils surveyed, only 6 publish anything close to " +
       "transaction-level data, at inconsistent thresholds and via " +
-      "inconsistent channels. See the sibling data repo for the full survey.",
+      "inconsistent channels.",
     wales:
       "Wales has no equivalent of England's Local Government Transparency " +
       "Code 2015 either. Of 22 councils surveyed, only 3 publish a " +
       "spend-over-£500 register -- one council's own FOI response " +
-      "confirmed Welsh authorities aren't required to. See the sibling " +
-      "data repo for the full survey.",
+      "confirmed Welsh authorities aren't required to.",
     "northern-ireland":
       "Northern Ireland has no equivalent statutory duty to publish " +
       "itemised spend. All 11 district councils were surveyed and none " +
-      "publish a spend-over-£500 register, so it's out of scope " +
-      "entirely. See the sibling data repo for details.",
+      "publish a spend-over-£500 register, so it's out of scope entirely.",
   };
 
   // Mutable "current selection" state -- read by the selected layer's own
@@ -72,19 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const prefersReducedMotion =
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Darker border + real fill opacity (was #8b8da3 @ 0.04, nearly
-  // invisible against the pale basemap) so idle councils read as
-  // clickable rather than as faint background texture. Dashed outline
-  // still marks "idle" vs the selected boundary's solid one.
+  // Darker + more opaque than before so idle councils read as clickable.
   const IDLE_STYLE = { color: "#6b6e87", weight: 2, fillOpacity: 0.14, dashArray: "4 4" };
-  // Fill matches the basemap's on-screen sea tone (#d9d9d9 -- the Esri
-  // Light Gray tile composited at its 0.3 layer opacity) at full opacity,
-  // so the landmass reads as flattened into the sea rather than as a
-  // heavy grey blob competing for attention. The border carries all the
-  // "this is a distinct, clickable region" signal.
+  // Fill matches the basemap's sea tone (#d9d9d9) so the nation flattens
+  // into the background. Border is a distinct slate-violet (not
+  // IDLE_STYLE's grey) so it doesn't read as a real council.
   const NATION_STYLE = {
-    color: "#6b6e87",
+    color: "#6a5f8f",
     weight: 1.5,
+    opacity: 0.55,
     fillColor: "#d9d9d9",
     fillOpacity: 1,
     className: "nation-boundary",
@@ -134,8 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ).addTo(map);
 
   function showNationNote(slug) {
-    // Both bubbles now share the same corner (see main.html) -- only one
-    // can be visible at a time.
+    // Shares a corner with #coverage-badge -- only one visible at a time.
     badgeEl.classList.remove("visible");
     nationNoteEl.textContent = NATION_NOTES[slug] || "";
     nationNoteEl.classList.add("visible");
@@ -145,9 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nationNoteEl.classList.remove("visible");
   }
 
-  // Fetched once up front like the council manifest -- a static overlay,
-  // not tied to any council selection, so it loads independently of
-  // whichever council (if any) the page opened on.
+  // Static overlay, independent of any council selection.
   if (nationsUrl) {
     fetch(nationsUrl)
       .then((response) => {
@@ -171,9 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Clicking anywhere else on the map (idle canvas, a council boundary)
-  // dismisses the note the same way a council switch dismisses the
-  // coverage badge.
+  // Click elsewhere on the map dismisses the note.
   map.on("click", hideNationNote);
 
   function buildIdleLayer(geojson, slug) {

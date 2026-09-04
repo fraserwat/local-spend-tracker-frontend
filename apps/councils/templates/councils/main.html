@@ -100,9 +100,8 @@
      problem needs to read as alarming, not as the same "heads up" tone as
      the CTA/warning chrome elsewhere on this page. No hard border; a
      saturated fill plus soft glow shadow reads as a modern bubble instead
-     of a boxed-in alert. Shares its corner with #nation-note below --
-     map.js keeps them mutually exclusive (each hides the other on show)
-     so only one bubble ever occupies it at a time. */
+     of a boxed-in alert. Shares its corner with #nation-note -- map.js
+     keeps them mutually exclusive. */
   #coverage-badge {
     display: none;
     position: absolute;
@@ -121,11 +120,8 @@
   }
   #coverage-badge.visible { display: block; }
 
-  /* Same rounded-bubble treatment as #coverage-badge (and the same
-     corner -- see the note above it), but blue: this explains an
-     absence of data (a devolved nation's councils aren't covered), not
-     a problem with data that exists, so it shouldn't read with the same
-     alarm tone. */
+  /* Same treatment as #coverage-badge, but blue -- explains absent
+     data, not a problem with data that exists. */
   #nation-note {
     display: none;
     position: absolute;
@@ -144,11 +140,9 @@
   }
   #nation-note.visible { display: block; }
 
-  /* Fill colour/opacity for the non-England nations lives in map.js's
-     NATION_STYLE (matches the basemap's sea tone, deliberately) -- this
-     just needs the pointer cursor for click affordance. */
+  /* Default cursor -- clickable, but shouldn't invite the click. */
   .nation-boundary {
-    cursor: pointer;
+    cursor: default;
   }
 
   .visually-hidden {
