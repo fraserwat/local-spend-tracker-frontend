@@ -15,7 +15,7 @@ from pathlib import Path
 
 import boto3
 from botocore.config import Config
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 from django.conf import settings
 
 # R2 keys published against the hyphen -> underscore convention -- checked
@@ -69,7 +69,17 @@ def _client():
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key,
         region_name="auto",
-        config=Config(signature_version="s3v4"),
+        # No timeout previously meant a stalled connection could hang for
+        # minutes (default 60s x boto3's own retries) before ever raising --
+        # observed live during the England-wide backfill: one council stuck
+        # for 4+ minutes with no query even reaching Postgres yet. Bounded
+        # here so a real stall fails fast into R2Error instead.
+        config=Config(
+            signature_version="s3v4",
+            connect_timeout=10,
+            read_timeout=30,
+            retries={"max_attempts": 2},
+        ),
     )
 
 
@@ -93,8 +103,13 @@ def _download_manifest(client, bucket: str, slug: str, dest_dir: Path) -> dict:
 
     try:
         client.download_file(bucket, f"manifest/{slug}.json", str(manifest_path))
-    except ClientError as exc:
-        raise R2Error(f"manifest not found for slug={slug!r}") from exc
+    except (ClientError, BotoCoreError) as exc:
+        # ClientError covers AWS-returned errors (404, permission denied);
+        # BotoCoreError covers connection/timeout failures. Both need to
+        # surface as R2Error -- reload_from_r2 only catches R2Error to mark
+        # one council failed and continue, so anything else here crashes
+        # the whole batch instead of just skipping this council.
+        raise R2Error(f"manifest fetch failed for slug={slug!r}: {exc}") from exc
 
     try:
         return json.loads(manifest_path.read_text())
@@ -136,8 +151,8 @@ def fetch_council(slug: str, dest_dir: Path) -> FetchedCouncil:
     parquet_path = dest_dir / f"{slug}.parquet"
     try:
         client.download_file(bucket, f"curated/{slug}.parquet", str(parquet_path))
-    except ClientError as exc:
-        raise R2Error(f"curated parquet not found for slug={slug!r}") from exc
+    except (ClientError, BotoCoreError) as exc:
+        raise R2Error(f"curated parquet fetch failed for slug={slug!r}: {exc}") from exc
 
     actual_sha256 = hashlib.sha256(parquet_path.read_bytes()).hexdigest()
     if actual_sha256 != expected_sha256:

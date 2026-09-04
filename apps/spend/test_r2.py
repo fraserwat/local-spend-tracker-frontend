@@ -116,7 +116,7 @@ def test_fetch_council_raises_on_sha256_mismatch(s3_client, tmp_path):
 
 
 def test_fetch_council_raises_when_manifest_missing(s3_client, tmp_path):
-    with pytest.raises(r2.R2Error, match="manifest not found"):
+    with pytest.raises(r2.R2Error, match="manifest fetch failed"):
         r2.fetch_council("nonexistent", tmp_path)
 
 
@@ -130,7 +130,7 @@ def test_fetch_council_raises_when_parquet_missing(s3_client, tmp_path):
         Bucket=BUCKET, Key="manifest/barnet.json", Body=json.dumps(manifest).encode()
     )
 
-    with pytest.raises(r2.R2Error, match="curated parquet not found"):
+    with pytest.raises(r2.R2Error, match="curated parquet fetch failed"):
         r2.fetch_council("barnet", tmp_path)
 
 
@@ -148,8 +148,24 @@ def test_fetch_manifest_returns_parsed_manifest_without_downloading_parquet(s3_c
 
 
 def test_fetch_manifest_raises_when_manifest_missing(s3_client):
-    with pytest.raises(r2.R2Error, match="manifest not found"):
+    with pytest.raises(r2.R2Error, match="manifest fetch failed"):
         r2.fetch_manifest("nonexistent")
+
+
+def test_fetch_manifest_wraps_connection_timeout_as_r2error(s3_client, monkeypatch):
+    """A stalled connection raises a BotoCoreError subclass, not ClientError
+    -- must still surface as R2Error, or reload_from_r2's per-council
+    error handling never catches it and the whole batch crashes instead
+    of marking one council failed and continuing."""
+    from botocore.exceptions import ConnectTimeoutError
+
+    def _raise_timeout(*args, **kwargs):
+        raise ConnectTimeoutError(endpoint_url="https://example.invalid")
+
+    monkeypatch.setattr(s3_client, "download_file", _raise_timeout)
+
+    with pytest.raises(r2.R2Error, match="manifest fetch failed"):
+        r2.fetch_manifest("barnet")
 
 
 def test_fetch_manifest_raises_on_invalid_json(s3_client):
