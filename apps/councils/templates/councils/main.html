@@ -21,18 +21,26 @@
      it to the sidebar's own edge gives it a constant, learnable home and
      keeps the map a clean data surface. */
   #council-detail-slot {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
     padding-bottom: var(--space-4);
     margin-bottom: var(--space-4);
     border-bottom: 1px solid var(--color-border-subtle);
+  }
+  /* Flow utility (Andy Bell / piccalil.li) instead of a uniform flex gap --
+     contextual vertical rhythm via margin-top on adjacent siblings, so
+     spacing can reflect grouping rather than being one fixed number.
+     Heading + action read as a single "pick this" unit and stay tight by
+     default; --flow-space overrides that per-child for the one gap that
+     needs to be looser (heading to action, so the action doesn't read as
+     glued to the title), leaving the rest of the scale untouched. */
+  #council-detail-slot > * + * {
+    margin-block-start: var(--flow-space, var(--space-3));
   }
   #council-route-heading {
     font-size: 1.1rem;
     margin: 0;
   }
   #status {
+    --flow-space: var(--space-4);
     font-size: 0.85rem;
     color: var(--color-text-muted);
   }
