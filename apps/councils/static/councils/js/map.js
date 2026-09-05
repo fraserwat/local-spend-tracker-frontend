@@ -105,9 +105,10 @@ document.addEventListener("DOMContentLoaded", () => {
   ).addTo(map);
 
   function showNationNote(slug) {
-    // Shares a corner with #coverage-badge -- only one visible at a time.
+    // Shares the sidebar detail slot with #coverage-badge -- only one
+    // visible at a time.
     badgeEl.classList.remove("visible");
-    nationNoteEl.textContent = NATION_NOTES[slug] || "";
+    nationNoteEl.querySelector(".badge-body").textContent = NATION_NOTES[slug] || "";
     nationNoteEl.classList.add("visible");
   }
 
@@ -171,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     promise.then((coverage) => {
       if (promise !== coveragePromise) return;
       if (!coverage || !coverage.has_data_quality_issue) return;
-      badgeEl.textContent = coverage.detail_text;
+      badgeEl.querySelector(".badge-body").textContent = coverage.detail_text;
       badgeEl.classList.add("visible");
     });
   }
