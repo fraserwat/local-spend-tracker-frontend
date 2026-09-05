@@ -88,6 +88,19 @@
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
+  /* Modular type scale (Müller-Brockmann) -- one shared set of sizes reused
+     across every template, instead of each page picking its own ad hoc
+     rem value. Steps were chosen to match the values already in use across
+     main.html/transactions.html/_council_sidebar.html, so adopting the
+     scale is close to a no-op visually; the win is that a new size now has
+     to justify joining this list rather than being invented per-template. */
+  --text-xs: 0.7rem;
+  --text-sm: 0.8rem;
+  --text-base: 0.85rem;
+  --text-md: 0.95rem;
+  --text-lg: 1.1rem;
+  --text-xl: 1.4rem;
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -130,7 +143,7 @@ button, input[type="submit"] {
   border: none;
   border-radius: var(--radius-sm);
   padding: var(--space-2) var(--space-4);
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   transition: background 120ms ease;
@@ -156,7 +169,7 @@ input, select {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: var(--space-2) var(--space-3);
-  font-size: 0.85rem;
+  font-size: var(--text-base);
 }
 input[disabled] {
   color: var(--color-text-faint);
