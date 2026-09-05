@@ -54,16 +54,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const prefersReducedMotion =
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Darker + more opaque than before so idle councils read as clickable.
-  const IDLE_STYLE = { color: "#6b6e87", weight: 2, fillOpacity: 0.14, dashArray: "4 4" };
-  // Fill matches the basemap's sea tone (#d9d9d9) so the nation flattens
-  // into the background. Border is a distinct slate-violet (not
-  // IDLE_STYLE's grey) so it doesn't read as a real council.
+  // Dark blue-grey fill against the dark basemap so idle councils read as
+  // distinct land, not empty void; solid stroke, no dash -- the dash was
+  // compensating for a flat light basemap with no fill contrast of its own,
+  // which the dark duotone treatment below no longer needs.
+  const IDLE_STYLE = { color: "#3a5f6e", weight: 1.5, fillColor: "#16232a", fillOpacity: 0.6 };
+  // Mouseover-only -- a lighter version of IDLE_STYLE, since a Leaflet
+  // polygon has no native hover affordance of its own (nothing short of an
+  // explicit style swap signals "this is clickable").
+  const HOVER_STYLE = { color: "#6fa0b3", weight: 2, fillColor: "#1c313a", fillOpacity: 0.8 };
+  // Fill matches --color-bg (theme.css) so the nation flattens into the
+  // app's own canvas rather than the basemap's sea tone. Border is a
+  // distinct slate-violet (not IDLE_STYLE's blue-grey) so it doesn't read
+  // as a real council.
   const NATION_STYLE = {
     color: "#6a5f8f",
     weight: 1.5,
     opacity: 0.55,
-    fillColor: "#d9d9d9",
+    fillColor: "#24262f",
     fillOpacity: 1,
     className: "nation-boundary",
   };
@@ -92,14 +100,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }).setView(englandMidpoint, 8);
   L.control.zoom({ position: "bottomright" }).addTo(map);
 
-  // Esri World Light Gray Canvas, no API key required (CartoDB's anonymous
-  // endpoint now needs one). Faded so its detail doesn't compete with a
-  // council boundary at high zoom.
+  // Esri World Dark Gray Canvas, same free/no-API-key service family as the
+  // light version this replaces (just a different Canvas map ID on the same
+  // ArcGIS Online host) -- keeps the map a dark surface consistent with the
+  // rest of the app's value hierarchy instead of a bright void next to a
+  // dark sidebar. Faded so its own detail doesn't compete with a council
+  // boundary at high zoom; #map's own background (theme.css) shows through
+  // underneath so the canvas is dark before tiles even load.
   L.tileLayer(
-    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
     {
       maxZoom: 16,
-      opacity: 0.3,
+      opacity: 0.55,
       attribution: "&copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
     }
   ).addTo(map);
@@ -157,6 +169,16 @@ document.addEventListener("DOMContentLoaded", () => {
               encodeURIComponent(slug)
             );
           }
+        });
+        // A GeoJSON polygon has no native hover affordance -- without this,
+        // nothing at all distinguishes a clickable council from inert map
+        // decoration until the click itself lands.
+        featureLayer.on("mouseover", () => {
+          featureLayer.setStyle(HOVER_STYLE);
+          featureLayer.bringToFront();
+        });
+        featureLayer.on("mouseout", () => {
+          featureLayer.setStyle(IDLE_STYLE);
         });
       },
     });
