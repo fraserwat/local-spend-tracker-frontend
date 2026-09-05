@@ -43,11 +43,9 @@ console_command = 'python manage.py shell'
       Host = 'local-spend-tracker-frontend.fly.dev'
 
 [[vm]]
-  # Bumped from shared-cpu-1x/1gb for the England-wide reload_from_r2
-  # backfill -- that job runs on this same machine (weekly-reload.yml SSHes
-  # in), and 1 shared CPU was the likely bottleneck on the COPY/psycopg
-  # side, not just Neon. Revisit scaling back down once the backfill's done
-  # and only the steady-state weekly diff-reload remains.
-  memory = '2gb'
+  # Baseline size. Bumped to shared-cpu-4x/2gb for the one-off England-wide
+  # reload_from_r2 backfill (weekly-reload.yml runs on this machine), back
+  # down now that it's done -- the weekly diff-reload doesn't need it.
+  memory = '1gb'
   cpu_kind = 'shared'
-  cpus = 4
+  cpus = 1
