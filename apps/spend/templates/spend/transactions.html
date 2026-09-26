@@ -128,16 +128,27 @@
      same convention as a disabled form field. */
   .beneficiary-redacted { color: var(--color-text-faint); font-style: italic; }
 
-  .category-pill {
+  /* Bordered, not filled -- same hairline-card convention as the rest of
+     the app. Six hues, one per semantic bucket (apps/spend/category_buckets.py);
+     deliberately skips the app's blue/orange (already reserved for
+     links/CTA, so reusing them here would read as "clickable" or "the one
+     important action"). Validated with the dataviz skill's CVD/contrast
+     checker against this table's own background (#2f3140), not eyeballed. */
+  .pill {
     display: inline-block;
     padding: 0.15rem var(--space-2);
     border-radius: 999px;
-    border: 1px solid var(--color-link);
-    color: var(--color-link);
+    border: 1px solid currentColor;
     font-size: var(--text-xs);
     font-weight: 600;
     white-space: nowrap;
   }
+  .pill-staff { color: #199e70; }
+  .pill-contracts { color: #c98500; }
+  .pill-capital { color: #d55181; }
+  .pill-premises { color: #008300; }
+  .pill-grants { color: #9085e9; }
+  .pill-other { color: #e66767; }
   .category-empty { color: var(--color-text-faint); }
 
   tfoot td {
@@ -150,7 +161,28 @@
     font-weight: 700;
   }
 
-  .pagination { margin-top: var(--space-4); display: flex; gap: var(--space-4); font-size: var(--text-base); }
+  .pagination { margin-top: var(--space-4); display: flex; gap: var(--space-3); align-items: center; }
+  /* Bordered button, not a bare link -- a bare-text Next/Previous carries
+     no affordance and no hover feedback. Same quiet outlined treatment as
+     .back-link; disabled state stays visible at either end of the result
+     set instead of the link just disappearing (GOV.UK pagination convention). */
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    background: transparent;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-base);
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+  .page-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .page-btn:hover { background: var(--color-surface-hover); border-color: var(--color-link); }
+  .page-btn.disabled { color: var(--color-text-faint); border-color: var(--color-border-subtle); cursor: default; }
 
   button.button-cta {
     background: var(--color-cta);
@@ -230,7 +262,7 @@
         <td class="amount">{{ txn.amount_gbp }}</td>
         <td>{{ txn.directorate }}</td>
         <td>
-          {% if txn.category %}<span class="category-pill">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
+          {% if txn.category %}<span class="pill pill-{{ txn.category_bucket.slug }}" title="{{ txn.category_bucket.label }}">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
         </td>
       </tr>
       {% empty %}
@@ -249,8 +281,28 @@
   </table>
 </div>
 
-<div class="pagination">
-  {% if previous_link %}<a href="{{ previous_link }}">&larr; Previous</a>{% endif %}
-  {% if next_link %}<a href="{{ next_link }}">Next &rarr;</a>{% endif %}
-</div>
+<nav class="pagination" aria-label="Pagination">
+  {% if previous_link %}
+  <a class="page-btn" href="{{ previous_link }}" rel="prev">
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Previous
+  </a>
+  {% else %}
+  <span class="page-btn disabled" aria-disabled="true">
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Previous
+  </span>
+  {% endif %}
+  {% if next_link %}
+  <a class="page-btn" href="{{ next_link }}" rel="next">
+    Next
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  {% else %}
+  <span class="page-btn disabled" aria-disabled="true">
+    Next
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </span>
+  {% endif %}
+</nav>
 {% endblock %}
