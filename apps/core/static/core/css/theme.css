@@ -35,56 +35,44 @@
 }
 
 :root {
-  --color-bg: #24262f;
-  --color-bg-elevated: #2f3140;
-  --color-surface: #4e5166;
-  --color-surface-hover: #5a5d75;
-  --color-border: #6b6e87;
-  --color-border-subtle: #3d3f4f;
+  /* Near-black base (Linear/Palantir). Each step up is conceptually
+     "white at N% over --color-bg", resolved to flat hex for predictable
+     compositing. */
+  --color-bg: #0a0a0d;
+  --color-bg-elevated: #131317;
+  --color-surface: #18181d;
+  --color-surface-hover: #202027;
+  --color-border-subtle: #19191e;
+  --color-border: #313139;
 
-  --color-text: #f2efe6;
-  --color-text-muted: #b8bacb;
-  --color-text-faint: #8b8da3;
+  --color-text: #f2f2f4;
+  --color-text-muted: #96979f;
+  --color-text-faint: #616269;
 
-  /* Primary blue -- does most of the work (links, buttons, map boundary
-     fill). Complementary to the orange accent below, so it stays the
-     dominant of the two or the pair vibrates instead of reading as a
-     hierarchy (Chevreul's law of simultaneous contrast). */
-  --color-accent: #0099cc;
-  --color-accent-hover: #00b8f5;
-  --color-accent-text: #04222b;
-
-  /* Direct text/link use on --color-bg wants more margin than the base
-     fill -- #0099cc clears WCAG AA at only 4.61:1, so links/pills borrow
-     this lighter tint instead (5.77:1) rather than the fill color itself. */
-  --color-link: #00ace6;
-
-  /* Orange -- the rare pop, reserved for CTAs and the info badge. Kept
-     scarce on purpose: it's blue's complement, so giving it equal real
-     estate would fight the primary color instead of accenting it. */
-  --color-cta: #ff9900;
-  --color-cta-hover: #d68100;
-  --color-cta-text: #1a1005;
+  /* One accent, one job: primary action, active state, focus ring, links.
+     Tailwind Indigo 600/500/300 -- white-on-600 clears 6.3:1 for a button
+     label (500 would be a hair under 4.5:1); 300 clears 7:1+ as text on bg. */
+  --color-accent: #4f46e5;
+  --color-accent-hover: #6366f1;
+  --color-accent-text: #ffffff;
+  --color-link: #a5b4fc;
 
   /* Direct text use (error copy on --color-bg). Same family as
      --color-alarm-text below, just without the card chrome. */
-  --color-error: #ff8a80;
+  --color-error: #ff8079;
 
-  /* Alarm card -- data-quality call-outs. Dark, hue-tinted surface with a
-     saturated border, not a solid-fill bubble: reads as "flagged", not
-     "flashing". Deliberately hue-separated from --color-cta (orange) so
-     an alert and an accent are never confusable, including for red-green
-     colorblind readers. */
-  --color-alarm: #ef4444;
-  --color-alarm-bg: #2b1414;
-  --color-alarm-text: #ff8a80;
+  /* Alarm card -- data-quality call-outs. Dark hue-tinted surface, saturated
+     border, not a solid bubble: "flagged", not "flashing". Hue-separated
+     from the accent and --color-info so alert/action/info never blur. */
+  --color-alarm: #f0524b;
+  --color-alarm-bg: #1a0f0f;
+  --color-alarm-text: #ff8079;
 
-  /* Same card treatment as alarm, but orange -- for "no data" notes
-     rather than problems. Reuses --color-cta as its border/icon color on
-     purpose: it's the same accent, just applied to an informational badge
-     instead of a call-to-action. */
-  --color-info-bg: #2b1a05;
-  --color-info-text: #ffcc80;
+  /* Same card treatment, muted amber -- "no data" and other informational
+     asides, never a call to action. One narrow job, not a second accent. */
+  --color-info: #c98f3a;
+  --color-info-bg: #1c150a;
+  --color-info-text: #e7b876;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
@@ -187,7 +175,7 @@ input, select {
 }
 input[disabled] {
   color: var(--color-text-faint);
-  background: var(--color-border-subtle);
+  background: var(--color-bg-elevated);
 }
 input:focus, select:focus, button:focus {
   outline: 2px solid var(--color-accent);
