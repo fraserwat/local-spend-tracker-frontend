@@ -94,12 +94,16 @@
      main.html/transactions.html/_council_sidebar.html, so adopting the
      scale is close to a no-op visually; the win is that a new size now has
      to justify joining this list rather than being invented per-template. */
+  /* Narrowed vs. the original 0.7-1.4rem spread (Design Bible doctrine III --
+     weight/color should carry more of the hierarchy than a wide size jump).
+     xs/sm/base/md unchanged; lg/xl pulled in so the top of the scale doesn't
+     do all the work alone. */
   --text-xs: 0.7rem;
   --text-sm: 0.8rem;
   --text-base: 0.85rem;
   --text-md: 0.95rem;
-  --text-lg: 1.1rem;
-  --text-xl: 1.4rem;
+  --text-lg: 1.05rem;
+  --text-xl: 1.25rem;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -111,6 +115,9 @@
 
   --radius-sm: 6px;
   --radius-md: 10px;
+  /* Reserved for a future larger surface -- a modal, the flagship stat
+     module -- nothing currently uses it. */
+  --radius-lg: 16px;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
@@ -146,7 +153,7 @@ button, input[type="submit"] {
   font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
-  transition: background 120ms ease;
+  transition: background 140ms ease;
 }
 button:hover, input[type="submit"]:hover {
   background: var(--color-accent-hover);
