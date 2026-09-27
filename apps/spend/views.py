@@ -1,5 +1,5 @@
 import calendar
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 
 from django.db.models import Count, Sum
@@ -110,6 +110,21 @@ def _link_with(request, mutate) -> str:
     return f"?{params.urlencode()}"
 
 
+DATE_PARAM_KEYS = [f"date_{side}_{i}" for side in ("from", "to") for i in range(3)]
+
+# Order here is the order the date-range dropdown lists them in. Council
+# spend is reported and read in monthly/annual terms, not days or weeks --
+# no Today/7D/30D-style presets (Stripe's own labels), just the calendar
+# periods a council report actually comes in.
+PRESET_LABELS = {
+    "latest_month": "Latest month",
+    "previous_month": "Previous month",
+    "latest_year": "Latest year",
+    "previous_year": "Previous year",
+    "all_time": "All time",
+}
+
+
 def _date_preset_link(request, date_from: date, date_to: date) -> str:
     """Same shape as _sort_link below, but for the two Day/Month/Year
     subfields DayMonthYearField's widget renders as (see forms.py) --
@@ -128,6 +143,11 @@ def _date_preset_link(request, date_from: date, date_to: date) -> str:
         )
 
     return _link_with(request, mutate)
+
+
+def _date_clear_link(request) -> str:
+    """Same-page URL with every date_* param dropped -- the "All time" preset."""
+    return _remove_filter_link(request, DATE_PARAM_KEYS)
 
 
 def _remove_filter_link(request, keys: list[str]) -> str:
@@ -156,30 +176,37 @@ def _remove_category_link(request, value: str) -> str:
     return _link_with(request, mutate)
 
 
-def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
-    """One chip per applied filter, so the active-filter row never has to
-    duplicate the parsing TransactionFilterForm already did."""
+def _date_filter_label(form: TransactionFilterForm) -> str | None:
+    """Formats the current date_from/date_to as text -- shared by the
+    active-filter chip and the date-range dropdown's trigger button, so the
+    two never phrase the same range differently."""
     cleaned = form.cleaned_data
-    chips = []
-
     date_from, date_to = cleaned.get("date_from"), cleaned.get("date_to")
     # isinstance, not truthy checks -- cleaned_data is typed Any, so mypy
     # can't otherwise narrow it to date (required by dateformat.format)
     # even though DayMonthYearField.compress guarantees date-or-None here.
     # Each branch tests the value it actually formats (rather than a bare
     # `else`) so mypy narrows both, not just the first.
-    date_label = None
     if isinstance(date_from, date) and isinstance(date_to, date):
-        date_label = (
-            f"{dateformat.format(date_from, 'j M Y')} – {dateformat.format(date_to, 'j M Y')}"
-        )
+        return f"{dateformat.format(date_from, 'j M Y')} – {dateformat.format(date_to, 'j M Y')}"
     elif isinstance(date_from, date):
-        date_label = f"From {dateformat.format(date_from, 'j M Y')}"
+        return f"From {dateformat.format(date_from, 'j M Y')}"
     elif isinstance(date_to, date):
-        date_label = f"Until {dateformat.format(date_to, 'j M Y')}"
+        return f"Until {dateformat.format(date_to, 'j M Y')}"
+    return None
+
+
+def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
+    """One chip per applied filter, so the active-filter row never has to
+    duplicate the parsing TransactionFilterForm already did."""
+    cleaned = form.cleaned_data
+    chips = []
+
+    date_label = _date_filter_label(form)
     if date_label:
-        date_keys = [f"date_{side}_{i}" for side in ("from", "to") for i in range(3)]
-        chips.append({"label": date_label, "remove_link": _remove_filter_link(request, date_keys)})
+        chips.append(
+            {"label": date_label, "remove_link": _remove_filter_link(request, DATE_PARAM_KEYS)}
+        )
 
     amount_min, amount_max = cleaned.get("amount_min"), cleaned.get("amount_max")
     if amount_min is not None or amount_max is not None:
@@ -264,19 +291,51 @@ def council_spend_view(request, slug):
     current_sort = form.sort_field if valid else "date"
     current_descending = form.descending if valid else True
 
+    # Relative to the council's latest loaded transaction, not real
+    # `date.today()` -- council spend data lags real time by weeks to
+    # months, so a real-"Today" preset would silently return zero rows.
     preset_links = {}
+    preset_ranges: dict[str, tuple[date, date]] = {}
     latest_date = get_latest_transaction_date(council)
     if latest_date:
         month_start = latest_date.replace(day=1)
         month_end = latest_date.replace(
             day=calendar.monthrange(latest_date.year, latest_date.month)[1]
         )
+        previous_month_end = month_start - timedelta(days=1)
+        previous_month_start = previous_month_end.replace(day=1)
         year_start = latest_date.replace(month=1, day=1)
         year_end = latest_date.replace(month=12, day=31)
-        preset_links = {
-            "latest_month": _date_preset_link(request, month_start, month_end),
-            "latest_year": _date_preset_link(request, year_start, year_end),
+        previous_year_start = year_start.replace(year=year_start.year - 1)
+        previous_year_end = year_end.replace(year=year_end.year - 1)
+        preset_ranges = {
+            "latest_month": (month_start, month_end),
+            "previous_month": (previous_month_start, previous_month_end),
+            "latest_year": (year_start, year_end),
+            "previous_year": (previous_year_start, previous_year_end),
         }
+        preset_links = {
+            key: _date_preset_link(request, start, end)
+            for key, (start, end) in preset_ranges.items()
+        }
+        preset_links["all_time"] = _date_clear_link(request)
+
+    # Which preset (if any) the current date_from/date_to exactly match --
+    # drives which row the redesigned date-range dropdown highlights as
+    # selected. "custom" covers a typed range that matches no preset;
+    # `None` means no date filter is applied at all (shows as "All time").
+    active_preset_key = None
+    if valid:
+        cleaned_from, cleaned_to = (
+            form.cleaned_data.get("date_from"),
+            form.cleaned_data.get("date_to"),
+        )
+        if cleaned_from or cleaned_to:
+            active_preset_key = "custom"
+            for key, (start, end) in preset_ranges.items():
+                if cleaned_from == start and cleaned_to == end:
+                    active_preset_key = key
+                    break
 
     # Expand the Custom date fields by default once a caller has actually
     # entered one -- otherwise a typed range only the URL remembers looks
@@ -284,6 +343,15 @@ def council_spend_view(request, slug):
     custom_date_open = any(
         request.GET.get(f"date_{side}_{i}") for side in ("from", "to") for i in range(3)
     )
+
+    # Trigger-button text for the date-range dropdown: the preset's own name
+    # when the range matches one exactly, the formatted range for a typed
+    # Custom range, "All time" otherwise.
+    if active_preset_key and active_preset_key != "custom":
+        date_range_label = PRESET_LABELS[active_preset_key]
+    else:
+        date_range_label = _date_filter_label(form) if valid else None
+        date_range_label = date_range_label or "All time"
 
     context = {
         "council": council,
@@ -300,6 +368,9 @@ def council_spend_view(request, slug):
             for field in SORT_FIELDS
         },
         "preset_links": preset_links,
+        "active_preset_key": active_preset_key,
+        "date_range_label": date_range_label,
+        "latest_date_iso": latest_date.isoformat() if latest_date else "",
         "custom_date_open": custom_date_open,
         "active_filters": _active_filter_chips(request, form) if valid else [],
         "cluster_active": {

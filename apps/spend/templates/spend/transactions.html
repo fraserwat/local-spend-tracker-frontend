@@ -133,11 +133,13 @@
 
   /* GOV.UK's date-input pattern: three typed fields, not a calendar
      widget -- recall beats visual navigation once a user already knows
-     the date they want. https://design-system.service.gov.uk/components/date-input/ */
+     the date they want. https://design-system.service.gov.uk/components/date-input/
+     Kept as the no-JS baseline: date-range-picker.js hides `.date-fallback`
+     and layers a dropdown + calendar on top, writing back into these same
+     six inputs, so the plain GET/no-JS path below is unchanged either way. */
   .dmy-day, .dmy-month { width: 2.6em; }
   .dmy-year { width: 3.8em; }
   .dmy-sep { color: var(--color-text-faint); margin: 0 0.2em; }
-  .date-range-label { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-1); }
   .preset-row { display: flex; flex-wrap: wrap; gap: var(--space-1); }
   .preset-btn {
     display: inline-block;
@@ -158,6 +160,192 @@
   .date-custom[open] summary { margin-bottom: var(--space-2); }
   .dmy-field-row { display: flex; align-items: center; gap: var(--space-1); margin-top: var(--space-1); }
   .dmy-field-row .dmy-field-label { font-size: var(--text-sm); color: var(--color-text-faint); width: 2.5em; }
+
+  /* ---- redesigned date-range control (Airbnb calendar + Stripe preset
+     dropdown, merged) --------------------------------------------------
+     .date-field gets position:relative so the panel can anchor to it;
+     .date-fallback (the markup above) is hidden by JS once the panel takes
+     over, never removed -- see date-range-picker.js. */
+  .date-field { position: relative; }
+  .date-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    border: 1px solid var(--color-border-subtle);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-family: inherit;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .date-field.active .date-trigger,
+  .date-trigger[aria-expanded="true"] { border-color: var(--color-border); color: var(--color-text); }
+  .date-trigger:hover { border-color: var(--color-border); color: var(--color-text); }
+  .date-trigger svg { width: 12px; height: 12px; flex-shrink: 0; transition: transform 150ms ease; }
+  .date-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+  /* Transparent scrim covers the viewport so an outside click closes the
+     panel on desktop too -- one listener (click on the scrim) instead of a
+     document-level "was the click inside the panel?" check. Only mobile
+     gives it a visible dim, matching the bottom-sheet it backs there. */
+  .date-scrim { position: fixed; inset: 0; z-index: 20; background: transparent; border: none; padding: 0; display: none; }
+  .date-scrim.is-open { display: block; }
+
+  .date-panel {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    left: 0;
+    z-index: 21;
+    display: flex;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .date-panel[hidden] { display: none; }
+
+  .date-panel__presets {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    padding: var(--space-2);
+    border-right: 1px solid var(--color-border-subtle);
+    flex-shrink: 0;
+  }
+  .date-panel__preset {
+    display: block;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-left: 2px solid transparent;
+    color: var(--color-text-muted);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .date-panel__preset:hover { background: var(--color-surface-hover); color: var(--color-text); }
+  .date-panel__preset.is-active {
+    border-left-color: var(--color-link);
+    color: var(--color-text);
+    font-weight: 700;
+    background: var(--color-surface-hover);
+  }
+
+  .date-panel__calendar { padding: var(--space-3); }
+  .date-panel__calendar[hidden] { display: none; }
+  .date-panel__months { display: flex; gap: var(--space-4); }
+  .date-month__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
+  .date-month__title { font-size: var(--text-sm); font-weight: 700; color: var(--color-text); }
+  .date-month__nav {
+    background: transparent;
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-muted);
+    border-radius: var(--radius-sm);
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .date-month__nav:hover { border-color: var(--color-border); color: var(--color-text); }
+  .date-month__nav:disabled { visibility: hidden; }
+  .date-month__nav svg { width: 10px; height: 10px; }
+  /* Second month's own prev-arrow and first month's own next-arrow would
+     both step the shared two-month window one month at a time from either
+     side -- hidden instead, so there's exactly one way to move the window
+     (the outer arrows) and no confusing double-stepping. */
+  .date-month--second .date-month__nav--prev,
+  .date-month--first .date-month__nav--next { visibility: hidden; pointer-events: none; }
+
+  .date-grid { border-collapse: separate; border-spacing: 0; }
+  .date-grid th {
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+    font-weight: 600;
+    padding: 2px 0;
+    width: 28px;
+  }
+  .date-cell-wrap { padding: 0; }
+  .date-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-family: inherit;
+    cursor: pointer;
+    position: relative;
+  }
+  .date-cell:disabled { color: var(--color-text-faint); cursor: default; }
+  .date-cell:not(:disabled):hover { border-color: var(--color-border); }
+  /* Flat band, no glow -- same rgba fill as .combobox-option.highlighted,
+     never a box-shadow (this app's dark-UI convention treats a bordered
+     flat plane, not simulated light, as the one way to show "selected"). */
+  .date-cell-wrap.in-range .date-cell { background: rgba(0, 172, 230, 0.16); border-radius: 0; }
+  .date-cell-wrap.range-start .date-cell,
+  .date-cell-wrap.range-end .date-cell {
+    background: var(--color-link);
+    color: var(--color-accent-text);
+    border-radius: 50%;
+    font-weight: 700;
+  }
+  /* The rounded end-cap sits above the flat band behind it -- half the
+     cell's own background stays square (toward the range interior), half
+     stays round (toward the outside), so the connected arc reads as one
+     continuous shape with rounded ends, not a row of separate pills. */
+  .date-cell-wrap.range-start { background: linear-gradient(to right, transparent 50%, rgba(0, 172, 230, 0.16) 50%); }
+  .date-cell-wrap.range-end { background: linear-gradient(to left, transparent 50%, rgba(0, 172, 230, 0.16) 50%); }
+  .date-cell-wrap.range-start.range-end { background: transparent; }
+  .date-cell--latest::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-cta);
+  }
+
+  .date-panel__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+  .date-panel__footer button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* Airbnb's mobile pattern: the same panel becomes a bottom sheet instead
+     of a floating popover -- a dual-month grid has no room to anchor under
+     a small trigger on a narrow screen. */
+  @media (max-width: 640px) {
+    .date-scrim.is-open { background: rgba(0, 0, 0, 0.5); }
+    .date-panel {
+      position: fixed;
+      inset: auto 0 0 0;
+      top: auto;
+      left: 0;
+      flex-direction: column;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .date-panel__presets { width: 100%; flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--color-border-subtle); }
+    .date-panel__months { flex-direction: column; }
+  }
 
   /* Recipient autocomplete -- ARIA combobox pattern, same shape as
      GOV.UK's accessible-autocomplete. Works with no JS: this is the same
@@ -354,25 +542,42 @@
   <div class="filter-panel">
     <form method="get">
       <div class="clusters">
-        <div class="cluster{% if cluster_active.date %} active{% endif %}">
+        <div class="cluster date-field{% if cluster_active.date %} active{% endif %}" id="date-range-field" data-latest-date="{{ latest_date_iso }}" data-active-preset="{{ active_preset_key|default:'' }}">
           <div class="cluster-label"><span class="mark"></span>Date range</div>
-          {% if preset_links %}
-          <div class="preset-row">
-            <a class="preset-btn" href="{{ preset_links.latest_month }}">Latest month</a>
-            <a class="preset-btn" href="{{ preset_links.latest_year }}">Latest year</a>
+
+          <!-- JS-only trigger: date-range-picker.js unhides this and hides
+               .date-fallback below once it's confirmed it can find every
+               input it needs -- so a script error never leaves the button
+               visible with nothing behind it to open. -->
+          <button type="button" class="date-trigger" id="date-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="date-panel" hidden>
+            <span id="date-trigger-label">{{ date_range_label }}</span>
+            <svg viewBox="0 0 12 8" fill="none" aria-hidden="true" focusable="false"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+
+          <!-- No-JS baseline -- real preset links, real day/month/year
+               fields, works with GET alone. See date-range-picker.js. -->
+          <div class="date-fallback" id="date-fallback">
+            {% if preset_links %}
+            <div class="preset-row" id="date-preset-links">
+              <a class="preset-btn" data-preset="latest_month" href="{{ preset_links.latest_month }}">Latest month</a>
+              <a class="preset-btn" data-preset="previous_month" href="{{ preset_links.previous_month }}">Previous month</a>
+              <a class="preset-btn" data-preset="latest_year" href="{{ preset_links.latest_year }}">Latest year</a>
+              <a class="preset-btn" data-preset="previous_year" href="{{ preset_links.previous_year }}">Previous year</a>
+              <a class="preset-btn" data-preset="all_time" href="{{ preset_links.all_time }}">All time</a>
+            </div>
+            {% endif %}
+            <details class="date-custom" id="date-custom-details"{% if custom_date_open %} open{% endif %}>
+              <summary>Custom&hellip;</summary>
+              <div class="dmy-field-row">
+                <span class="dmy-field-label">From</span>
+                {{ form.date_from }}
+              </div>
+              <div class="dmy-field-row">
+                <span class="dmy-field-label">To</span>
+                {{ form.date_to }}
+              </div>
+            </details>
           </div>
-          {% endif %}
-          <details class="date-custom"{% if custom_date_open %} open{% endif %}>
-            <summary>Custom&hellip;</summary>
-            <div class="dmy-field-row">
-              <span class="dmy-field-label">From</span>
-              {{ form.date_from }}
-            </div>
-            <div class="dmy-field-row">
-              <span class="dmy-field-label">To</span>
-              {{ form.date_to }}
-            </div>
-          </details>
         </div>
 
         <div class="cluster{% if cluster_active.amount %} active{% endif %}">
@@ -484,4 +689,5 @@
   {% endif %}
 </nav>
 <script src="{% static 'spend/js/autocomplete.js' %}" defer></script>
+<script src="{% static 'spend/js/date-range-picker.js' %}" defer></script>
 {% endblock %}
