@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         statusEl.innerHTML = "";
         const link = document.createElement("a");
         link.href = councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
-        link.className = "spend-cta";
+        link.className = "spend-cta button-cta";
         link.textContent = "View " + row.name + " Spend";
         statusEl.appendChild(link);
         setAriaCurrent(slug);
