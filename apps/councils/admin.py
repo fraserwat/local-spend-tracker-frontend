@@ -13,5 +13,6 @@ class CouncilAdmin(admin.ModelAdmin):
 @admin.register(CouncilCoverage)
 class CouncilCoverageAdmin(admin.ModelAdmin):
     list_display = ("council", "has_data_quality_issue")
+    list_select_related = ("council",)
     list_filter = ("has_data_quality_issue",)
     search_fields = ("council__name",)

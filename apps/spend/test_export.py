@@ -2,7 +2,6 @@ import csv
 from io import StringIO
 
 import pytest
-from django.test import Client
 from django.urls import reverse
 
 from apps.spend.models import SpendTransaction
@@ -22,8 +21,7 @@ def _csv_body_rows(response) -> list[list[str]]:
 
 @pytest.mark.parametrize("endpoint_name,params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
-def test_unfiltered_export_matches_db_count(council, rows, endpoint_name, params):
-    client = Client()
+def test_unfiltered_export_matches_db_count(council, rows, endpoint_name, params, client):
     response = client.get(reverse(endpoint_name, kwargs={"slug": council.slug}), params)
 
     assert response.status_code == 200
@@ -37,8 +35,9 @@ def test_unfiltered_export_matches_db_count(council, rows, endpoint_name, params
 
 @pytest.mark.parametrize("endpoint_name,extra_params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
-def test_filtered_export_only_includes_matching_rows(council, rows, endpoint_name, extra_params):
-    client = Client()
+def test_filtered_export_only_includes_matching_rows(
+    council, rows, endpoint_name, extra_params, client
+):
     params = {"amount_min": "40", **extra_params}
     response = client.get(reverse(endpoint_name, kwargs={"slug": council.slug}), params)
 
@@ -50,9 +49,8 @@ def test_filtered_export_only_includes_matching_rows(council, rows, endpoint_nam
 
 
 @pytest.mark.django_db
-def test_export_respects_row_cap(council, rows, monkeypatch):
+def test_export_respects_row_cap(council, rows, monkeypatch, client):
     monkeypatch.setattr(export_module, "CSV_EXPORT_ROW_CAP", 3)
-    client = Client()
     response = client.get(
         reverse("council-spend", kwargs={"slug": council.slug}), {"export": "csv"}
     )
@@ -62,8 +60,7 @@ def test_export_respects_row_cap(council, rows, monkeypatch):
 
 @pytest.mark.parametrize("endpoint_name,extra_params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
-def test_export_unknown_council_404s(endpoint_name, extra_params):
-    client = Client()
+def test_export_unknown_council_404s(endpoint_name, extra_params, client):
     response = client.get(
         reverse(endpoint_name, kwargs={"slug": "not-a-real-council"}), extra_params
     )
@@ -71,8 +68,7 @@ def test_export_unknown_council_404s(endpoint_name, extra_params):
 
 
 @pytest.mark.django_db
-def test_html_export_with_invalid_filters_falls_back_to_error_render(council, rows):
-    client = Client()
+def test_html_export_with_invalid_filters_falls_back_to_error_render(council, rows, client):
     response = client.get(
         reverse("council-spend", kwargs={"slug": council.slug}),
         {
@@ -92,8 +88,7 @@ def test_html_export_with_invalid_filters_falls_back_to_error_render(council, ro
 
 
 @pytest.mark.django_db
-def test_api_export_rejects_invalid_filters(council, rows):
-    client = Client()
+def test_api_export_rejects_invalid_filters(council, rows, client):
     response = client.get(
         reverse("council-transactions-export", kwargs={"slug": council.slug}),
         {"amount_min": "500", "amount_max": "10"},
@@ -103,8 +98,7 @@ def test_api_export_rejects_invalid_filters(council, rows):
 
 @pytest.mark.parametrize("endpoint_name,params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
-def test_sixth_rapid_export_request_is_throttled(council, rows, endpoint_name, params):
-    client = Client()
+def test_sixth_rapid_export_request_is_throttled(council, rows, endpoint_name, params, client):
     url = reverse(endpoint_name, kwargs={"slug": council.slug})
 
     for _ in range(5):

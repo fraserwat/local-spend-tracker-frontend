@@ -12,7 +12,7 @@ class Nation:
 # Transparency Code exists in these nations, so there's no itemised spend
 # data to onboard a Council row for. Copy mirrors what the map's grey
 # nation overlay used to show inline; now it's the content of the nation's
-# own screen (see council_views.nation_dashboard) instead of a map popup.
+# own screen (see apps.councils.views.nation_dashboard) instead of a map popup.
 NATIONS = {
     "wales": Nation(
         "wales",

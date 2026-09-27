@@ -18,7 +18,7 @@ from psycopg import sql
 
 from apps.councils.models import Council, CouncilCoverage
 from apps.spend.models import AMOUNT_DECIMAL_PLACES, DataLoadRun
-from apps.spend.services.r2 import normalize_slug
+from apps.spend.services.r2 import FetchedCouncil, normalize_slug
 
 # Fixed column contract enforced by the data repo's harmonise() step
 # (src/ingest/harmonise.py:TARGET_COLUMNS) -- always exactly these 8
@@ -202,4 +202,15 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
     run.row_count = row_count
     run.finished_at = timezone.now()
     run.save(update_fields=["status", "row_count", "finished_at"])
+    return run
+
+
+def load_and_stamp(council: Council, fetched: FetchedCouncil) -> DataLoadRun:
+    """load_council_spend() plus recording the R2 manifest's sha256 on the
+    resulting DataLoadRun -- the load-from-R2 sequence shared by
+    `load_council_spend --from-r2` and `reload_from_r2`.
+    """
+    run = load_council_spend(council, fetched.parquet_path)
+    run.source_sha256 = fetched.manifest["curated"]["sha256"]
+    run.save(update_fields=["source_sha256"])
     return run

@@ -6,7 +6,7 @@ from rest_framework.pagination import CursorPagination
 
 from .models import Council
 from .nations import NATIONS
-from .selectors import get_councils, get_coverage
+from .selectors import get_active_councils_by_region, get_councils, get_coverage
 from .serializers import CouncilSerializer, CoverageSerializer
 
 
@@ -57,7 +57,7 @@ def council_dashboard(request, slug=None):
     instead, not this queryset.
     """
     council = get_object_or_404(Council, slug=slug) if slug else None
-    councils = get_councils().filter(is_active=True).order_by("region", "name")
+    councils = get_active_councils_by_region()
     context = {
         "council": council,
         "councils": councils,
@@ -86,7 +86,7 @@ def nation_dashboard(request, slug):
     nation = NATIONS.get(slug)
     if nation is None:
         raise Http404(f"unknown nation slug={slug!r}")
-    councils = get_councils().filter(is_active=True).order_by("region", "name")
+    councils = get_active_councils_by_region()
     context = {
         "council": None,
         "nation": nation,

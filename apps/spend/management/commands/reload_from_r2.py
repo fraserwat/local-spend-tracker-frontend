@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from apps.councils.models import Council
 from apps.spend.models import DataLoadRun
-from apps.spend.services.etl import load_council_spend
+from apps.spend.services.etl import load_and_stamp
 from apps.spend.services.r2 import (
     R2Error,
     fetch_council,
@@ -84,12 +84,10 @@ class Command(BaseCommand):
                 return False, f"FAILED (fetch: {exc})"
 
             try:
-                run = load_council_spend(council, fetched.parquet_path)
+                run = load_and_stamp(council, fetched)
             except Exception as exc:
                 return False, f"FAILED (load: {exc})"
 
-            run.source_sha256 = fetched.manifest["curated"]["sha256"]
-            run.save(update_fields=["source_sha256"])
             return True, f"RELOADED ({run.row_count} rows)"
 
     def _record_fetch_failure(self, council: Council, r2_slug: str, error: object) -> None:

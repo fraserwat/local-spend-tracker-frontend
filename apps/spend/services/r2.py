@@ -86,8 +86,11 @@ def _client():
 def list_councils() -> list[str]:
     """Slugs of every council with a published manifest, via ListObjectsV2
     on the manifest/ prefix -- there is no aggregate index object."""
-    _, _, _, bucket = _require_config()
+    # _client() already runs _require_config() internally, which validates
+    # bucket is set too -- read it straight off settings instead of paying
+    # for a second _require_config() call just to unpack it again.
     client = _client()
+    bucket = settings.R2_BUCKET
     slugs: list[str] = []
     paginator = client.get_paginator("list_objects_v2")
     for page in paginator.paginate(Bucket=bucket, Prefix="manifest/"):
@@ -124,8 +127,8 @@ def fetch_manifest(slug: str) -> dict:
     Cheap enough to call once per council on every diff check; use
     fetch_council() when the data itself is actually needed.
     """
-    _, _, _, bucket = _require_config()
     client = _client()
+    bucket = settings.R2_BUCKET
     with tempfile.TemporaryDirectory() as tmp_dir:
         return _download_manifest(client, bucket, slug, Path(tmp_dir))
 
@@ -138,8 +141,8 @@ def fetch_council(slug: str, dest_dir: Path) -> FetchedCouncil:
     returns a FetchedCouncil pointing at unverified data. dest_dir's
     lifecycle (creation/cleanup) is the caller's responsibility.
     """
-    _, _, _, bucket = _require_config()
     client = _client()
+    bucket = settings.R2_BUCKET
 
     manifest = _download_manifest(client, bucket, slug, dest_dir)
 
@@ -154,7 +157,11 @@ def fetch_council(slug: str, dest_dir: Path) -> FetchedCouncil:
     except (ClientError, BotoCoreError) as exc:
         raise R2Error(f"curated parquet fetch failed for slug={slug!r}: {exc}") from exc
 
-    actual_sha256 = hashlib.sha256(parquet_path.read_bytes()).hexdigest()
+    hasher = hashlib.sha256()
+    with parquet_path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            hasher.update(chunk)
+    actual_sha256 = hasher.hexdigest()
     if actual_sha256 != expected_sha256:
         raise R2Error(
             f"sha256 mismatch for slug={slug!r}: "
