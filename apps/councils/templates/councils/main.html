@@ -44,29 +44,15 @@
     padding: 0;
     pointer-events: none;
   }
+  /* Color/shadow/hover come from the shared .button-cta class in
+     theme.css -- this sits directly on top of the teal boundary fill, so
+     it needs that honey-bronze treatment to visually detach from it. */
   a.spend-cta {
     display: inline-block;
     pointer-events: auto;
-    /* Honey bronze, not teal -- this sits directly on top of the teal
-       boundary fill, so it needs to visually detach from that backdrop
-       rather than blend into it. */
-    background: var(--color-cta);
-    color: var(--color-cta-text);
-    font-weight: 700;
     font-size: 1.05rem;
     padding: var(--space-3) var(--space-6);
     border-radius: var(--radius-md);
-    text-decoration: none;
-    /* Offset-heavy, mostly-black shadow (mimics light from above) plus a
-       thin bronze-tinted layer for cohesion -- a big colored glow here
-       reads as fuzzy rather than "elevated, pressable". */
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(233, 180, 76, 0.35);
-    transition: transform 180ms ease-out, box-shadow 180ms ease-out, background 180ms ease-out;
-  }
-  a.spend-cta:hover {
-    background: var(--color-cta-hover);
-    transform: translateY(-1px) scale(1.03);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(233, 180, 76, 0.45);
   }
 
   /* Selected boundary gets a persistent glow, not a hover-only one -- it
@@ -94,49 +80,35 @@
       filter: drop-shadow(0 0 8px rgba(62, 205, 212, 0.95)) drop-shadow(0 0 16px rgba(62, 205, 212, 0.6));
     }
   }
-  /* Bright red floating bubble, not honey bronze -- a data quality
-     problem needs to read as alarming, not as the same "heads up" tone as
-     the CTA/warning chrome elsewhere on this page. No hard border; a
-     saturated fill plus soft glow shadow reads as a modern bubble instead
-     of a boxed-in alert. Shares its corner with #nation-note -- map.js
-     keeps them mutually exclusive. */
-  #coverage-badge {
+  /* Floating map-corner call-out -- alarm (data quality problem) and info
+     (no-data explainer) share position/shape, differing only in color. No
+     hard border; a saturated fill plus soft glow shadow reads as a modern
+     bubble instead of a boxed-in alert. #coverage-badge and #nation-note
+     share this corner -- map.js keeps them mutually exclusive. */
+  .floating-badge {
     display: none;
     position: absolute;
     top: var(--space-4);
     right: var(--space-4);
     z-index: 1000;
     max-width: 22rem;
+    border: none;
+    padding: var(--space-3) var(--space-4);
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .floating-badge.visible { display: block; }
+  .floating-badge--alarm {
     background: var(--color-alarm-bg);
-    border: none;
     color: var(--color-alarm-text);
-    padding: var(--space-3) var(--space-4);
-    border-radius: 14px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 24px rgba(255, 90, 60, 0.55);
-    font-size: 0.85rem;
-    font-weight: 600;
   }
-  #coverage-badge.visible { display: block; }
-
-  /* Same treatment as #coverage-badge, but blue -- explains absent
-     data, not a problem with data that exists. */
-  #nation-note {
-    display: none;
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-    z-index: 1000;
-    max-width: 22rem;
+  .floating-badge--info {
     background: var(--color-info-bg);
-    border: none;
     color: var(--color-info-text);
-    padding: var(--space-3) var(--space-4);
-    border-radius: 14px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 24px rgba(72, 172, 240, 0.55);
-    font-size: 0.85rem;
-    font-weight: 600;
   }
-  #nation-note.visible { display: block; }
 
   /* Default cursor -- clickable, but shouldn't invite the click. */
   .nation-boundary {
@@ -212,10 +184,10 @@
     <h1 id="council-route-heading" class="visually-hidden" tabindex="-1">{% if council %}{{ council.name }}{% else %}Select a council{% endif %}</h1>
     <div id="council-switch-announcer" class="visually-hidden" aria-live="polite" role="status"></div>
     <div id="status">
-      {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta">View {{ council.name }} Spend</a>{% else %}select a council to see its boundary{% endif %}
+      {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta button-cta">View {{ council.name }} Spend</a>{% else %}select a council to see its boundary{% endif %}
     </div>
-    <div id="coverage-badge"></div>
-    <div id="nation-note"></div>
+    <div id="coverage-badge" class="floating-badge floating-badge--alarm"></div>
+    <div id="nation-note" class="floating-badge floating-badge--info"></div>
     <div
       id="map"
       data-geojson-url="{% if geojson_static_path %}{% static geojson_static_path %}{% endif %}"

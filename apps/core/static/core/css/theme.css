@@ -143,6 +143,25 @@ button.button-secondary:hover {
   color: var(--color-text);
 }
 
+/* Shared honey-bronze CTA treatment -- for any link/button that needs to
+   visually detach from teal-tinted surfaces (map boundary CTA, back link,
+   export button). Class specificity beats the plain `button` element rule
+   above regardless of tag, so this alone is enough even on a
+   <button class="button-cta">. */
+.button-cta {
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--color-cta);
+  color: var(--color-cta-text);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(233, 180, 76, 0.35);
+  transition: background 180ms ease-out, transform 180ms ease-out, box-shadow 180ms ease-out;
+}
+.button-cta:hover {
+  background: var(--color-cta-hover);
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(233, 180, 76, 0.45);
+}
+
 input, select {
   font-family: inherit;
   background: var(--color-bg-elevated);
