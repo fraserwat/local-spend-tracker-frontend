@@ -35,7 +35,7 @@ def _filtered_transactions(council: Council, form: TransactionFilterForm):
         amount_min=data.get("amount_min"),
         amount_max=data.get("amount_max"),
         q=data.get("q") or "",
-        category=data.get("category") or None,
+        consultancy=bool(data.get("consultancy")),
         sort=form.sort_field,
         descending=form.descending,
     )
@@ -55,7 +55,7 @@ class TransactionListAPIView(ListAPIView):
 
     def list(self, request, *args, **kwargs):
         council = get_object_or_404(Council, slug=self.kwargs["slug"])
-        form = TransactionFilterForm(request.query_params, council=council)
+        form = TransactionFilterForm(request.query_params)
         if not form.is_valid():
             return Response(form.errors, status=400)
         queryset = _filtered_transactions(council, form)
@@ -78,7 +78,7 @@ class TransactionExportAPIView(APIView):
 
     def get(self, request, slug):
         council = get_object_or_404(Council, slug=slug)
-        form = TransactionFilterForm(request.query_params, council=council)
+        form = TransactionFilterForm(request.query_params)
         if not form.is_valid():
             return Response(form.errors, status=400)
         queryset = _filtered_transactions(council, form)
@@ -161,21 +161,6 @@ def _remove_filter_link(request, keys: list[str]) -> str:
     return _link_with(request, mutate)
 
 
-def _remove_category_link(request, value: str) -> str:
-    """Same shape as _remove_filter_link, but drops one value out of the
-    repeated `category` param instead of the whole key -- each selected
-    category gets its own chip/remove link, not one combined chip."""
-
-    def mutate(params):
-        remaining = [v for v in params.getlist("category") if v != value]
-        if remaining:
-            params.setlist("category", remaining)
-        else:
-            params.pop("category", None)
-
-    return _link_with(request, mutate)
-
-
 def _date_filter_label(form: TransactionFilterForm) -> str | None:
     """Formats the current date_from/date_to as text -- shared by the
     active-filter chip and the date-range dropdown's trigger button, so the
@@ -229,11 +214,11 @@ def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
             {"label": f'Recipient: "{q}"', "remove_link": _remove_filter_link(request, ["q"])}
         )
 
-    for category in cleaned.get("category") or []:
+    if cleaned.get("consultancy"):
         chips.append(
             {
-                "label": f"Category: {category}",
-                "remove_link": _remove_category_link(request, category),
+                "label": "Consultancy",
+                "remove_link": _remove_filter_link(request, ["consultancy"]),
             }
         )
 
@@ -264,7 +249,7 @@ def council_spend_view(request, slug):
     behaves identically either way.
     """
     council = get_object_or_404(Council, slug=slug)
-    form = TransactionFilterForm(request.GET, council=council)
+    form = TransactionFilterForm(request.GET)
     valid = form.is_valid()
 
     if valid and request.GET.get("export") == "csv":
@@ -385,7 +370,7 @@ def council_spend_view(request, slug):
                 )
             ),
             "recipient": bool(valid and form.cleaned_data.get("q")),
-            "category": bool(valid and form.cleaned_data.get("category")),
+            "consultancy": bool(valid and form.cleaned_data.get("consultancy")),
         },
     }
     return render(request, "spend/transactions.html", context)

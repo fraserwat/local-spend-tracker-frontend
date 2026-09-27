@@ -357,22 +357,19 @@
   .combobox-option { padding: var(--space-2) var(--space-3); font-size: var(--text-base); cursor: pointer; }
   .combobox-option.highlighted { background: rgba(0, 172, 230, 0.16); }
 
-  /* Real distinct-value checkbox list (apps/spend/selectors.py's
-     get_distinct_categories), not the old disabled "Coming soon" field --
-     Django's CheckboxSelectMultiple renders a plain <ul>/<li>/<label>, so
-     this just restyles that default markup rather than hand-rolling a
-     custom widget template. */
-  /* Wider column -- 170px forced every label to wrap 3-4 lines ragged.
-     Still fixed-width (sits beside three other clusters), still scrolls
-     vertically for long category lists. */
-  .cat-list { max-height: 11rem; overflow-y: auto; overflow-x: hidden; width: 240px; }
-  .cat-list ul { list-style: none; margin: 0; padding: 0; }
-  .cat-list li { padding: 2px 0; }
-  .cat-list label { display: flex; align-items: flex-start; gap: var(--space-2); font-size: var(--text-base); color: var(--color-text-muted); cursor: pointer; line-height: 1.3; }
-  .cat-list label:has(input:checked) { color: var(--color-text); font-weight: 600; }
+  .consultancy-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    max-width: 200px;
+  }
+  .consultancy-toggle:has(input:checked) { color: var(--color-text); font-weight: 600; }
   /* Custom box -- native checkbox renders OS-white regardless of
      accent-color when unchecked, a bright patch on a dark panel. */
-  .cat-list input[type="checkbox"] {
+  .consultancy-checkbox {
     appearance: none;
     -webkit-appearance: none;
     width: 15px;
@@ -386,12 +383,12 @@
     cursor: pointer;
     transition: background 140ms ease, border-color 140ms ease;
   }
-  .cat-list input[type="checkbox"]:hover { border-color: var(--color-link); }
-  .cat-list input[type="checkbox"]:checked {
+  .consultancy-checkbox:hover { border-color: var(--color-link); }
+  .consultancy-checkbox:checked {
     background: var(--color-link);
     border-color: var(--color-link);
   }
-  .cat-list input[type="checkbox"]:checked::after {
+  .consultancy-checkbox:checked::after {
     content: "";
     position: absolute;
     left: 4px;
@@ -402,8 +399,7 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
-  .cat-list input[type="checkbox"]:focus-visible { outline: 2px solid var(--color-link); outline-offset: 1px; }
-  .cat-summary { margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-link); }
+  .consultancy-checkbox:focus-visible { outline: 2px solid var(--color-link); outline-offset: 1px; }
 
   .panel-actions { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); }
 
@@ -496,21 +492,10 @@
   .beneficiary-redacted { color: var(--color-text-faint); font-style: italic; }
 
   /* Bordered, not filled -- same hairline-card convention as the rest of
-     the app. Five hues, one per real semantic bucket (apps/spend/category_buckets.py);
-     deliberately skips the app's blue/orange (already reserved for
-     links/CTA, so reusing them here would read as "clickable" or "the one
-     important action"). Recomputed against this table's own background
-     (#2f3140) at the pill's actual 11.2px text size -- the original five
-     ranged 3.3-4.2:1 (all failing WCAG's 4.5:1 body-text minimum); each is
-     lightened in HSL space, same hue/saturation, to clear ~4.7:1.
-     pill-other (the catch-all bucket, ~80% of rows on a typical council) is
-     no longer a hue at all: giving the majority-default bucket the same
-     saturated treatment as the five genuinely distinct ones defeated the
-     "ration color to one job" point of having buckets, and its rose read
-     close enough to --color-alarm to misread as a data-quality flag on a
-     quick scan. It's --color-text-muted now -- neutral, passes contrast
-     outright, and lets the five real hues stand out because most of the
-     table no longer competes with them. */
+     the app. category is raw free text with no shared vocabulary across
+     councils (apps/spend/category_buckets.py's docstring), so there's no
+     trustworthy taxonomy left to color-code by bucket -- one neutral
+     treatment for every value, same as the old catch-all pill-other. */
   .pill {
     display: inline-block;
     padding: 0.15rem var(--space-2);
@@ -519,13 +504,8 @@
     font-size: var(--text-xs);
     font-weight: 600;
     white-space: nowrap;
+    color: var(--color-text-muted);
   }
-  .pill-staff { color: #1cb07c; }
-  .pill-contracts { color: #d88f00; }
-  .pill-capital { color: #e07ea2; }
-  .pill-premises { color: #00b600; }
-  .pill-grants { color: #9c92eb; }
-  .pill-other { color: var(--color-text-muted); }
   .category-empty { color: var(--color-text-faint); }
 
   /* One flagship module, not a table row (Design Bible doctrine VI) -- the
@@ -669,13 +649,13 @@
           </div>
         </div>
 
-        {# TODO: swap for a "Contracting Firm" filter once the Entity Resolution Layer exists #}
-        <div class="cluster{% if cluster_active.category %} active{% endif %}">
-          <div class="cluster-label"><span class="mark"></span>Category</div>
-          <div class="cat-list">{{ form.category }}</div>
-          {% with selected_count=form.category.data|length %}
-          {% if selected_count %}<div class="cat-summary">{{ selected_count }} selected</div>{% endif %}
-          {% endwith %}
+        {# Keyword proxy, not real entity resolution -- see category_buckets.CONSULTANCY_KEYWORDS. #}
+        <div class="cluster{% if cluster_active.consultancy %} active{% endif %}">
+          <div class="cluster-label"><span class="mark"></span>Consultancy</div>
+          <label class="consultancy-toggle">
+            {{ form.consultancy }}
+            <span>Consultancy &amp; professional spend</span>
+          </label>
         </div>
       </div>
 
@@ -729,7 +709,7 @@
         <td class="amount">{{ txn.amount_gbp|intcomma }}</td>
         <td>{{ txn.directorate }}</td>
         <td>
-          {% if txn.category %}<span class="pill pill-{{ txn.category_bucket.slug }}" title="{{ txn.category_bucket.label }}">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
+          {% if txn.category %}<span class="pill">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
         </td>
       </tr>
       {% empty %}

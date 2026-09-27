@@ -4,10 +4,11 @@ import re
 from datetime import date
 from decimal import Decimal
 
-from django.db.models import Max, QuerySet
+from django.db.models import Max, Q, QuerySet
 
 from apps.councils.models import Council
 
+from .category_buckets import CONSULTANCY_KEYWORDS
 from .models import SpendTransaction
 
 # Explicit allow-list, never a raw field name into .order_by().
@@ -38,7 +39,7 @@ def get_council_transactions(
     amount_min: Decimal | None = None,
     amount_max: Decimal | None = None,
     q: str = "",
-    category: list[str] | None = None,
+    consultancy: bool = False,
     sort: str = DEFAULT_SORT,
     descending: bool = True,
 ) -> QuerySet[SpendTransaction]:
@@ -64,8 +65,19 @@ def get_council_transactions(
         # GIN index can't use (EXPLAIN: full seq scan). iregex compiles to
         # `~*`, which pg_trgm does index (EXPLAIN: Bitmap Index Scan).
         qs = qs.filter(beneficiary_name__iregex=re.escape(q))
-    if category:
-        qs = qs.filter(category__in=category)
+    if consultancy:
+        # PLACEHOLDER for real entity-resolved consultancy spend (TODO.md
+        # Phase 3 -- Entity Resolution Layer, not yet built). Keyword-matches
+        # `category` against CONSULTANCY_KEYWORDS -- same free-text,
+        # no-shared-vocabulary caveats as everywhere else `category` is used,
+        # so this both over- and under-counts real consultancy spend.
+        # No supporting index on `category` for icontains (a trigram/GIN
+        # index would fix this) -- acceptable for a placeholder, revisit
+        # before this ships broadly.
+        query = Q()
+        for keyword in CONSULTANCY_KEYWORDS:
+            query |= Q(category__icontains=keyword)
+        qs = qs.filter(query)
 
     return qs.order_by(*resolve_ordering(sort, descending))
 
@@ -77,23 +89,6 @@ def get_latest_transaction_date(council: Council) -> date | None:
     mean the same date range regardless of what else is already applied.
     """
     return SpendTransaction.objects.filter(council=council).aggregate(latest=Max("date"))["latest"]
-
-
-def get_distinct_categories(council: Council) -> list[str]:
-    """Distinct non-blank `category` strings on record for this council, for
-    the Category filter's choices. Unfiltered by any other applied filter --
-    same "always the full set" rule as get_latest_transaction_date, so
-    picking a category doesn't shrink the list of other categories you
-    could still add.
-    """
-    qs = (
-        SpendTransaction.objects.filter(council=council)
-        .exclude(category="")
-        .values_list("category", flat=True)
-        .distinct()
-        .order_by("category")
-    )
-    return list(qs)
 
 
 def get_beneficiary_suggestions(council: Council, q: str, limit: int = 7) -> list[str]:
