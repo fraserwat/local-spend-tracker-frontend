@@ -1,0 +1,1 @@
+{% for w in widget.subwidgets %}{% if not forloop.first %}<span class="dmy-sep">/</span>{% endif %}{% include w.template_name with widget=w %}{% endfor %}

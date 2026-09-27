@@ -72,7 +72,14 @@ def test_html_view_rejects_inverted_date_range(council, rows):
     client = Client()
     response = client.get(
         reverse("council-spend", kwargs={"slug": council.slug}),
-        {"date_from": "2026-06-01", "date_to": "2026-01-01"},
+        {
+            "date_from_0": "1",
+            "date_from_1": "6",
+            "date_from_2": "2026",
+            "date_to_0": "1",
+            "date_to_1": "1",
+            "date_to_2": "2026",
+        },
     )
     assert response.status_code == 200
     assert "date_from must not be after date_to" in response.content.decode()
@@ -187,3 +194,60 @@ def test_beneficiary_search_query_param_is_parameterized_not_interpolated(counci
     # The table must still exist and still hold every row -- proof the
     # input was bound as data, never concatenated into executable SQL.
     assert SpendTransaction.objects.filter(council=council).count() == 5
+
+
+@pytest.mark.django_db
+def test_beneficiary_suggestions_endpoint_returns_matches(council, rows):
+    client = Client()
+    response = client.get(
+        reverse("council-transaction-beneficiaries", kwargs={"slug": council.slug}),
+        {"q": "Vendor 0"},
+    )
+    assert response.status_code == 200
+    assert set(response.json()["results"]) == {f"Vendor {i:02d}" for i in range(5)}
+
+
+@pytest.mark.django_db
+def test_beneficiary_suggestions_endpoint_404s_for_unknown_council():
+    client = Client()
+    response = client.get(
+        reverse("council-transaction-beneficiaries", kwargs={"slug": "not-a-real-council"}),
+        {"q": "ab"},
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_date_presets_link_to_the_latest_transactions_month_and_year(council, rows):
+    """rows' latest date is 2026-01-05 (see the `rows` fixture) -- presets
+    are computed from the data's own max date, not wall-clock "today"."""
+    client = Client()
+    response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
+    content = response.content.decode()
+
+    assert (
+        "date_from_0=1&amp;date_from_1=1&amp;date_from_2=2026&amp;date_to_0=31&amp;date_to_1=1&amp;date_to_2=2026"
+        in content
+    )
+    assert (
+        "date_from_0=1&amp;date_from_1=1&amp;date_from_2=2026&amp;date_to_0=31&amp;date_to_1=12&amp;date_to_2=2026"
+        in content
+    )
+
+
+@pytest.mark.django_db
+def test_active_filter_chip_shown_for_applied_recipient_search(council, rows):
+    client = Client()
+    response = client.get(
+        reverse("council-spend", kwargs={"slug": council.slug}), {"q": "Vendor 00"}
+    )
+    content = response.content.decode()
+    assert "Recipient: &quot;Vendor 00&quot;" in content
+    assert 'class="chip-row"' in content
+
+
+@pytest.mark.django_db
+def test_no_chip_row_when_no_filters_applied(council, rows):
+    client = Client()
+    response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
+    assert 'class="chip-row"' not in response.content.decode()

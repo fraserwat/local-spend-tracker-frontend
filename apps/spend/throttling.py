@@ -8,3 +8,12 @@ class ExportRateThrottle(AnonRateThrottle):
     """
 
     scope = "export"
+
+
+class BeneficiaryAutocompleteThrottle(AnonRateThrottle):
+    """Search-as-you-type fires many small requests per session -- a
+    higher allowance than export, but still capped against scripting the
+    whole beneficiary list character by character.
+    """
+
+    scope = "autocomplete"

@@ -119,7 +119,15 @@ def test_html_export_with_invalid_filters_falls_back_to_error_render(council, ro
     client = Client()
     response = client.get(
         reverse("council-spend", kwargs={"slug": council.slug}),
-        {"export": "csv", "date_from": "2026-06-01", "date_to": "2026-01-01"},
+        {
+            "export": "csv",
+            "date_from_0": "1",
+            "date_from_1": "6",
+            "date_from_2": "2026",
+            "date_to_0": "1",
+            "date_to_1": "1",
+            "date_to_2": "2026",
+        },
     )
 
     assert response.status_code == 200
