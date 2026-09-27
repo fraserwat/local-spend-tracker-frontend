@@ -149,17 +149,23 @@ def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
     chips = []
 
     date_from, date_to = cleaned.get("date_from"), cleaned.get("date_to")
-    if date_from or date_to:
-        if date_from and date_to:
-            label = (
-                f"{dateformat.format(date_from, 'j M Y')} – {dateformat.format(date_to, 'j M Y')}"
-            )
-        elif date_from:
-            label = f"From {dateformat.format(date_from, 'j M Y')}"
-        else:
-            label = f"Until {dateformat.format(date_to, 'j M Y')}"
+    # isinstance, not truthy checks -- cleaned_data is typed Any, so mypy
+    # can't otherwise narrow it to date (required by dateformat.format)
+    # even though DayMonthYearField.compress guarantees date-or-None here.
+    # Each branch tests the value it actually formats (rather than a bare
+    # `else`) so mypy narrows both, not just the first.
+    date_label = None
+    if isinstance(date_from, date) and isinstance(date_to, date):
+        date_label = (
+            f"{dateformat.format(date_from, 'j M Y')} – {dateformat.format(date_to, 'j M Y')}"
+        )
+    elif isinstance(date_from, date):
+        date_label = f"From {dateformat.format(date_from, 'j M Y')}"
+    elif isinstance(date_to, date):
+        date_label = f"Until {dateformat.format(date_to, 'j M Y')}"
+    if date_label:
         date_keys = [f"date_{side}_{i}" for side in ("from", "to") for i in range(3)]
-        chips.append({"label": label, "remove_link": _remove_filter_link(request, date_keys)})
+        chips.append({"label": date_label, "remove_link": _remove_filter_link(request, date_keys)})
 
     amount_min, amount_max = cleaned.get("amount_min"), cleaned.get("amount_max")
     if amount_min is not None or amount_max is not None:
