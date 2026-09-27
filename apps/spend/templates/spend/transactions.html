@@ -15,7 +15,9 @@
   }
 
   /* Navigation chrome, not a call to action -- orange is reserved for the
-     one important action per screen (here, Filter), so Back stays in the
+     one genuine commit action per screen (here, Export CSV -- Filter just
+     re-runs the same query and gets clicked repeatedly while narrowing a
+     date range, so it stays a secondary action), so Back stays in the
      same quiet outlined treatment as a secondary button. */
   .back-link {
     display: inline-flex;
@@ -459,11 +461,21 @@
   .beneficiary-redacted { color: var(--color-text-faint); font-style: italic; }
 
   /* Bordered, not filled -- same hairline-card convention as the rest of
-     the app. Six hues, one per semantic bucket (apps/spend/category_buckets.py);
+     the app. Five hues, one per real semantic bucket (apps/spend/category_buckets.py);
      deliberately skips the app's blue/orange (already reserved for
      links/CTA, so reusing them here would read as "clickable" or "the one
-     important action"). Validated with the dataviz skill's CVD/contrast
-     checker against this table's own background (#2f3140), not eyeballed. */
+     important action"). Recomputed against this table's own background
+     (#2f3140) at the pill's actual 11.2px text size -- the original five
+     ranged 3.3-4.2:1 (all failing WCAG's 4.5:1 body-text minimum); each is
+     lightened in HSL space, same hue/saturation, to clear ~4.7:1.
+     pill-other (the catch-all bucket, ~80% of rows on a typical council) is
+     no longer a hue at all: giving the majority-default bucket the same
+     saturated treatment as the five genuinely distinct ones defeated the
+     "ration color to one job" point of having buckets, and its rose read
+     close enough to --color-alarm to misread as a data-quality flag on a
+     quick scan. It's --color-text-muted now -- neutral, passes contrast
+     outright, and lets the five real hues stand out because most of the
+     table no longer competes with them. */
   .pill {
     display: inline-block;
     padding: 0.15rem var(--space-2);
@@ -473,19 +485,46 @@
     font-weight: 600;
     white-space: nowrap;
   }
-  .pill-staff { color: #199e70; }
-  .pill-contracts { color: #c98500; }
-  .pill-capital { color: #d55181; }
-  .pill-premises { color: #008300; }
-  .pill-grants { color: #9085e9; }
-  .pill-other { color: #e66767; }
+  .pill-staff { color: #1cb07c; }
+  .pill-contracts { color: #d88f00; }
+  .pill-capital { color: #e07ea2; }
+  .pill-premises { color: #00b600; }
+  .pill-grants { color: #9c92eb; }
+  .pill-other { color: var(--color-text-muted); }
   .category-empty { color: var(--color-text-faint); }
 
-  tfoot td {
+  /* One flagship module, not a table row (Design Bible doctrine VI) -- the
+     total is the single most important figure on this page, so it gets a
+     dedicated bordered zone, generous padding (doctrine IV's "story"
+     register, applied once), and the app's one serif use (doctrine VIII),
+     instead of just a bold weight in the same 13.6px cell as every row
+     it's summarizing. */
+  .flagship-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     background: var(--color-bg-elevated);
-    border-top: 2px solid var(--color-border);
-    border-bottom: none;
-    font-weight: 700;
+    padding: var(--space-5) var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+  .flagship-total__label {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .flagship-total__figure {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 2.25rem;
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
   }
 
   .pagination { margin-top: var(--space-4); display: flex; gap: var(--space-3); align-items: center; }
@@ -515,7 +554,8 @@
      that's otherwise flat and bordered everywhere else (Judd's argument
      against illusionistic relief; 2026's "tactile brutalism" dark-UI
      trend drops the same blur for the same reason). The button is a
-     plane, not a lit object. */
+     plane, not a lit object. Applied to Export CSV, not Filter -- see the
+     .back-link comment above for why the two swapped roles. */
   button.button-cta {
     background: var(--color-cta);
     color: var(--color-cta-text);
@@ -617,14 +657,21 @@
       <input type="hidden" name="sort" value="{{ sort }}">
       <input type="hidden" name="dir" value="{{ dir }}">
       <div class="panel-actions">
-        <button type="submit" class="button-cta">Filter</button>
-        <button type="submit" name="export" value="csv" class="button-secondary">Export CSV</button>
+        <button type="submit" class="button-secondary">Filter</button>
+        <button type="submit" name="export" value="csv" class="button-cta">Export CSV</button>
       </div>
     </form>
   </div>
 
   <div class="result-summary">Showing {{ transactions|length }} of {{ total_count }} transaction{{ total_count|pluralize }} matching filters</div>
 </div>
+
+{% if transactions %}
+<div class="flagship-total">
+  <span class="flagship-total__label">Total &middot; all {{ total_count }} matching result{{ total_count|pluralize }}</span>
+  <span class="flagship-total__figure">&pound;{{ total_amount|intcomma }}</span>
+</div>
+{% endif %}
 
 <div class="table-wrapper">
   <table>
@@ -652,15 +699,6 @@
       <tr><td colspan="5">No transactions match these filters.</td></tr>
       {% endfor %}
     </tbody>
-    {% if transactions %}
-    <tfoot>
-      <tr>
-        <td colspan="2">Total (all matching results)</td>
-        <td class="amount">£{{ total_amount|intcomma }}</td>
-        <td colspan="2"></td>
-      </tr>
-    </tfoot>
-    {% endif %}
   </table>
 </div>
 
