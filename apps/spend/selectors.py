@@ -4,7 +4,7 @@ import re
 from datetime import date
 from decimal import Decimal
 
-from django.db.models import QuerySet
+from django.db.models import Max, QuerySet
 
 from apps.councils.models import Council
 
@@ -56,3 +56,31 @@ def get_council_transactions(
     field = SORT_FIELDS.get(sort, SORT_FIELDS[DEFAULT_SORT])
     ordering = (field, "id") if not descending else (f"-{field}", "-id")
     return qs.order_by(*ordering)
+
+
+def get_latest_transaction_date(council: Council) -> date | None:
+    """Most recent transaction date on record for this council, unfiltered
+    -- the basis for the "Latest month"/"Latest year" filter presets.
+    Deliberately not the current filtered queryset's max: a preset should
+    mean the same date range regardless of what else is already applied.
+    """
+    return SpendTransaction.objects.filter(council=council).aggregate(latest=Max("date"))["latest"]
+
+
+def get_beneficiary_suggestions(council: Council, q: str, limit: int = 7) -> list[str]:
+    """Distinct beneficiary names for this council matching `q`, for the
+    Recipient filter's autocomplete. Same iregex path as the main search
+    filter above (rewards the beneficiary_name trigram index) -- callers
+    should not call this below a couple characters, since an unanchored
+    regex with no meaningful prefix does a much bigger scan on a
+    400K+-row council.
+    """
+    if len(q) < 2:
+        return []
+    qs = (
+        SpendTransaction.objects.filter(council=council, beneficiary_name__iregex=re.escape(q))
+        .values_list("beneficiary_name", flat=True)
+        .distinct()
+        .order_by("beneficiary_name")[:limit]
+    )
+    return list(qs)

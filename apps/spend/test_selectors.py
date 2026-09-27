@@ -6,7 +6,11 @@ import pytest
 
 from apps.councils.models import Council
 from apps.spend.models import SpendTransaction
-from apps.spend.selectors import get_council_transactions
+from apps.spend.selectors import (
+    get_beneficiary_suggestions,
+    get_council_transactions,
+    get_latest_transaction_date,
+)
 
 
 @pytest.fixture
@@ -155,3 +159,53 @@ def test_filtered_total_matches_equivalent_polars_query(council, rows):
 
     assert actual_count == expected_count
     assert actual_total == Decimal(str(expected_total))
+
+
+@pytest.mark.django_db
+def test_latest_transaction_date_ignores_other_councils(council, rows):
+    assert get_latest_transaction_date(council) == date(2026, 3, 1)
+
+
+@pytest.mark.django_db
+def test_latest_transaction_date_none_when_no_rows(other_council):
+    SpendTransaction.objects.filter(council=other_council).delete()
+    assert get_latest_transaction_date(other_council) is None
+
+
+@pytest.mark.django_db
+def test_beneficiary_suggestions_matches_and_dedupes(council, rows):
+    SpendTransaction.objects.create(
+        council=council,
+        date=date(2026, 3, 2),
+        beneficiary_name="Acme Consulting Ltd",
+        amount_gbp="5.00",
+    )
+    result = get_beneficiary_suggestions(council, "acme")
+    assert result == ["Acme Consulting Ltd", "Acme Facilities"]
+
+
+@pytest.mark.django_db
+def test_beneficiary_suggestions_below_min_length_returns_nothing(council, rows):
+    assert get_beneficiary_suggestions(council, "a") == []
+
+
+@pytest.mark.django_db
+def test_beneficiary_suggestions_does_not_leak_across_councils(council, other_council, rows):
+    result = get_beneficiary_suggestions(council, "acme")
+    assert all("Acme" in name for name in result)
+    # other_council also has an "Acme Consulting Ltd" row -- scoping is by
+    # the queryset filter, not by name uniqueness, so this only proves
+    # the leak-check is meaningful if a second council's own count differs.
+    assert get_beneficiary_suggestions(other_council, "acme") == ["Acme Consulting Ltd"]
+
+
+@pytest.mark.django_db
+def test_beneficiary_suggestions_respects_limit(council, rows):
+    for i in range(10):
+        SpendTransaction.objects.create(
+            council=council,
+            date=date(2026, 3, i + 1),
+            beneficiary_name=f"Acme Branch {i}",
+            amount_gbp="1.00",
+        )
+    assert len(get_beneficiary_suggestions(council, "acme", limit=3)) == 3

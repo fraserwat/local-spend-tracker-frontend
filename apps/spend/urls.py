@@ -13,4 +13,9 @@ urlpatterns = [
         views.TransactionExportAPIView.as_view(),
         name="council-transactions-export",
     ),
+    path(
+        "councils/<slug:slug>/transactions/beneficiaries/",
+        views.BeneficiarySuggestionsAPIView.as_view(),
+        name="council-transaction-beneficiaries",
+    ),
 ]

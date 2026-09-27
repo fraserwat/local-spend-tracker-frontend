@@ -1,8 +1,11 @@
+import calendar
+from datetime import date
 from decimal import Decimal
 
 from django.db.models import Count, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils import dateformat
 from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -12,10 +15,15 @@ from apps.councils.models import Council
 
 from .forms import TransactionFilterForm
 from .pagination import TransactionCursorPagination
-from .selectors import SORT_FIELDS, get_council_transactions
+from .selectors import (
+    SORT_FIELDS,
+    get_beneficiary_suggestions,
+    get_council_transactions,
+    get_latest_transaction_date,
+)
 from .serializers import SpendTransactionSerializer
 from .services.export import stream_transactions_csv
-from .throttling import ExportRateThrottle
+from .throttling import BeneficiaryAutocompleteThrottle, ExportRateThrottle
 
 
 def _filtered_transactions(council: Council, form: TransactionFilterForm):
@@ -76,6 +84,92 @@ class TransactionExportAPIView(APIView):
         return stream_transactions_csv(queryset, filename=f"{council.slug}-transactions.csv")
 
 
+class BeneficiarySuggestionsAPIView(APIView):
+    """GET /api/v1/councils/<slug>/transactions/beneficiaries/?q=... —
+    autocomplete source for the Recipient filter. Read-only distinct name
+    strings, not a serializer -- there's no model instance to represent.
+    """
+
+    throttle_classes = [BeneficiaryAutocompleteThrottle]
+
+    def get(self, request, slug):
+        council = get_object_or_404(Council, slug=slug)
+        q = request.query_params.get("q", "").strip()
+        return Response({"results": get_beneficiary_suggestions(council, q)})
+
+
+def _date_preset_link(request, date_from: date, date_to: date) -> str:
+    """Same shape as _sort_link below, but for the two Day/Month/Year
+    subfields DayMonthYearField's widget renders as (see forms.py) --
+    date_from_0/1/2 for day/month/year, not one date_from param."""
+    params = request.GET.copy()
+    params["date_from_0"], params["date_from_1"], params["date_from_2"] = (
+        str(date_from.day),
+        str(date_from.month),
+        str(date_from.year),
+    )
+    params["date_to_0"], params["date_to_1"], params["date_to_2"] = (
+        str(date_to.day),
+        str(date_to.month),
+        str(date_to.year),
+    )
+    params.pop("cursor", None)
+    return f"?{params.urlencode()}"
+
+
+def _remove_filter_link(request, keys: list[str]) -> str:
+    """Same-page URL with the given GET params (and any cursor) dropped --
+    what an active-filter chip's remove button links to."""
+    params = request.GET.copy()
+    for key in keys:
+        params.pop(key, None)
+    params.pop("cursor", None)
+    return f"?{params.urlencode()}"
+
+
+def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
+    """One chip per applied filter, so the active-filter row never has to
+    duplicate the parsing TransactionFilterForm already did."""
+    cleaned = form.cleaned_data
+    chips = []
+
+    date_from, date_to = cleaned.get("date_from"), cleaned.get("date_to")
+    if date_from or date_to:
+        if date_from and date_to:
+            label = (
+                f"{dateformat.format(date_from, 'j M Y')} – {dateformat.format(date_to, 'j M Y')}"
+            )
+        elif date_from:
+            label = f"From {dateformat.format(date_from, 'j M Y')}"
+        else:
+            label = f"Until {dateformat.format(date_to, 'j M Y')}"
+        date_keys = [f"date_{side}_{i}" for side in ("from", "to") for i in range(3)]
+        chips.append({"label": label, "remove_link": _remove_filter_link(request, date_keys)})
+
+    amount_min, amount_max = cleaned.get("amount_min"), cleaned.get("amount_max")
+    if amount_min is not None or amount_max is not None:
+        if amount_min is not None and amount_max is not None:
+            label = f"£{amount_min:g} – £{amount_max:g}"
+        elif amount_min is not None:
+            label = f"Min £{amount_min:g}"
+        else:
+            label = f"Max £{amount_max:g}"
+        chips.append(
+            {
+                "label": label,
+                "remove_link": _remove_filter_link(request, ["amount_min", "amount_max"]),
+            }
+        )
+
+    q = cleaned.get("q")
+    if q:
+        chips.append(
+            {"label": f'Recipient: "{q}"', "remove_link": _remove_filter_link(request, ["q"])}
+        )
+
+    return chips
+
+
 def _sort_link(request, field: str, current_sort: str, current_descending: bool) -> str:
     """Build a same-page URL that sorts by `field`, toggling direction if it's
     already the active sort column. Drops any pagination cursor -- changing
@@ -124,6 +218,28 @@ def council_spend_view(request, slug):
 
     current_sort = form.sort_field if form.is_valid() else "date"
     current_descending = form.descending if form.is_valid() else True
+
+    preset_links = {}
+    latest_date = get_latest_transaction_date(council)
+    if latest_date:
+        month_start = latest_date.replace(day=1)
+        month_end = latest_date.replace(
+            day=calendar.monthrange(latest_date.year, latest_date.month)[1]
+        )
+        year_start = latest_date.replace(month=1, day=1)
+        year_end = latest_date.replace(month=12, day=31)
+        preset_links = {
+            "latest_month": _date_preset_link(request, month_start, month_end),
+            "latest_year": _date_preset_link(request, year_start, year_end),
+        }
+
+    # Expand the Custom date fields by default once a caller has actually
+    # entered one -- otherwise a typed range only the URL remembers looks
+    # like it silently vanished behind the collapsed <details>.
+    custom_date_open = any(
+        request.GET.get(f"date_{side}_{i}") for side in ("from", "to") for i in range(3)
+    )
+
     context = {
         "council": council,
         "form": form,
@@ -137,6 +253,23 @@ def council_spend_view(request, slug):
         "sort_links": {
             field: _sort_link(request, field, current_sort, current_descending)
             for field in SORT_FIELDS
+        },
+        "preset_links": preset_links,
+        "custom_date_open": custom_date_open,
+        "active_filters": _active_filter_chips(request, form) if form.is_valid() else [],
+        "cluster_active": {
+            "date": bool(
+                form.is_valid()
+                and (form.cleaned_data.get("date_from") or form.cleaned_data.get("date_to"))
+            ),
+            "amount": bool(
+                form.is_valid()
+                and (
+                    form.cleaned_data.get("amount_min") is not None
+                    or form.cleaned_data.get("amount_max") is not None
+                )
+            ),
+            "recipient": bool(form.is_valid() and form.cleaned_data.get("q")),
         },
     }
     return render(request, "spend/transactions.html", context)

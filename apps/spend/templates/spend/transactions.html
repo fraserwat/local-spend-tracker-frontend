@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}{{ council.name }} spend — Local Spend Tracker{% endblock %}
 
@@ -63,23 +64,158 @@
     flex-shrink: 0;
   }
 
-  .filters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; }
-  .filters label {
-    display: block;
+  /* ---- filter panel: bordered clusters, not one flat row ----
+     Gestalt common region (Palmer) -- a border around related fields reads
+     as "these belong together" harder than spacing alone, so date/amount/
+     recipient/category each get their own cluster instead of six loose
+     inputs. "Active" is a literal border/weight change (Judd's flat
+     objects, Albers' relational contrast), never a glow -- see the CTA
+     button below for the same rule applied to the one button on this
+     screen. */
+  .filter-panel {
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-elevated);
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .clusters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-start; }
+  .cluster {
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3) var(--space-3);
+    transition: border-color 150ms ease;
+  }
+  .cluster.active { border-color: var(--color-border); }
+  .cluster-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--color-text-muted);
-    margin-bottom: var(--space-1);
+    margin-bottom: var(--space-2);
   }
-  .reset-link {
-    align-self: center;
+  .cluster.active .cluster-label { color: var(--color-text); font-weight: 700; }
+  .cluster-label .mark { width: 5px; height: 5px; border-radius: 50%; background: var(--color-text-faint); flex-shrink: 0; }
+  .cluster.active .cluster-label .mark { background: var(--color-link); }
+
+  .field {
+    background: transparent;
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-2);
+    font-size: var(--text-base);
+    font-family: inherit;
+  }
+  .cluster.active .field { border-color: var(--color-border); }
+  .field:focus { outline: none; border-color: var(--color-link); }
+  /* Native spinner arrows compete visually with the border and add
+     nothing a sighted mouse user needs; arrow-key stepping still works
+     while the input is focused (Carbon Number Input's own rationale for
+     excluding the spinner from the tab order). */
+  input.field[type="number"]::-webkit-inner-spin-button,
+  input.field[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input.field[type="number"] { -moz-appearance: textfield; }
+
+  .amount-row { display: flex; align-items: center; gap: var(--space-2); }
+  .amount-field-wrap { position: relative; }
+  .amount-field-wrap::before {
+    content: "£";
+    position: absolute;
+    left: var(--space-2);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-faint);
+    font-size: var(--text-base);
+    pointer-events: none;
+  }
+  .amount-field-wrap .field { padding-left: 1.3rem; width: 90px; }
+  .amount-sep { color: var(--color-text-faint); }
+
+  /* GOV.UK's date-input pattern: three typed fields, not a calendar
+     widget -- recall beats visual navigation once a user already knows
+     the date they want. https://design-system.service.gov.uk/components/date-input/ */
+  .dmy-day, .dmy-month { width: 2.6em; }
+  .dmy-year { width: 3.8em; }
+  .dmy-sep { color: var(--color-text-faint); margin: 0 0.2em; }
+  .date-range-label { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-1); }
+  .preset-row { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+  .preset-btn {
+    display: inline-block;
+    border: 1px solid var(--color-border-subtle);
+    background: transparent;
     color: var(--color-text-muted);
     font-size: var(--text-sm);
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    padding: 0.3rem var(--space-3);
+    border-radius: 999px;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
   }
-  .reset-link:hover { color: var(--color-link); }
+  .preset-btn:hover { border-color: var(--color-border); color: var(--color-text); }
+  .date-custom { margin-top: var(--space-2); }
+  .date-custom summary { color: var(--color-text-muted); font-size: var(--text-sm); cursor: pointer; }
+  .date-custom summary:hover { color: var(--color-link); }
+  .date-custom[open] summary { margin-bottom: var(--space-2); }
+  .dmy-field-row { display: flex; align-items: center; gap: var(--space-1); margin-top: var(--space-1); }
+  .dmy-field-row .dmy-field-label { font-size: var(--text-sm); color: var(--color-text-faint); width: 2.5em; }
+
+  /* Recipient autocomplete -- ARIA combobox pattern, same shape as
+     GOV.UK's accessible-autocomplete. Works with no JS: this is the same
+     plain text input either way, apps/spend/static/spend/js/autocomplete.js
+     only adds the listbox on top. */
+  .combobox-wrap { position: relative; }
+  .combobox-wrap .field { width: 200px; }
+  .combobox-listbox {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    z-index: 5;
+  }
+  .combobox-option { padding: var(--space-2) var(--space-3); font-size: var(--text-base); cursor: pointer; }
+  .combobox-option.highlighted { background: rgba(0, 172, 230, 0.16); }
+
+  .cat-disabled { display: flex; align-items: center; gap: var(--space-2); color: var(--color-text-faint); font-size: var(--text-base); }
+  .soon-badge { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid var(--color-border-subtle); border-radius: 999px; padding: 0.1rem var(--space-2); }
+
+  .panel-actions { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); }
+
+  /* Active-filter chips -- same signal shown a second time (Path of
+     Exile's loot-filter state echoed on both the item and the minimap),
+     so "what's filtering right now" never requires reading every cluster. */
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-radius: 999px;
+    padding: 0.25rem 0.4rem 0.25rem var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .chip .x { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; color: var(--color-text-muted); }
+  .chip:hover .x { background: rgba(255, 255, 255, 0.14); color: var(--color-text); }
+  .chip-clear { color: var(--color-text-faint); font-size: var(--text-sm); text-decoration: underline; text-underline-offset: 2px; }
+  .chip-clear:hover { color: var(--color-link); }
 
   .errorlist { color: var(--color-error); list-style: none; padding: 0; margin: 0 0 var(--space-4); font-size: var(--text-base); }
 
@@ -184,14 +320,18 @@
   .page-btn:hover { background: var(--color-surface-hover); border-color: var(--color-link); }
   .page-btn.disabled { color: var(--color-text-faint); border-color: var(--color-border-subtle); cursor: default; }
 
+  /* Flat fill, no box-shadow -- a glow fakes a light source on a screen
+     that's otherwise flat and bordered everywhere else (Judd's argument
+     against illusionistic relief; 2026's "tactile brutalism" dark-UI
+     trend drops the same blur for the same reason). The button is a
+     plane, not a lit object. */
   button.button-cta {
     background: var(--color-cta);
     color: var(--color-cta-text);
-    box-shadow: 0 2px 10px rgba(255, 153, 0, 0.3);
+    border: 1px solid var(--color-cta-hover);
   }
   button.button-cta:hover {
     background: var(--color-cta-hover);
-    box-shadow: 0 4px 14px rgba(255, 153, 0, 0.4);
   }
 </style>
 {% endblock %}
@@ -208,37 +348,69 @@
   </ul>
   {% endif %}
 
-  <form class="filters" method="get">
-    <div>
-      <label for="{{ form.date_from.id_for_label }}">From</label>
-      {{ form.date_from }}
-    </div>
-    <div>
-      <label for="{{ form.date_to.id_for_label }}">To</label>
-      {{ form.date_to }}
-    </div>
-    <div>
-      <label for="{{ form.amount_min.id_for_label }}">Min £</label>
-      {{ form.amount_min }}
-    </div>
-    <div>
-      <label for="{{ form.amount_max.id_for_label }}">Max £</label>
-      {{ form.amount_max }}
-    </div>
-    <div>
-      <label for="{{ form.q.id_for_label }}">Recipient</label>
-      {{ form.q }}
-    </div>
-    <div>
-      <label for="{{ form.category.id_for_label }}">Category (Coming Soon)</label>
-      {{ form.category }}
-    </div>
-    <input type="hidden" name="sort" value="{{ sort }}">
-    <input type="hidden" name="dir" value="{{ dir }}">
-    <button type="submit" class="button-cta">Filter</button>
-    <button type="submit" name="export" value="csv" class="button-secondary">Export CSV</button>
-    <a class="reset-link" href="{% url 'council-spend' slug=council.slug %}">Reset filters</a>
-  </form>
+  <div class="filter-panel">
+    <form method="get">
+      <div class="clusters">
+        <div class="cluster{% if cluster_active.date %} active{% endif %}">
+          <div class="cluster-label"><span class="mark"></span>Date range</div>
+          {% if preset_links %}
+          <div class="preset-row">
+            <a class="preset-btn" href="{{ preset_links.latest_month }}">Latest month</a>
+            <a class="preset-btn" href="{{ preset_links.latest_year }}">Latest year</a>
+          </div>
+          {% endif %}
+          <details class="date-custom"{% if custom_date_open %} open{% endif %}>
+            <summary>Custom&hellip;</summary>
+            <div class="dmy-field-row">
+              <span class="dmy-field-label">From</span>
+              {{ form.date_from }}
+            </div>
+            <div class="dmy-field-row">
+              <span class="dmy-field-label">To</span>
+              {{ form.date_to }}
+            </div>
+          </details>
+        </div>
+
+        <div class="cluster{% if cluster_active.amount %} active{% endif %}">
+          <div class="cluster-label"><span class="mark"></span>Amount</div>
+          <div class="amount-row">
+            <div class="amount-field-wrap">{{ form.amount_min }}</div>
+            <span class="amount-sep">&ndash;</span>
+            <div class="amount-field-wrap">{{ form.amount_max }}</div>
+          </div>
+        </div>
+
+        <div class="cluster{% if cluster_active.recipient %} active{% endif %}">
+          <div class="cluster-label"><span class="mark"></span>Recipient</div>
+          <div class="combobox-wrap" data-suggest-url="{% url 'council-transaction-beneficiaries' slug=council.slug %}">
+            {{ form.q }}
+          </div>
+        </div>
+
+        <div class="cluster">
+          <div class="cluster-label"><span class="mark"></span>Category</div>
+          <div class="cat-disabled">{{ form.category }}<span class="soon-badge">Coming soon</span></div>
+        </div>
+      </div>
+
+      {% if active_filters %}
+      <div class="chip-row">
+        {% for chip in active_filters %}
+        <a class="chip" href="{{ chip.remove_link }}">{{ chip.label }}<span class="x" aria-hidden="true">&times;</span></a>
+        {% endfor %}
+        <a class="chip-clear" href="{% url 'council-spend' slug=council.slug %}">Clear all</a>
+      </div>
+      {% endif %}
+
+      <input type="hidden" name="sort" value="{{ sort }}">
+      <input type="hidden" name="dir" value="{{ dir }}">
+      <div class="panel-actions">
+        <button type="submit" class="button-cta">Filter</button>
+        <button type="submit" name="export" value="csv" class="button-secondary">Export CSV</button>
+      </div>
+    </form>
+  </div>
 
   <div class="result-summary">Showing {{ transactions|length }} of {{ total_count }} transaction{{ total_count|pluralize }} matching filters</div>
 </div>
@@ -305,4 +477,5 @@
   </span>
   {% endif %}
 </nav>
+<script src="{% static 'spend/js/autocomplete.js' %}" defer></script>
 {% endblock %}
