@@ -108,5 +108,5 @@ REST_FRAMEWORK = {
     # throttle_classes (apps/spend/throttling.py) replaces this rather than
     # stacking with it.
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
-    "DEFAULT_THROTTLE_RATES": {"anon": "120/min", "export": "5/min"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "120/min", "export": "5/min", "autocomplete": "60/min"},
 }
