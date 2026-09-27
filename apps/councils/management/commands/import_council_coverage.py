@@ -43,8 +43,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "bath-and-north-east-somerset": (False, ""),
     "bedford": (
         True,
-        "Jul-Aug 2024 rows are missing; the source page's earliest file is "
-        "Sep-2024, a genuine publication gap rather than a scrape miss.",
+        "Jul-Aug 2024 rows are missing; the source page's earliest file is Sep-2024.",
     ),
     "bexley": (False, ""),
     "birmingham": (False, ""),
@@ -67,7 +66,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         True,
         "3 months (04.2025, 05.2025, 02.2026) have Supplier Name 100% blank "
         "(the mandatory beneficiary field), so those files are dropped "
-        "entirely, a genuine source gap. Separately, 10,359 of 10,643 rows in "
+        "entirely. Separately, 10,359 of 10,643 rows in "
         "09.2025 duplicate the Sep tail of the mislabelled '07.2025' file "
         "(which actually spans Jul-Sep 2025); 09.2025 is kept anyway for its "
         "284 unique late-Sep rows, so the overlap inflates a naive sum.",
@@ -144,7 +143,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         True,
         "No source data for 2019-06 or 2026-05 (auth-walled SharePoint share "
         "links). Separately, ~9,600 of 144,000 rows are dropped for genuinely "
-        "blank Payment Date, confirmed not a parse gap.",
+        "blank Payment Date.",
     ),
     "cornwall": (False, ""),
     "cotswold": (False, ""),
@@ -193,7 +192,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "ealing": (False, ""),
     "east-cambridgeshire": (
         True,
-        "No source data for June 2023 (genuine gap in the source).",
+        "No source data for June 2023.",
     ),
     "east-devon": (False, ""),
     "east-hampshire": (
@@ -205,8 +204,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         "No source data for 2019-2021 (no published report at all). "
         "Separately, 16 weekly files (Mar-Oct 2017) never existed at the "
         "source, one 2016 week is password-protected, and one 2024-02 week "
-        "sits behind an internal login wall -- all excluded, not just "
-        "unparsed.",
+        "sits behind an internal login wall.",
     ),
     "east-lindsey": (
         True,
@@ -224,7 +222,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         "2011Q3.csv and 2012Q4.csv genuinely overlap by ~150 rows in Nov-Dec "
         "2011 (kept as published), double-counting that overlap in the "
         "displayed total. Separately, 2010Q1.csv has no date column at all; "
-        "~643 rows drop entirely for missing date, a genuine source gap.",
+        "~643 rows drop entirely for missing date.",
     ),
     "east-suffolk": (
         True,
@@ -260,7 +258,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         True,
         "2025-06 and 2026-06 data could not be recovered -- both collided on "
         "disk under the same generic upload filename as the 2026-07 file, and "
-        "only 2026-07 was kept. Those two months are a known, documented gap.",
+        "only 2026-07 was kept.",
     ),
     "gedling": (
         True,
@@ -315,7 +313,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "hinckley-and-bosworth": (
         True,
         "Jan-Dec 2019 files were pulled from the source page and no longer "
-        "link (a real gap, not a scrape miss); pre-2019 months use a "
+        "link; pre-2019 months use a "
         "decommissioned URL scheme that also 404s. Coverage now starts "
         "January 2020.",
     ),
@@ -324,7 +322,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "huntingdonshire": (
         True,
         "Jul-Sep and Oct-Dec 2018 report every amount as negative -- a "
-        "ledger-export convention for that half-year, not a parsing error -- "
+        "ledger-export convention for that half-year -- "
         "retained as published, so displayed totals for that period reflect "
         "the sign flip.",
     ),
@@ -375,13 +373,12 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "lincoln": (False, ""),
     "liverpool": (
         True,
-        "Jan-May 2026 is published PDF-only so far (no spreadsheet yet), a "
-        "coverage gap rather than a bug.",
+        "Jan-May 2026 is published PDF-only so far (no spreadsheet yet).",
     ),
     "luton": (
         True,
         "No data exists for years before Jan 2024: the council took down "
-        "earlier years' pages (404s), not a fetch fault.",
+        "earlier years' pages (404s).",
     ),
     "maidstone": (
         False,
@@ -394,7 +391,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "mansfield": (
         True,
         "2013-14 to 2019-20 and FY2022-23 supplier-spend are published "
-        "PDF-only (no spreadsheet), a genuine source gap that's omitted.",
+        "PDF-only (no spreadsheet) and omitted.",
     ),
     "medway": (False, ""),
     "melton": (
@@ -411,21 +408,18 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "mid-devon": (
         True,
         "The site keeps only a rolling ~2-year window, so earlier months "
-        "already 404; December 2024 itself is also missing (a site-side gap, "
-        "not something pruned by us).",
+        "already 404; December 2024 itself is also missing.",
     ),
     "mid-suffolk": (False, ""),
     "mid-sussex": (False, ""),
     "middlesbrough": (
         True,
-        "No CSV was ever published for Sept 2013, Feb 2016, or Aug 2021 (PDF "
-        "only) -- genuine source gaps, not scrape misses.",
+        "No CSV was ever published for Sept 2013, Feb 2016, or Aug 2021 (PDF only).",
     ),
     "milton-keynes": (
         True,
         "Apr 2019-Mar 2020 data is no longer available: the source archive "
-        "page now starts at 2020/21 and the older files 404 -- a data gap, "
-        "not a bug.",
+        "page now starts at 2020/21 and the older files 404.",
     ),
     "mole-valley": (False, ""),
     "new-forest": (
@@ -438,13 +432,12 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     ),
     "newark-and-sherwood": (
         True,
-        "No file was ever published for Q4 FY2023-24 (Jan-Mar 2024) -- a real "
-        "gap between the Q3 2023-24 and Q1 2024-25 releases, not a drop.",
+        "No file was ever published for Q4 FY2023-24 (Jan-Mar 2024).",
     ),
     "newcastle-under-lyme": (False, ""),
     "newcastle-upon-tyne": (
         True,
-        "November 2025 has no published file on the source page -- a gap, not a fetch failure.",
+        "November 2025 has no published file on the source page.",
     ),
     "newham": (False, ""),
     "north-devon": (False, ""),
@@ -453,8 +446,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "north-hertfordshire": (
         True,
         "No CSV or PDF has been published for 2024-2025: the council pulled "
-        "it site-side ('errors have been found') -- a genuine coverage gap, "
-        "not a fetch failure.",
+        "it site-side ('errors have been found').",
     ),
     "north-kesteven": (False, ""),
     "north-norfolk": (False, ""),
@@ -465,8 +457,8 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "north-west-leicestershire": (
         True,
         "2010-11 through 2019-20 landing pages are now 410 Gone (removed by "
-        "the council) and Apr-Aug 2024 has no published file anywhere -- both "
-        "genuine coverage gaps, not fetch faults. From 2023-24 on, the "
+        "the council) and Apr-Aug 2024 has no published file anywhere. "
+        "From 2023-24 on, the "
         "source's gross-amount column also repeats the whole invoice total on "
         "every split line of a multi-line invoice, so the mapped AMOUNT_GBP "
         "overstates spend for those invoices; left as published rather than "
@@ -532,7 +524,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "rugby": (False, ""),
     "runnymede": (
         True,
-        "No source file actually holds May 2021 data -- a real publishing gap, not a scrape miss.",
+        "No source file actually holds May 2021 data.",
     ),
     "rushcliffe": (False, ""),
     "rushmoor": (False, ""),
@@ -543,8 +535,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "sevenoaks": (
         True,
         "Aug-Nov 2010 (the first 4 months published) have no date column at "
-        "all, so those rows are undateable and dropped entirely -- "
-        "effectively no data exists for that period.",
+        "all, so those rows are undateable and dropped entirely.",
     ),
     "sheffield": (False, ""),
     "shropshire": (False, ""),
@@ -566,16 +557,15 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         True,
         "~7.6k rows across three 2010 files (Apr, May, Jun) publish no "
         "payment-date column at all and are dropped by the required-DATE "
-        "filter, a genuine source gap.",
+        "filter.",
     ),
     "south-hams": (
         True,
-        "FY2018/19 (Mar-2018 to Apr-2019) is absent from the source webapp "
-        "entirely, a real coverage gap.",
+        "FY2018/19 (Mar-2018 to Apr-2019) is absent from the source webapp entirely.",
     ),
     "south-holland": (
         True,
-        "No file (CSV or XML) was published for July 2018, a genuine gap.",
+        "No file (CSV or XML) was published for July 2018.",
     ),
     "south-kesteven": (False, ""),
     "south-norfolk": (False, ""),
@@ -594,11 +584,11 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     # recovered
     "spelthorne": (
         True,
-        "Jan 2024 is PDF-only, with no CSV or xlsx published that month, a one-month gap.",
+        "Jan 2024 is PDF-only, with no CSV or xlsx published that month.",
     ),
     "st-albans": (
         True,
-        "No file was published for November 2021, a genuine gap in the council's series.",
+        "No file was published for November 2021.",
     ),
     "st-helens": (
         True,
@@ -618,8 +608,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "stroud": (
         True,
         "161 rows are literal same-file duplicates (identical Transaction "
-        "Number repeated) and remain in the totals since the dedupe pipeline "
-        "isn't implemented yet, inflating a naive sum.",
+        "Number repeated) and remain in the totals, inflating a naive sum.",
     ),
     "sunderland": (False, ""),
     "surrey-heath": (False, ""),
@@ -638,7 +627,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         True,
         "Only a rolling ~12-month window (Jul 2025 on) is published at all; "
         "within that, Jul-Oct 2025 exist only as PDF and are excluded as not "
-        "machine-readable, a coverage gap.",
+        "machine-readable.",
     ),
     "telford-and-wrekin": (False, ""),
     "tendring": (
@@ -666,7 +655,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "torbay": (False, ""),
     "tower-hamlets": (
         True,
-        "A few hundred malformed, shifted-column rows are dropped from the parse every run (#79).",
+        "A few hundred malformed, shifted-column rows are dropped from the parse every run.",
     ),
     "trafford": (False, ""),
     "tunbridge-wells": (False, ""),
@@ -674,9 +663,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "vale-of-white-horse": (False, ""),
     "wakefield": (
         True,
-        "No CSV/xlsx data was published for 2021-22 Q4 (PDF-only on the "
-        "source site, excluded) -- a genuine coverage gap, not a pruned "
-        "duplicate.",
+        "No CSV/xlsx data was published for 2021-22 Q4 (PDF-only on the source site, excluded).",
     ),
     "walsall": (False, ""),
     "waltham-forest": (False, ""),
@@ -688,9 +675,7 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "wealden": (False, ""),
     "welwyn-hatfield": (
         True,
-        "Source only keeps a rolling ~12-month window of files live (older "
-        "ids 404); ingested history may be limited to that window rather than "
-        "covering the council's full publication history.",
+        "Source only keeps a rolling ~12-month window of files live (older ids 404).",
     ),
     # REVIEW: source keeps only a rolling ~12-month window -- unclear if
     # ingested history is capped at that window or built up from
@@ -705,9 +690,8 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
     "westmorland-and-furness": (
         True,
         "About 0.15% of rows (mostly in one Support Related Payments file) "
-        "are literal duplicate source lines left in rather than deduped "
-        "(dedupe pipeline unimplemented, tracked in #237), inflating a naive "
-        "sum by that amount.",
+        "are literal duplicate source lines left in rather than deduped, "
+        "inflating a naive sum by that amount.",
     ),
     "wigan": (False, ""),
     "winchester": (False, ""),
@@ -716,19 +700,17 @@ COVERAGE_FIXTURE: dict[str, tuple[bool, str]] = {
         True,
         "The December 2025 file is missing its Paid Date column, shifting "
         "every field left; roughly 4,985 of 4,987 rows drop on a null amount "
-        "before any date check runs, leaving that month with effectively no "
-        "usable data.",
+        "before any date check runs.",
     ),
     "woking": (False, ""),
     "wokingham": (False, ""),
     "wolverhampton": (
         True,
-        "No spend-over-£500 report was published for Feb 2026 or Mar 2026 "
-        "(confirmed real gap, not a missed link).",
+        "No spend-over-£500 report was published for Feb 2026 or Mar 2026.",
     ),
     "worcester": (
         True,
-        "No CSV data exists for Jun 2022 (published PDF-only) -- a genuine gap, not a parse drop.",
+        "No CSV data exists for Jun 2022 (published PDF-only).",
     ),
     "worthing": (False, ""),
     "wychavon": (
