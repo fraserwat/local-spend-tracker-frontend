@@ -67,8 +67,8 @@
     /* Rectangular, matching the sidebar's own radius, not a pill -- it
        should read as part of the slot's surface, not an object floating
        above it. No independent shadow for the same reason. */
-    background: var(--color-cta);
-    color: var(--color-cta-text);
+    background: var(--color-accent);
+    color: var(--color-accent-text);
     font-weight: 700;
     font-size: var(--text-md);
     padding: var(--space-3) var(--space-4);
@@ -77,29 +77,20 @@
     transition: background 140ms ease;
   }
   a.spend-cta:hover {
-    /* Restated, not inherited -- theme.css's generic a:hover has higher
-       specificity (element+pseudo beats a lone class) and would otherwise
-       overwrite this with the blue link-hover color, putting light blue
-       text on an orange button. */
-    color: var(--color-cta-text);
-    background: var(--color-cta-hover);
+    /* Restated -- theme.css's generic a:hover (element+pseudo) otherwise
+       outranks this class and overwrites it with the link tint. */
+    color: var(--color-accent-text);
+    background: var(--color-accent-hover);
   }
 
-  /* Selected boundary gets a persistent glow, not a hover-only one -- it
-     needs to read as "this is the one you picked" the whole time its page
-     is open. Kept deliberately quiet -- a hairline-weight stroke (see
-     SELECTED_STYLE in map.js) plus a single soft glow layer, not the
-     heavier double-glow bloom this used to carry; dense dashboards read
-     better with a thin definite edge than a saturated halo. The base
-     (non-animated) rule is the glow's resting state; the pulse is a few
-     cycles of emphasis on arrival, not a permanent loop -- an infinite
-     animation running alongside page content trips WCAG 2.2.2
-     (pause/stop/hide), so it's capped at 4 iterations here and settles
-     back to the static glow once done. 2s/cycle is also nowhere near SC
-     2.3.1's 3-flashes-per-second threshold. prefers-reduced-motion skips
-     the animation and goes straight to the static glow. */
+  /* Persistent glow, not hover-only -- "this is the one you picked" for as
+     long as the page is open. Exception to the flat-UI no-glow rule: a map
+     selection needs to stand out against arbitrary basemap imagery, which
+     a hairline alone can't guarantee. Capped at 4 pulse cycles on arrival
+     (infinite motion trips WCAG 2.2.2); prefers-reduced-motion skips
+     straight to the static glow. Recolored to the new accent's link tint. */
   .leaflet-interactive.council-boundary--selected {
-    filter: drop-shadow(0 0 3px rgba(0, 172, 230, 0.35));
+    filter: drop-shadow(0 0 3px rgba(165, 180, 252, 0.35));
   }
   @media (prefers-reduced-motion: no-preference) {
     .leaflet-interactive.council-boundary--selected {
@@ -108,19 +99,13 @@
   }
   @keyframes council-pulse {
     0%, 100% {
-      filter: drop-shadow(0 0 3px rgba(0, 172, 230, 0.35));
+      filter: drop-shadow(0 0 3px rgba(165, 180, 252, 0.35));
     }
     50% {
-      filter: drop-shadow(0 0 5px rgba(0, 172, 230, 0.55));
+      filter: drop-shadow(0 0 5px rgba(165, 180, 252, 0.55));
     }
   }
-  /* Dark card with a saturated border, not a solid-fill floating bubble --
-     reads as "flagged" without competing with the CTA for the same
-     saturated-color attention. Static in the sidebar slot now, not pinned
-     to a map corner, so it never overlaps #nation-note -- map.js still
-     keeps them mutually exclusive since only one is ever relevant at once.
-     The heading is static markup (map.js only ever writes .badge-body),
-     so map.js can keep using textContent for the copy itself. */
+  /* Dark card, saturated border, not a solid bubble -- reads as "flagged". */
   #coverage-badge {
     display: none;
     width: 100%;
@@ -134,14 +119,14 @@
   }
   #coverage-badge.visible { display: block; }
 
-  /* Same card treatment as #coverage-badge, but orange -- explains absent
+  /* Same card treatment as #coverage-badge, but amber -- explains absent
      data, not a problem with data that exists. */
   #nation-note {
     display: none;
     width: 100%;
     box-sizing: border-box;
     background: var(--color-info-bg);
-    border: 1px solid var(--color-cta);
+    border: 1px solid var(--color-info);
     color: var(--color-info-text);
     padding: var(--space-3);
     border-radius: var(--radius-md);
@@ -208,7 +193,7 @@
     height: 16px;
     border-radius: var(--radius-sm);
     flex-shrink: 0;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-cta));
+    background: var(--color-accent);
   }
   #council-search {
     width: 100%;

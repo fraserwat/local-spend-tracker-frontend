@@ -58,17 +58,16 @@ document.addEventListener("DOMContentLoaded", () => {
     color: "#6a5f8f",
     weight: 1.5,
     opacity: 0.55,
-    fillColor: "#24262f",
+    fillColor: "#0a0a0d",
     fillOpacity: 1,
     className: "nation-boundary",
   };
   const SELECTED_STYLE = {
-    color: "#00ace6",
+    color: "#a5b4fc",
     weight: 3,
     fillOpacity: 0.14,
-    // Lighter-tint blue (--color-link), not the base accent (#0099cc), so
-    // "selected" reads as unmistakably on. Targeted by the hairline glow
-    // in main.html.
+    // Link tint (--color-link), not the base accent (#6366f1) -- reads as
+    // unmistakably "on". Targeted by the hairline glow in main.html.
     className: "council-boundary--selected",
   };
 
