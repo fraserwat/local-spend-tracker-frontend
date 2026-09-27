@@ -148,15 +148,15 @@ def test_api_pagination_walk_covers_all_rows(council, client):
 
 
 @pytest.mark.django_db
-def test_category_filter_only_returns_matching_rows(council, rows, client):
-    rows[0].category = "Staff costs"
+def test_consultancy_filter_only_returns_matching_rows(council, rows, client):
+    rows[0].category = "Consultancy Fees"
     rows[0].save()
     rows[1].category = "Grants"
     rows[1].save()
 
     response = client.get(
         reverse("council-transactions", kwargs={"slug": council.slug}),
-        {"category": "Staff costs"},
+        {"consultancy": "on"},
     )
 
     assert response.status_code == 200
@@ -166,60 +166,33 @@ def test_category_filter_only_returns_matching_rows(council, rows, client):
 
 
 @pytest.mark.django_db
-def test_category_filter_accepts_multiple_values(council, rows, client):
-    rows[0].category = "Staff costs"
+def test_consultancy_filter_off_returns_all_rows(council, rows, client):
+    rows[0].category = "Consultancy Fees"
     rows[0].save()
-    rows[1].category = "Grants"
-    rows[1].save()
 
-    response = client.get(
-        reverse("council-transactions", kwargs={"slug": council.slug}),
-        {"category": ["Staff costs", "Grants"]},
-    )
+    response = client.get(reverse("council-transactions", kwargs={"slug": council.slug}))
 
     assert response.status_code == 200
-    names = {r["beneficiary_name"] for r in response.json()["results"]}
-    assert names == {"Vendor 00", "Vendor 01"}
+    assert len(response.json()["results"]) == 5
 
 
 @pytest.mark.django_db
-def test_category_filter_rejects_value_not_in_councils_categories(council, rows, client):
-    """A category param must be one of this council's own distinct values --
-    guards against a stale bookmarked filter link silently matching nothing,
-    or an unrelated value being accepted as if it filtered anything."""
-    rows[0].category = "Staff costs"
-    rows[0].save()
-
-    response = client.get(
-        reverse("council-transactions", kwargs={"slug": council.slug}),
-        {"category": "Not A Real Category"},
-    )
-
-    assert response.status_code == 400
-
-
-@pytest.mark.django_db
-def test_category_checkboxes_render_councils_distinct_values(council, rows, client):
-    rows[0].category = "Staff costs"
-    rows[0].save()
-
+def test_consultancy_checkbox_unchecked_by_default(council, rows, client):
     response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
 
     content = response.content.decode()
-    assert 'value="Staff costs"' in content
+    assert 'id="id_consultancy"' in content
+    assert "checked" not in re.search(r'id="id_consultancy"[^>]*>', content).group()
 
 
 @pytest.mark.django_db
-def test_category_chip_shown_per_selected_category(council, rows, client):
-    rows[0].category = "Staff costs"
-    rows[0].save()
-
+def test_consultancy_chip_shown_when_active(council, rows, client):
     response = client.get(
-        reverse("council-spend", kwargs={"slug": council.slug}), {"category": "Staff costs"}
+        reverse("council-spend", kwargs={"slug": council.slug}), {"consultancy": "on"}
     )
 
     content = response.content.decode()
-    assert "Category: Staff costs" in content
+    assert "Consultancy" in content
 
 
 @pytest.mark.django_db

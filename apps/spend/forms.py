@@ -2,7 +2,7 @@ from datetime import date as date_cls
 
 from django import forms
 
-from .selectors import SORT_FIELDS, get_distinct_categories
+from .selectors import SORT_FIELDS
 
 SORT_CHOICES = [(key, key) for key in SORT_FIELDS]
 DIR_CHOICES = [("asc", "asc"), ("desc", "desc")]
@@ -90,19 +90,11 @@ class TransactionFilterForm(forms.Form):
     )
     sort = forms.ChoiceField(choices=SORT_CHOICES, required=False)
     dir = forms.ChoiceField(choices=DIR_CHOICES, required=False)
-    # Choices are set per-instance in __init__ (they're council-scoped, not
-    # static) -- empty here so the field still exists, and still validates
-    # to "no categories" cleanly, for a caller that never passes `council`.
-    category = forms.MultipleChoiceField(
-        required=False, choices=[], widget=forms.CheckboxSelectMultiple
+    # Keyword-proxy filter, not real entity resolution -- see
+    # category_buckets.CONSULTANCY_KEYWORDS and selectors.get_council_transactions.
+    consultancy = forms.BooleanField(
+        required=False, widget=forms.CheckboxInput(attrs={"class": "consultancy-checkbox"})
     )
-
-    def __init__(self, *args, council=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if council is not None:
-            self.fields["category"].choices = [
-                (value, value) for value in get_distinct_categories(council)
-            ]
 
     def clean(self):
         cleaned = super().clean()
