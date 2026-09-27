@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from apps.councils.management.commands.import_council_coverage import COVERAGE_FIXTURE
-from apps.councils.models import Council, CouncilCoverage
+from apps.councils.models import Council, CouncilCoverage, Region
 from apps.councils.selectors import get_coverage
 
 
@@ -66,11 +66,18 @@ def test_coverage_api_404s_for_unknown_slug():
 
 @pytest.mark.django_db
 def test_import_council_coverage_applies_fixture_to_seeded_councils():
-    """All fixture councils are seeded by migration 0002 -- this only needs
-    their CouncilCoverage rows to exist first, as `load_council_spend` would
-    create them, before the fixture can be applied on top."""
-    for slug in COVERAGE_FIXTURE:
-        CouncilCoverage.objects.create(council=Council.objects.get(slug=slug))
+    """The 18 London-pilot slugs are seeded by migration 0002; the rest of
+    COVERAGE_FIXTURE's nationwide slugs are onboarded live by
+    onboard_english_councils, which doesn't run against the test DB, so
+    they're created synthetically here. Either way this only needs a
+    CouncilCoverage row to exist first, as `load_council_spend` would
+    create it, before the fixture can be applied on top."""
+    for i, slug in enumerate(COVERAGE_FIXTURE):
+        council, _ = Council.objects.get_or_create(
+            slug=slug,
+            defaults={"name": slug, "gss_code": f"E99{i:06d}", "region": Region.LONDON},
+        )
+        CouncilCoverage.objects.create(council=council)
 
     call_command("import_council_coverage")
 
