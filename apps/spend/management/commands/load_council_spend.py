@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.councils.models import Council
-from apps.spend.services.etl import EXPECTED_COLUMNS, load_council_spend
+from apps.spend.services.etl import LoadError, load_council_spend, validate_columns
 from apps.spend.services.r2 import R2Error, fetch_council, normalize_slug
 
 
@@ -58,8 +58,7 @@ class Command(BaseCommand):
 
         if dry_run:
             df = pl.read_parquet(source_path)
-            if set(df.columns) != EXPECTED_COLUMNS:
-                raise CommandError(f"column mismatch: found {set(df.columns)}")
+            self._check_columns(df)
             self.stdout.write(f"dry-run OK: {source_path} has {len(df)} rows, columns match")
             return
 
@@ -78,8 +77,7 @@ class Command(BaseCommand):
 
             if dry_run:
                 df = pl.read_parquet(fetched.parquet_path)
-                if set(df.columns) != EXPECTED_COLUMNS:
-                    raise CommandError(f"column mismatch: found {set(df.columns)}")
+                self._check_columns(df)
                 self.stdout.write(
                     f"dry-run OK: r2://{r2_slug} manifest row_count="
                     f"{fetched.manifest['curated']['row_count']}, downloaded {len(df)} rows, "
@@ -93,3 +91,9 @@ class Command(BaseCommand):
             run.source_sha256 = fetched.manifest["curated"]["sha256"]
             run.save(update_fields=["source_sha256"])
             self.stdout.write(self.style.SUCCESS(f"loaded {run.row_count} rows for {council.name}"))
+
+    def _check_columns(self, df):
+        try:
+            validate_columns(set(df.columns))
+        except LoadError as exc:
+            raise CommandError(str(exc)) from exc

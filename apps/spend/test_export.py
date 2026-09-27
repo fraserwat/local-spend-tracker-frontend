@@ -1,43 +1,17 @@
 import csv
-from datetime import date, timedelta
 from io import StringIO
 
 import pytest
-from django.core.cache import cache
 from django.test import Client
 from django.urls import reverse
 
-from apps.councils.models import Council
 from apps.spend.models import SpendTransaction
 from apps.spend.services import export as export_module
 
-
-@pytest.fixture(autouse=True)
-def _clear_throttle_cache():
-    # ExportRateThrottle's rate limit is keyed in the default cache -- clear
-    # it around each test so tests don't bleed rate-limit state into each other.
-    cache.clear()
-    yield
-    cache.clear()
-
-
-@pytest.fixture
-def council():
-    return Council.objects.get(slug="haringey")
-
-
-@pytest.fixture
-def rows(council):
-    base = date(2026, 1, 1)
-    return [
-        SpendTransaction.objects.create(
-            council=council,
-            date=base + timedelta(days=i),
-            beneficiary_name=f"Vendor {i:02d}",
-            amount_gbp=f"{(i + 1) * 10}.00",
-        )
-        for i in range(5)
-    ]
+EXPORT_ENDPOINTS = [
+    ("council-spend", {"export": "csv"}),
+    ("council-transactions-export", {}),
+]
 
 
 def _csv_body_rows(response) -> list[list[str]]:
@@ -46,13 +20,7 @@ def _csv_body_rows(response) -> list[list[str]]:
     return rows[1:]  # drop header
 
 
-@pytest.mark.parametrize(
-    "endpoint_name,params",
-    [
-        ("council-spend", {"export": "csv"}),
-        ("council-transactions-export", {}),
-    ],
-)
+@pytest.mark.parametrize("endpoint_name,params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
 def test_unfiltered_export_matches_db_count(council, rows, endpoint_name, params):
     client = Client()
@@ -67,13 +35,7 @@ def test_unfiltered_export_matches_db_count(council, rows, endpoint_name, params
     assert len(body_rows) == SpendTransaction.objects.filter(council=council).count() == 5
 
 
-@pytest.mark.parametrize(
-    "endpoint_name,extra_params",
-    [
-        ("council-spend", {"export": "csv"}),
-        ("council-transactions-export", {}),
-    ],
-)
+@pytest.mark.parametrize("endpoint_name,extra_params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
 def test_filtered_export_only_includes_matching_rows(council, rows, endpoint_name, extra_params):
     client = Client()
@@ -98,13 +60,7 @@ def test_export_respects_row_cap(council, rows, monkeypatch):
     assert len(_csv_body_rows(response)) == 3
 
 
-@pytest.mark.parametrize(
-    "endpoint_name,extra_params",
-    [
-        ("council-spend", {"export": "csv"}),
-        ("council-transactions-export", {}),
-    ],
-)
+@pytest.mark.parametrize("endpoint_name,extra_params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
 def test_export_unknown_council_404s(endpoint_name, extra_params):
     client = Client()
@@ -145,13 +101,7 @@ def test_api_export_rejects_invalid_filters(council, rows):
     assert response.status_code == 400
 
 
-@pytest.mark.parametrize(
-    "endpoint_name,params",
-    [
-        ("council-spend", {"export": "csv"}),
-        ("council-transactions-export", {}),
-    ],
-)
+@pytest.mark.parametrize("endpoint_name,params", EXPORT_ENDPOINTS)
 @pytest.mark.django_db
 def test_sixth_rapid_export_request_is_throttled(council, rows, endpoint_name, params):
     client = Client()

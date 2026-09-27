@@ -425,9 +425,9 @@
   <table>
     <thead>
       <tr>
-        <th><a href="{{ sort_links.date }}">Date{% if sort == "date" %}<span class="sort-arrow">{% if dir == "asc" %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
-        <th><a href="{{ sort_links.beneficiary_name }}">Beneficiary{% if sort == "beneficiary_name" %}<span class="sort-arrow">{% if dir == "asc" %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
-        <th class="amount"><a href="{{ sort_links.amount_gbp }}">Amount (£){% if sort == "amount_gbp" %}<span class="sort-arrow">{% if dir == "asc" %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+        {% include "spend/_sortable_th.html" with url=sort_links.date label="Date" field="date" %}
+        {% include "spend/_sortable_th.html" with url=sort_links.beneficiary_name label="Beneficiary" field="beneficiary_name" %}
+        {% include "spend/_sortable_th.html" with url=sort_links.amount_gbp label="Amount (£)" field="amount_gbp" th_class="amount" %}
         <th>Directorate</th>
         <th>Category</th>
       </tr>

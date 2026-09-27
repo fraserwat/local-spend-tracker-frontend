@@ -8,11 +8,6 @@ from apps.spend.models import SpendTransaction
 
 
 @pytest.fixture
-def council():
-    return Council.objects.get(slug="haringey")
-
-
-@pytest.fixture
 def admin_instance():
     return SpendTransactionAdmin(SpendTransaction, AdminSite())
 

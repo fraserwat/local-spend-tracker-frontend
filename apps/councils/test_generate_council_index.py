@@ -28,13 +28,10 @@ def test_generate_council_index_matches_db_state(tmp_path):
 
 
 @pytest.mark.django_db
-def test_generate_council_index_has_coverage_true_for_council_with_coverage_row(tmp_path):
-    council = Council.objects.create(
-        name="Covered Test Council",
-        slug="covered-test-council",
-        gss_code="E99999997",
-        region=Region.LONDON,
-    )
+def test_generate_council_index_has_coverage_true_for_council_with_coverage_row(
+    tmp_path, make_synthetic_council
+):
+    council = make_synthetic_council("covered-test-council", "999997", name="Covered Test Council")
     CouncilCoverage.objects.create(council=council)
     output_path = tmp_path / "council-index.json"
 
@@ -46,13 +43,10 @@ def test_generate_council_index_has_coverage_true_for_council_with_coverage_row(
 
 
 @pytest.mark.django_db
-def test_generate_council_index_has_coverage_false_for_council_without_coverage_row(tmp_path):
-    Council.objects.create(
-        name="Uncovered Test Council",
-        slug="uncovered-test-council",
-        gss_code="E99999996",
-        region=Region.LONDON,
-    )
+def test_generate_council_index_has_coverage_false_for_council_without_coverage_row(
+    tmp_path, make_synthetic_council
+):
+    make_synthetic_council("uncovered-test-council", "999996", name="Uncovered Test Council")
     output_path = tmp_path / "council-index.json"
 
     call_command("generate_council_index", output=str(output_path))
@@ -63,13 +57,9 @@ def test_generate_council_index_has_coverage_false_for_council_without_coverage_
 
 
 @pytest.mark.django_db
-def test_generate_council_index_excludes_inactive_councils(tmp_path):
-    Council.objects.create(
-        name="Inactive Test Council",
-        slug="inactive-test-council",
-        gss_code="E99999999",
-        region=Region.LONDON,
-        is_active=False,
+def test_generate_council_index_excludes_inactive_councils(tmp_path, make_synthetic_council):
+    make_synthetic_council(
+        "inactive-test-council", "999999", name="Inactive Test Council", is_active=False
     )
     output_path = tmp_path / "council-index.json"
 
@@ -122,12 +112,11 @@ def test_generate_council_index_force_bypasses_shrink_guard(tmp_path):
 
 
 @pytest.mark.django_db
-def test_generate_council_index_raises_clear_error_for_invalid_region(tmp_path):
-    Council.objects.create(
-        name="Bad Region Council",
-        slug="bad-region-council",
-        gss_code="E99999998",
-        region="not_a_real_region",
+def test_generate_council_index_raises_clear_error_for_invalid_region(
+    tmp_path, make_synthetic_council
+):
+    make_synthetic_council(
+        "bad-region-council", "999998", name="Bad Region Council", region="not_a_real_region"
     )
     output_path = tmp_path / "council-index.json"
 

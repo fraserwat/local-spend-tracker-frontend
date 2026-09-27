@@ -1,12 +1,6 @@
 import pytest
 
-from apps.councils.models import Council
 from apps.spend.models import DataLoadRun, SpendTransaction
-
-
-@pytest.fixture
-def council():
-    return Council.objects.get(slug="haringey")
 
 
 @pytest.mark.django_db

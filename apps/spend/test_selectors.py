@@ -15,11 +15,6 @@ from apps.spend.selectors import (
 
 
 @pytest.fixture
-def council():
-    return Council.objects.get(slug="haringey")
-
-
-@pytest.fixture
 def other_council():
     return Council.objects.get(slug="camden")
 
