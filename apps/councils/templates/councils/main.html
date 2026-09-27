@@ -33,14 +33,30 @@
      wrapping to two lines would push the meta line, CTA, search box and
      list down by a line-height, the exact shift bug this redesign exists
      to remove. Ellipsis absorbs the overflow; the title attribute (see
-     _council_sidebar.html) recovers the full name on hover. */
+     _council_sidebar.html) recovers the full name on hover.
+
+     1.35rem, not the shared --text-xl (1.25rem) -- past the type scale on
+     purpose, the same way .flagship-total__figure (transactions.html) is,
+     since this is the sidebar's one flagship element too. Measured against
+     the longest real council name ("Bournemouth, Christchurch and Poole",
+     366px at 1.4rem vs. this slot's 368px content width) -- 1.35rem (353px)
+     was the largest step with real margin left before that name would
+     start clipping again. */
   #council-route-heading {
-    font-size: var(--text-xl);
+    font-size: 1.35rem;
     margin: 0;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  /* headingEl.focus() (council-switch.js) moves focus here on every switch
+     purely so screen readers announce the new heading -- tabindex="-1"
+     means a sighted keyboard user can never Tab to it directly, so the
+     browser's default focus ring has nothing to orient them to and just
+     draws an ugly box around the serif text on every click. */
+  #council-route-heading:focus {
+    outline: none;
   }
   /* Design Bible doctrine VIII -- one typographic signature, reused here
      rather than invented, for the sidebar's own flagship fact (which
@@ -201,9 +217,19 @@
   }
   /* Only #council-list scrolls internally (flex: 1 + its own overflow-y) --
      the heading/search stay fixed at the top and the badge/footer stay
-     pinned at the bottom regardless of how long the list is. */
+     pinned at the bottom regardless of how long the list is.
+
+     26rem (416px), not the previous 20rem -- measured against the actual
+     worst-case strings ("Yorkshire and the Humber · Updated 2 weeks, 3
+     days ago" renders at 343px at this font/size), this leaves ~25px of
+     margin over that instead of falling ~70px short of it. Also lines up
+     with real precedent: Google Maps' own web sidebar runs ~400px, and
+     Material Design 3's nav-drawer spec sets 360dp as the standard width
+     for a persistent side panel. Ellipsis (see #council-route-heading,
+     #council-meta, .row-name) stays regardless -- this reduces how often
+     it fires, it doesn't guarantee it never will. */
   .council-sidebar {
-    width: 20rem;
+    width: 26rem;
     flex: none;
     height: 100%;
     display: flex;
