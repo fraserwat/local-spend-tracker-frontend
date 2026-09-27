@@ -5,6 +5,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import CursorPagination
 
 from .models import Council
+from .nations import NATIONS
 from .selectors import get_councils, get_coverage
 from .serializers import CouncilSerializer, CoverageSerializer
 
@@ -67,4 +68,29 @@ def council_dashboard(request, slug=None):
         # render an empty map rather than 404ing the page.
         context["geojson_static_path"] = f"councils/geo/{council.slug}.geojson"
         context["coverage_url"] = reverse("council-coverage", kwargs={"slug": council.slug})
+    return render(request, "councils/main.html", context)
+
+
+def nation_dashboard(request, slug):
+    """GET /nations/<slug>/ — the map screen with a nation's own info card,
+    not a council.
+
+    Scotland/Wales/Northern Ireland have no Council rows (no comparable
+    itemised spend data to onboard), so this is a static info screen, not a
+    variant of council_dashboard's DB-backed lookup. Its own route means
+    the state is shareable/back-button-able instead of only reachable by
+    clicking the map's grey nation overlay -- and, critically, gives it a
+    real "no council selected" render instead of stacking under whatever
+    council happened to be selected before the click (the bug this replaces).
+    """
+    nation = NATIONS.get(slug)
+    if nation is None:
+        raise Http404(f"unknown nation slug={slug!r}")
+    councils = get_councils().filter(is_active=True).order_by("region", "name")
+    context = {
+        "council": None,
+        "nation": nation,
+        "councils": councils,
+        "selected_slug": None,
+    }
     return render(request, "councils/main.html", context)

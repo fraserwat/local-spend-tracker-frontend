@@ -2,7 +2,7 @@ from datetime import date as date_cls
 
 from django import forms
 
-from .selectors import SORT_FIELDS
+from .selectors import SORT_FIELDS, get_distinct_categories
 
 SORT_CHOICES = [(key, key) for key in SORT_FIELDS]
 DIR_CHOICES = [("asc", "asc"), ("desc", "desc")]
@@ -90,9 +90,19 @@ class TransactionFilterForm(forms.Form):
     )
     sort = forms.ChoiceField(choices=SORT_CHOICES, required=False)
     dir = forms.ChoiceField(choices=DIR_CHOICES, required=False)
-    # Rendered disabled with "Coming Soon" -- no backend filtering exists
-    # for it yet (Phase 4 scope), so it's never read out of cleaned_data.
-    category = forms.CharField(required=False, disabled=True)
+    # Choices are set per-instance in __init__ (they're council-scoped, not
+    # static) -- empty here so the field still exists, and still validates
+    # to "no categories" cleanly, for a caller that never passes `council`.
+    category = forms.MultipleChoiceField(
+        required=False, choices=[], widget=forms.CheckboxSelectMultiple
+    )
+
+    def __init__(self, *args, council=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if council is not None:
+            self.fields["category"].choices = [
+                (value, value) for value in get_distinct_categories(council)
+            ]
 
     def clean(self):
         cleaned = super().clean()

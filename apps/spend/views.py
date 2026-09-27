@@ -35,6 +35,7 @@ def _filtered_transactions(council: Council, form: TransactionFilterForm):
         amount_min=data.get("amount_min"),
         amount_max=data.get("amount_max"),
         q=data.get("q") or "",
+        category=data.get("category") or None,
         sort=form.sort_field,
         descending=form.descending,
     )
@@ -53,10 +54,10 @@ class TransactionListAPIView(ListAPIView):
     pagination_class = TransactionCursorPagination
 
     def list(self, request, *args, **kwargs):
-        form = TransactionFilterForm(request.query_params)
+        council = get_object_or_404(Council, slug=self.kwargs["slug"])
+        form = TransactionFilterForm(request.query_params, council=council)
         if not form.is_valid():
             return Response(form.errors, status=400)
-        council = get_object_or_404(Council, slug=self.kwargs["slug"])
         queryset = _filtered_transactions(council, form)
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
@@ -76,10 +77,10 @@ class TransactionExportAPIView(APIView):
     throttle_classes = [ExportRateThrottle]
 
     def get(self, request, slug):
-        form = TransactionFilterForm(request.query_params)
+        council = get_object_or_404(Council, slug=slug)
+        form = TransactionFilterForm(request.query_params, council=council)
         if not form.is_valid():
             return Response(form.errors, status=400)
-        council = get_object_or_404(Council, slug=slug)
         queryset = _filtered_transactions(council, form)
         return stream_transactions_csv(queryset, filename=f"{council.slug}-transactions.csv")
 
@@ -127,6 +128,20 @@ def _remove_filter_link(request, keys: list[str]) -> str:
     return f"?{params.urlencode()}"
 
 
+def _remove_category_link(request, value: str) -> str:
+    """Same shape as _remove_filter_link, but drops one value out of the
+    repeated `category` param instead of the whole key -- each selected
+    category gets its own chip/remove link, not one combined chip."""
+    params = request.GET.copy()
+    remaining = [v for v in params.getlist("category") if v != value]
+    if remaining:
+        params.setlist("category", remaining)
+    else:
+        params.pop("category", None)
+    params.pop("cursor", None)
+    return f"?{params.urlencode()}"
+
+
 def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
     """One chip per applied filter, so the active-filter row never has to
     duplicate the parsing TransactionFilterForm already did."""
@@ -167,6 +182,14 @@ def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
             {"label": f'Recipient: "{q}"', "remove_link": _remove_filter_link(request, ["q"])}
         )
 
+    for category in cleaned.get("category") or []:
+        chips.append(
+            {
+                "label": f"Category: {category}",
+                "remove_link": _remove_category_link(request, category),
+            }
+        )
+
     return chips
 
 
@@ -193,7 +216,7 @@ def council_spend_view(request, slug):
     behaves identically either way.
     """
     council = get_object_or_404(Council, slug=slug)
-    form = TransactionFilterForm(request.GET)
+    form = TransactionFilterForm(request.GET, council=council)
 
     if form.is_valid() and request.GET.get("export") == "csv":
         if not ExportRateThrottle().allow_request(Request(request), view=None):
@@ -270,6 +293,7 @@ def council_spend_view(request, slug):
                 )
             ),
             "recipient": bool(form.is_valid() and form.cleaned_data.get("q")),
+            "category": bool(form.is_valid() and form.cleaned_data.get("category")),
         },
     }
     return render(request, "spend/transactions.html", context)

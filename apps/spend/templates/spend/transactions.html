@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% load static %}
+{% load static humanize %}
 
 {% block title %}{{ council.name }} spend — Local Spend Tracker{% endblock %}
 
@@ -9,9 +9,6 @@
   h1 { font-size: var(--text-xl); margin-bottom: var(--space-2); }
 
   .page-header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
     background: var(--color-bg);
     padding-top: var(--space-1);
     padding-bottom: var(--space-2);
@@ -46,8 +43,7 @@
 
   /* Persistent "you are here" -- the map view's spatial context (which
      region a council sits in) otherwise disappears completely once a user
-     drills into this table. Sits inside the sticky .page-header so it
-     survives the table's own internal scroll. */
+     drills into this table. */
   .council-context {
     display: flex;
     align-items: center;
@@ -183,8 +179,18 @@
   .combobox-option { padding: var(--space-2) var(--space-3); font-size: var(--text-base); cursor: pointer; }
   .combobox-option.highlighted { background: rgba(0, 172, 230, 0.16); }
 
-  .cat-disabled { display: flex; align-items: center; gap: var(--space-2); color: var(--color-text-faint); font-size: var(--text-base); }
-  .soon-badge { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid var(--color-border-subtle); border-radius: 999px; padding: 0.1rem var(--space-2); }
+  /* Real distinct-value checkbox list (apps/spend/selectors.py's
+     get_distinct_categories), not the old disabled "Coming soon" field --
+     Django's CheckboxSelectMultiple renders a plain <ul>/<li>/<label>, so
+     this just restyles that default markup rather than hand-rolling a
+     custom widget template. */
+  .cat-list { max-height: 9.5rem; overflow-y: auto; width: 170px; }
+  .cat-list ul { list-style: none; margin: 0; padding: 0; }
+  .cat-list li { padding: 2px 0; }
+  .cat-list label { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-base); color: var(--color-text-muted); cursor: pointer; }
+  .cat-list label:has(input:checked) { color: var(--color-text); font-weight: 600; }
+  .cat-list input[type="checkbox"] { accent-color: var(--color-link); }
+  .cat-summary { margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-link); }
 
   .panel-actions { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); }
 
@@ -226,24 +232,24 @@
   }
 
   .table-wrapper {
-    max-height: calc(100vh - 320px);
-    overflow-y: auto;
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
+    /* Wide tables (5 columns, long beneficiary names) shouldn't force the
+       whole page to scroll sideways -- this is the one axis that scrolls
+       independently, never the vertical one (the page scrolls as a single
+       unit; no inner scrollbox competing with it). */
+    overflow-x: auto;
   }
   /* separate, not collapse -- collapsed borders paint in the gap between
-     cells rather than inside either cell's own box, so a sticky thead/tfoot
-     background can't fully occlude the row scrolling underneath it and rows
-     bleed through at the seam. Separate borders keep each cell's background
-     self-contained. border-spacing: 0 plus explicit per-cell border-bottom
-     (below) keeps rows visually seamless despite the collapse mode change. */
+     cells rather than inside either cell's own box, so a hovered row's
+     background can't fully occlude the border under it. Separate borders
+     keep each cell's background self-contained. border-spacing: 0 plus
+     explicit per-cell border-bottom (below) keeps rows visually seamless
+     despite the collapse mode change. */
   table { border-collapse: separate; border-spacing: 0; width: 100%; }
   th, td { text-align: left; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--color-border-subtle); font-size: var(--text-base); }
   thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
     background: var(--color-bg-elevated);
     font-size: var(--text-xs);
     text-transform: uppercase;
@@ -288,9 +294,6 @@
   .category-empty { color: var(--color-text-faint); }
 
   tfoot td {
-    position: sticky;
-    bottom: 0;
-    z-index: 2;
     background: var(--color-bg-elevated);
     border-top: 2px solid var(--color-border);
     border-bottom: none;
@@ -388,9 +391,12 @@
           </div>
         </div>
 
-        <div class="cluster">
+        <div class="cluster{% if cluster_active.category %} active{% endif %}">
           <div class="cluster-label"><span class="mark"></span>Category</div>
-          <div class="cat-disabled">{{ form.category }}<span class="soon-badge">Coming soon</span></div>
+          <div class="cat-list">{{ form.category }}</div>
+          {% with selected_count=form.category.data|length %}
+          {% if selected_count %}<div class="cat-summary">{{ selected_count }} selected</div>{% endif %}
+          {% endwith %}
         </div>
       </div>
 
@@ -431,7 +437,7 @@
       <tr>
         <td>{{ txn.date }}</td>
         <td>{% if "redact" in txn.beneficiary_name|lower %}<span class="beneficiary-redacted">{{ txn.beneficiary_name }}</span>{% else %}{{ txn.beneficiary_name }}{% endif %}</td>
-        <td class="amount">{{ txn.amount_gbp }}</td>
+        <td class="amount">{{ txn.amount_gbp|intcomma }}</td>
         <td>{{ txn.directorate }}</td>
         <td>
           {% if txn.category %}<span class="pill pill-{{ txn.category_bucket.slug }}" title="{{ txn.category_bucket.label }}">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
@@ -445,7 +451,7 @@
     <tfoot>
       <tr>
         <td colspan="2">Total (all matching results)</td>
-        <td class="amount">£{{ total_amount }}</td>
+        <td class="amount">£{{ total_amount|intcomma }}</td>
         <td colspan="2"></td>
       </tr>
     </tfoot>

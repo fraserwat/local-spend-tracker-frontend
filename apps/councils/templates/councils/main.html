@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block title %}{% if council %}{{ council.name }} — {% endif %}Local Spend Tracker{% endblock %}
+{% block title %}{% if council %}{{ council.name }} — {% elif nation %}{{ nation.name }} — {% endif %}Local Spend Tracker{% endblock %}
 
 {% block extra_head %}
 <link
@@ -255,6 +255,7 @@
       data-nations-url="{% static 'councils/geo/nations.geojson' %}"
       data-coverage-url="{{ coverage_url|default:'' }}"
       data-selected-slug="{% if council %}{{ council.slug }}{% endif %}"
+      data-selected-nation-slug="{% if nation %}{{ nation.slug }}{% endif %}"
     ></div>
   </main>
 </div>

@@ -40,6 +40,21 @@ def test_html_view_renders_table_for_council(council, rows):
 
 
 @pytest.mark.django_db
+def test_amounts_are_comma_delimited_in_table_and_total(council):
+    SpendTransaction.objects.create(
+        council=council,
+        date=date(2026, 1, 1),
+        beneficiary_name="Big Vendor",
+        amount_gbp="1234567.89",
+    )
+    client = Client()
+    response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
+
+    content = response.content.decode()
+    assert "1,234,567.89" in content
+
+
+@pytest.mark.django_db
 def test_scraped_beneficiary_name_is_escaped_in_html(council):
     """docs/ARCHITECTURE.md's security plan: scraped text (beneficiary_name,
     description, directorate, category) must never be rendered via |safe or
@@ -163,19 +178,83 @@ def test_api_pagination_walk_covers_all_rows(council):
 
 
 @pytest.mark.django_db
-def test_category_field_is_disabled_and_has_no_filtering_effect(council, rows):
-    """Phase 4 scope explicitly renders Category disabled ('Coming Soon') --
-    submitting a value for it must not affect results, since there's no
-    server-side handling for it yet."""
+def test_category_filter_only_returns_matching_rows(council, rows):
+    rows[0].category = "Staff costs"
+    rows[0].save()
+    rows[1].category = "Grants"
+    rows[1].save()
     client = Client()
-    without = client.get(reverse("council-transactions", kwargs={"slug": council.slug}))
-    with_category = client.get(
-        reverse("council-transactions", kwargs={"slug": council.slug}), {"category": "Anything"}
-    )
-    assert without.json()["results"] == with_category.json()["results"]
 
-    html = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
-    assert "disabled" in html.content.decode()
+    response = client.get(
+        reverse("council-transactions", kwargs={"slug": council.slug}),
+        {"category": "Staff costs"},
+    )
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 1
+    assert results[0]["beneficiary_name"] == "Vendor 00"
+
+
+@pytest.mark.django_db
+def test_category_filter_accepts_multiple_values(council, rows):
+    rows[0].category = "Staff costs"
+    rows[0].save()
+    rows[1].category = "Grants"
+    rows[1].save()
+    client = Client()
+
+    response = client.get(
+        reverse("council-transactions", kwargs={"slug": council.slug}),
+        {"category": ["Staff costs", "Grants"]},
+    )
+
+    assert response.status_code == 200
+    names = {r["beneficiary_name"] for r in response.json()["results"]}
+    assert names == {"Vendor 00", "Vendor 01"}
+
+
+@pytest.mark.django_db
+def test_category_filter_rejects_value_not_in_councils_categories(council, rows):
+    """A category param must be one of this council's own distinct values --
+    guards against a stale bookmarked filter link silently matching nothing,
+    or an unrelated value being accepted as if it filtered anything."""
+    rows[0].category = "Staff costs"
+    rows[0].save()
+    client = Client()
+
+    response = client.get(
+        reverse("council-transactions", kwargs={"slug": council.slug}),
+        {"category": "Not A Real Category"},
+    )
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_category_checkboxes_render_councils_distinct_values(council, rows):
+    rows[0].category = "Staff costs"
+    rows[0].save()
+    client = Client()
+
+    response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
+
+    content = response.content.decode()
+    assert 'value="Staff costs"' in content
+
+
+@pytest.mark.django_db
+def test_category_chip_shown_per_selected_category(council, rows):
+    rows[0].category = "Staff costs"
+    rows[0].save()
+    client = Client()
+
+    response = client.get(
+        reverse("council-spend", kwargs={"slug": council.slug}), {"category": "Staff costs"}
+    )
+
+    content = response.content.decode()
+    assert "Category: Staff costs" in content
 
 
 @pytest.mark.django_db

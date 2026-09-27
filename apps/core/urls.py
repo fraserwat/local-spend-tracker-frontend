@@ -10,4 +10,5 @@ urlpatterns = [
     path("", council_views.council_dashboard, name="council-picker"),
     path("council/<slug:slug>/", council_views.council_dashboard, name="council-detail"),
     path("council/<slug:slug>/spend/", spend_views.council_spend_view, name="council-spend"),
+    path("nations/<slug:slug>/", council_views.nation_dashboard, name="nation-detail"),
 ]
