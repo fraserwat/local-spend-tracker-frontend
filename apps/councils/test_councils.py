@@ -196,6 +196,31 @@ def test_council_detail_route_404s_for_unknown_slug():
 
 
 @pytest.mark.django_db
+def test_nation_detail_route_renders_nation_note_and_clears_council_slot():
+    """A nation's own screen -- no council heading/CTA/coverage-badge stuck
+    over from a previous selection (the bug this route replaces: clicking a
+    nation on the map used to leave whatever council was selected showing
+    underneath the nation note)."""
+    client = Client()
+    response = client.get(reverse("nation-detail", kwargs={"slug": "wales"}))
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert '<h1 id="council-route-heading" tabindex="-1">Wales</h1>' in content
+    assert "No Transparency Data" in content
+    assert "Welsh authorities" in content and "required to" in content
+    assert 'class="spend-cta"' not in content
+    assert ' aria-current="page"' not in content
+
+
+@pytest.mark.django_db
+def test_nation_detail_route_404s_for_unknown_slug():
+    client = Client()
+    response = client.get(reverse("nation-detail", kwargs={"slug": "atlantis"}))
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
 def test_council_picker_root_has_no_council_selected():
     """The "/" state of the shared screen: map has no boundary to fetch yet,
     and no sidebar link is marked as the current one."""

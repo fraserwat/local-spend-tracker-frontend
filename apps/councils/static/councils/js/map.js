@@ -7,26 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const manifestUrl = mapEl.dataset.manifestUrl;
   const nationsUrl = mapEl.dataset.nationsUrl;
   const initialSelectedSlug = mapEl.dataset.selectedSlug || null;
+  const initialSelectedNationSlug = mapEl.dataset.selectedNationSlug || null;
 
-  // No equivalent of England's Transparency Code in these nations, so no
-  // comparable itemised spend data. Static copy, not model-backed.
-  const NATION_NOTES = {
-    scotland:
-      "Scotland has no equivalent of England's Local Government " +
-      "Transparency Code 2015 -- itemised spend disclosure is voluntary. " +
-      "Of 32 councils surveyed, only 6 publish anything close to " +
-      "transaction-level data, at inconsistent thresholds and via " +
-      "inconsistent channels.",
-    wales:
-      "Wales has no equivalent of England's Local Government Transparency " +
-      "Code 2015 either. Of 22 councils surveyed, only 3 publish a " +
-      "spend-over-£500 register -- one council's own FOI response " +
-      "confirmed Welsh authorities aren't required to.",
-    "northern-ireland":
-      "Northern Ireland has no equivalent statutory duty to publish " +
-      "itemised spend. All 11 district councils were surveyed and none " +
-      "publish a spend-over-£500 register, so it's out of scope entirely.",
-  };
+  // slug -> Leaflet layer, populated as the nations GeoJSON loads. Only
+  // used to fly the camera to the right nation on load/click -- the note
+  // copy itself is server-rendered on /nations/<slug>/ (see
+  // apps/councils/nations.py), not duplicated here.
+  const nationLayersBySlug = new Map();
 
   // Closure state read by the selected layer's own event handlers, so a
   // switch just reassigns these instead of rebuilding every handler.
@@ -116,19 +103,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ).addTo(map);
 
-  function showNationNote(slug) {
-    // Shares the sidebar detail slot with #coverage-badge -- only one
-    // visible at a time.
-    badgeEl.classList.remove("visible");
-    nationNoteEl.querySelector(".badge-body").textContent = NATION_NOTES[slug] || "";
-    nationNoteEl.classList.add("visible");
-  }
-
   function hideNationNote() {
     nationNoteEl.classList.remove("visible");
   }
 
-  // Static overlay, independent of any council selection.
+  function flyToNation(slug) {
+    const layer = nationLayersBySlug.get(slug);
+    if (!layer) return;
+    const bounds = layer.getBounds().pad(0.2);
+    if (prefersReducedMotion) {
+      map.fitBounds(bounds);
+    } else {
+      map.flyToBounds(bounds, { duration: 0.4, easeLinearity: 0.25 });
+    }
+  }
+
+  // Static overlay, independent of any council selection. A click is a
+  // real navigation to that nation's own screen (server-rendered info
+  // card, cleared council panel) rather than an in-place popup -- a popup
+  // used to leave whatever council panel was already showing stacked
+  // underneath it, since this handler had no way to reset state it
+  // doesn't own (council-switch.js does).
   if (nationsUrl) {
     fetch(nationsUrl)
       .then((response) => {
@@ -139,21 +134,25 @@ document.addEventListener("DOMContentLoaded", () => {
         L.geoJSON(geojson, {
           style: NATION_STYLE,
           onEachFeature: (feature, featureLayer) => {
+            const slug = feature.properties.slug;
+            nationLayersBySlug.set(slug, featureLayer);
             featureLayer.on("click", (event) => {
               L.DomEvent.stopPropagation(event);
-              showNationNote(feature.properties.slug);
+              window.location.href = nationUrlTemplate.replace(
+                "__SLUG__",
+                encodeURIComponent(slug)
+              );
             });
           },
         }).addTo(map);
+
+        if (initialSelectedNationSlug) flyToNation(initialSelectedNationSlug);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
         console.error("nations fetch failed", error);
       });
   }
-
-  // Click elsewhere on the map dismisses the note.
-  map.on("click", hideNationNote);
 
   function buildIdleLayer(geojson, slug) {
     return L.geoJSON(geojson, {

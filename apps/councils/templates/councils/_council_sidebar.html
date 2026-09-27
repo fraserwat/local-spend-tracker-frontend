@@ -8,7 +8,7 @@ gets aria-current="page".
 {% endcomment %}
 <div class="council-sidebar">
   <div id="council-detail-slot">
-    <h1 id="council-route-heading" tabindex="-1">{% if council %}{{ council.name }}{% else %}Select a council{% endif %}</h1>
+    <h1 id="council-route-heading" tabindex="-1">{% if council %}{{ council.name }}{% elif nation %}{{ nation.name }}{% else %}Select a council{% endif %}</h1>
     <div id="status">
       {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta">View {{ council.name }} Spend</a>{% else %}select a council to see its boundary{% endif %}
     </div>
@@ -16,9 +16,9 @@ gets aria-current="page".
       <div class="badge-heading">&#9888; Source Data Issues</div>
       <div class="badge-body"></div>
     </div>
-    <div id="nation-note">
+    <div id="nation-note"{% if nation %} class="visible"{% endif %}>
       <div class="badge-heading">&#8505; No Transparency Data</div>
-      <div class="badge-body"></div>
+      <div class="badge-body">{% if nation %}{{ nation.note }}{% endif %}</div>
     </div>
   </div>
   <div id="council-search-container" data-index-url="{% static 'councils/data/council-index.json' %}">
@@ -70,6 +70,7 @@ gets aria-current="page".
   var councilUrlTemplate = "{% url 'council-detail' slug='__SLUG__' %}";
   var councilSpendUrlTemplate = "{% url 'council-spend' slug='__SLUG__' %}";
   var councilCoverageUrlTemplate = "{% url 'council-coverage' slug='__SLUG__' %}";
+  var nationUrlTemplate = "{% url 'nation-detail' slug='__SLUG__' %}";
 </script>
 <script src="{% static 'councils/js/council-data.js' %}" defer></script>
 <script src="{% static 'councils/js/picker.js' %}" defer></script>

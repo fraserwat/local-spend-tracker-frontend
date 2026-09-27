@@ -9,6 +9,7 @@ from apps.spend.models import SpendTransaction
 from apps.spend.selectors import (
     get_beneficiary_suggestions,
     get_council_transactions,
+    get_distinct_categories,
     get_latest_transaction_date,
 )
 
@@ -84,6 +85,45 @@ def test_beneficiary_search_treats_query_as_literal_substring(council, rows):
     )
     result = get_council_transactions(council, q="A.C.M.E (Holdings)")
     assert {t.beneficiary_name for t in result} == {"A.C.M.E (Holdings)"}
+
+
+@pytest.mark.django_db
+def test_filters_by_category(council, rows):
+    rows[0].category = "Consulting"
+    rows[0].save()
+    rows[2].category = "Facilities"
+    rows[2].save()
+    result = get_council_transactions(council, category=["Consulting"])
+    assert {t.beneficiary_name for t in result} == {"Acme Consulting Ltd"}
+
+
+@pytest.mark.django_db
+def test_filters_by_multiple_categories(council, rows):
+    rows[0].category = "Consulting"
+    rows[0].save()
+    rows[2].category = "Facilities"
+    rows[2].save()
+    result = get_council_transactions(council, category=["Consulting", "Facilities"])
+    assert {t.beneficiary_name for t in result} == {"Acme Consulting Ltd", "Acme Facilities"}
+
+
+@pytest.mark.django_db
+def test_distinct_categories_excludes_blank_and_dedupes(council, other_council, rows):
+    rows[0].category = "Consulting"
+    rows[0].save()
+    rows[1].category = "Consulting"
+    rows[1].save()
+    rows[2].category = "Facilities"
+    rows[2].save()
+    # rows[3] left blank on purpose -- must not show up as a choice.
+    SpendTransaction.objects.create(
+        council=other_council,
+        date=date(2026, 1, 1),
+        beneficiary_name="Other council row",
+        amount_gbp="1.00",
+        category="Should not leak",
+    )
+    assert get_distinct_categories(council) == ["Consulting", "Facilities"]
 
 
 @pytest.mark.django_db
