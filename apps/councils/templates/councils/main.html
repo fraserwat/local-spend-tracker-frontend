@@ -35,13 +35,13 @@
      to remove. Ellipsis absorbs the overflow; the title attribute (see
      _council_sidebar.html) recovers the full name on hover.
 
-     1.35rem, not the shared --text-xl (1.25rem) -- past the type scale on
+     1.5rem, not the shared --text-xl (1.25rem) -- past the type scale on
      purpose, the same way .flagship-total__figure (transactions.html) is,
      since this is the sidebar's one flagship element too. Measured against
      the longest real council name ("Bournemouth, Christchurch and Poole",
-     366px at 1.4rem vs. this slot's 368px content width) -- 1.35rem (353px)
-     was the largest step with real margin left before that name would
-     start clipping again.
+     392px at 1.5rem vs. this slot's 416px content width, see .council-
+     sidebar below) -- ~24px of margin left before that name would start
+     clipping again.
 
      Design Bible doctrine VIII -- one typographic signature, reused here
      rather than invented, for the sidebar's own flagship fact. Always
@@ -55,7 +55,7 @@
      this slot and the transactions page's spend total are never on screen
      together either. */
   #council-route-heading {
-    font-size: 1.35rem;
+    font-size: 1.5rem;
     margin: 0;
     font-family: var(--font-serif);
     font-weight: 500;
@@ -220,17 +220,18 @@
      the heading/search stay fixed at the top and the badge/footer stay
      pinned at the bottom regardless of how long the list is.
 
-     26rem (416px), not the previous 20rem -- measured against the actual
-     worst-case strings ("Yorkshire and the Humber · Updated 2 weeks, 3
-     days ago" renders at 343px at this font/size), this leaves ~25px of
-     margin over that instead of falling ~70px short of it. Also lines up
-     with real precedent: Google Maps' own web sidebar runs ~400px, and
-     Material Design 3's nav-drawer spec sets 360dp as the standard width
-     for a persistent side panel. Ellipsis (see #council-route-heading,
-     #council-meta, .row-name) stays regardless -- this reduces how often
-     it fires, it doesn't guarantee it never will. */
+     29rem (464px), not the previous 20rem -- 416px of content width clears
+     both measured worst cases with real margin: the longest council name
+     at the heading's 1.5rem size (392px, ~24px to spare) and the longest
+     region+update string at the meta line's size ("Yorkshire and the
+     Humber · Updated 2 weeks, 3 days ago", 343px, ~73px to spare). Also
+     lines up with real precedent: Google Maps' own web sidebar runs
+     ~400px, and Material Design 3's nav-drawer spec sets 360dp as the
+     standard width for a persistent side panel. Ellipsis (see
+     #council-route-heading, #council-meta, .row-name) stays regardless --
+     this reduces how often it fires, it doesn't guarantee it never will. */
   .council-sidebar {
-    width: 26rem;
+    width: 29rem;
     flex: none;
     height: 100%;
     display: flex;
