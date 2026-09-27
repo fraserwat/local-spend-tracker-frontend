@@ -515,14 +515,13 @@
      it's summarizing. */
   .flagship-total {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: var(--space-3);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-bg-elevated);
-    padding: var(--space-5) var(--space-6);
+    padding: var(--space-6);
     margin-bottom: var(--space-4);
   }
   .flagship-total__label {
@@ -535,8 +534,9 @@
   .flagship-total__figure {
     font-family: var(--font-serif);
     font-weight: 500;
-    font-size: 2.25rem;
-    letter-spacing: -0.01em;
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
     color: var(--color-text);
     font-variant-numeric: tabular-nums;
   }
@@ -684,8 +684,8 @@
 
 {% if transactions %}
 <div class="flagship-total">
-  <span class="flagship-total__label">Total &middot; all {{ total_count }} matching result{{ total_count|pluralize }}</span>
   <span class="flagship-total__figure">&pound;{{ total_amount|intcomma }}</span>
+  <span class="flagship-total__label">Total &middot; all {{ total_count }} matching result{{ total_count|pluralize }}</span>
 </div>
 {% endif %}
 
