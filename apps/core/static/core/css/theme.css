@@ -183,3 +183,16 @@ input:focus, select:focus, button:focus {
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
 }
+
+/* Flow utility (https://piccalil.li/blog/flow-utility/) -- one spacing
+   mechanism for vertical rhythm between stacked elements, instead of each
+   one carrying its own one-off margin. A child sets --flow-space on itself
+   to change the gap above it; the container sets it to change the default
+   for everyone inside. Works for a page section or a single widget's own
+   internal stack alike. */
+.flow > * {
+  margin-top: 0;
+}
+.flow > * + * {
+  margin-top: var(--flow-space, var(--space-4));
+}

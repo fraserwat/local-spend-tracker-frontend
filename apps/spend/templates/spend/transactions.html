@@ -436,22 +436,16 @@
 
   .errorlist { color: var(--color-error); list-style: none; padding: 0; margin: 0 0 var(--space-4); font-size: var(--text-base); }
 
-  /* Result count + top pagination on one line (Doctrine V) -- users
-     scanning a huge result set shouldn't have to scroll past the whole
-     table just to reach Next. */
-  .result-bar {
-    margin: var(--space-4) 0 var(--space-2);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-4);
-    flex-wrap: wrap;
-  }
+  /* One flow scope for everything below the filters -- headline total,
+     result count, top pagination, table, bottom pagination all share the
+     same vertical rhythm (theme.css's .flow) instead of each carrying its
+     own one-off margin. */
+  .content-flow { --flow-space: var(--space-5); }
+
   .result-summary {
     color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
-  .result-bar .pagination { margin-top: 0; }
 
   .table-wrapper {
     background: var(--color-bg-elevated);
@@ -517,12 +511,13 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-2);
+    /* Its own flow scope: a bigger gap than the page-level default, so the
+       label reads as a caption under the figure, not crowding it. */
+    --flow-space: var(--space-4);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-bg-elevated);
     padding: var(--space-6);
-    margin-bottom: var(--space-4);
   }
   .flagship-total__label {
     font-size: var(--text-sm);
@@ -540,7 +535,7 @@
     color: var(--color-text);
     font-variant-numeric: tabular-nums;
   }
-  .pagination { margin-top: var(--space-4); display: flex; gap: var(--space-3); align-items: center; }
+  .pagination { display: flex; gap: var(--space-3); align-items: center; }
   /* Bordered button, not a bare link -- a bare-text Next/Previous carries
      no affordance and no hover feedback. Same quiet outlined treatment as
      .back-link; disabled state stays visible at either end of the result
@@ -676,49 +671,53 @@
     </form>
   </div>
 
-  <div class="result-bar">
-    <div class="result-summary">Showing {{ transactions|length }} of {{ total_count }} transaction{{ total_count|pluralize }} matching filters</div>
-    {% if transactions %}{% include "spend/_pagination.html" with position="top" %}{% endif %}
+</div>
+
+<div class="content-flow flow">
+  {% if transactions %}
+  <div class="flagship-total flow">
+    <span class="flagship-total__figure">&pound;{{ total_amount|intcomma }}</span>
+    <span class="flagship-total__label">Total &middot; all {{ total_count }} matching result{{ total_count|pluralize }}</span>
   </div>
-</div>
+  {% endif %}
 
-{% if transactions %}
-<div class="flagship-total">
-  <span class="flagship-total__figure">&pound;{{ total_amount|intcomma }}</span>
-  <span class="flagship-total__label">Total &middot; all {{ total_count }} matching result{{ total_count|pluralize }}</span>
-</div>
-{% endif %}
+  <div class="result-summary">Showing {{ transactions|length }} of {{ total_count }} transaction{{ total_count|pluralize }} matching filters</div>
 
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <tr>
-        {% include "spend/_sortable_th.html" with url=sort_links.date label="Date" field="date" %}
-        {% include "spend/_sortable_th.html" with url=sort_links.beneficiary_name label="Beneficiary" field="beneficiary_name" %}
-        {% include "spend/_sortable_th.html" with url=sort_links.amount_gbp label="Amount (£)" field="amount_gbp" th_class="amount" %}
-        <th>Directorate</th>
-        <th>Category</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for txn in transactions %}
-      <tr>
-        <td>{{ txn.date }}</td>
-        <td>{% if "redact" in txn.beneficiary_name|lower %}<span class="beneficiary-redacted">{{ txn.beneficiary_name }}</span>{% else %}{{ txn.beneficiary_name }}{% endif %}</td>
-        <td class="amount">{{ txn.amount_gbp|intcomma }}</td>
-        <td>{{ txn.directorate }}</td>
-        <td>
-          {% if txn.category %}<span class="pill">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="5">No transactions match these filters.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+  {% if transactions %}
+  {% include "spend/_pagination.html" with position="top" %}
+  {% endif %}
 
-{% include "spend/_pagination.html" with position="bottom" %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          {% include "spend/_sortable_th.html" with url=sort_links.date label="Date" field="date" %}
+          {% include "spend/_sortable_th.html" with url=sort_links.beneficiary_name label="Beneficiary" field="beneficiary_name" %}
+          {% include "spend/_sortable_th.html" with url=sort_links.amount_gbp label="Amount (£)" field="amount_gbp" th_class="amount" %}
+          <th>Directorate</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for txn in transactions %}
+        <tr>
+          <td>{{ txn.date }}</td>
+          <td>{% if "redact" in txn.beneficiary_name|lower %}<span class="beneficiary-redacted">{{ txn.beneficiary_name }}</span>{% else %}{{ txn.beneficiary_name }}{% endif %}</td>
+          <td class="amount">{{ txn.amount_gbp|intcomma }}</td>
+          <td>{{ txn.directorate }}</td>
+          <td>
+            {% if txn.category %}<span class="pill">{{ txn.category }}</span>{% else %}<span class="category-empty">&mdash;</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No transactions match these filters.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% include "spend/_pagination.html" with position="bottom" %}
+</div>
 <script src="{% static 'spend/js/autocomplete.js' %}" defer></script>
 <script src="{% static 'spend/js/date-range-picker.js' %}" defer></script>
 {% endblock %}
