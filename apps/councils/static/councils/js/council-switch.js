@@ -46,24 +46,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Mirrors django.utils.timesince's largest-unit-only output (the server
+  // Mirrors django.utils.timesince's default depth=2 output (the server
   // renders the same "Updated ..." clause with the real timesince() on a
-  // hard load) -- council-index.json only ever carries the raw timestamp,
-  // never a pre-rendered string, so this always reflects "now" rather than
+  // hard load, e.g. "2 weeks, 3 days ago", not just "2 weeks ago") -- an
+  // in-page switch showing a shorter, differently-shaped string than a
+  // hard navigation to the same URL would be its own small inconsistency.
+  // council-index.json only ever carries the raw timestamp, never a
+  // pre-rendered string, so this always reflects "now" rather than
   // whenever the index file was last regenerated.
+  const TIMESINCE_CHUNKS = [
+    ["year", 31536000],
+    ["month", 2592000],
+    ["week", 604800],
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60],
+  ];
   function relativeTime(isoString) {
     const seconds = Math.max(0, Math.floor((Date.now() - new Date(isoString).getTime()) / 1000));
-    const units = [
-      ["year", 31536000],
-      ["month", 2592000],
-      ["week", 604800],
-      ["day", 86400],
-      ["hour", 3600],
-      ["minute", 60],
-    ];
-    for (const [name, secondsPerUnit] of units) {
+    for (let i = 0; i < TIMESINCE_CHUNKS.length; i++) {
+      const [name, secondsPerUnit] = TIMESINCE_CHUNKS[i];
       const count = Math.floor(seconds / secondsPerUnit);
-      if (count >= 1) return count + " " + name + (count === 1 ? "" : "s") + " ago";
+      if (count < 1) continue;
+
+      let result = count + " " + name + (count === 1 ? "" : "s");
+      const next = TIMESINCE_CHUNKS[i + 1];
+      if (next) {
+        const count2 = Math.floor((seconds - count * secondsPerUnit) / next[1]);
+        if (count2 >= 1) result += ", " + count2 + " " + next[0] + (count2 === 1 ? "" : "s");
+      }
+      return result + " ago";
     }
     return "just now";
   }
@@ -119,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.title = row.name + " — Local Spend Tracker";
         headingEl.textContent = row.name;
         headingEl.title = row.name;
-        headingEl.classList.add("council-heading--serif");
         setMeta(row.region_display, row.last_loaded_at ? "Updated " + relativeTime(row.last_loaded_at) : null);
         // Same <a> element as the ghost state (see showPicker) -- only its
         // href/class/disabledness change, never its node type.
@@ -150,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.title = "Local Spend Tracker";
     headingEl.textContent = "Select a council";
     headingEl.removeAttribute("title");
-    headingEl.classList.remove("council-heading--serif");
     setMeta("Select a council to see its spend", null);
     ctaEl.removeAttribute("href");
     ctaEl.classList.add("council-cta--ghost");

@@ -196,10 +196,7 @@ def test_nation_detail_route_renders_nation_note_and_clears_council_slot():
 
     assert response.status_code == 200
     content = response.content.decode()
-    assert (
-        '<h1 id="council-route-heading" tabindex="-1" class="council-heading--serif" '
-        'title="Wales">Wales</h1>' in content
-    )
+    assert '<h1 id="council-route-heading" tabindex="-1" title="Wales">Wales</h1>' in content
     assert '<span class="meta-primary">No council-level spend data</span>' in content
     assert "No Transparency Data" in content
     assert "Welsh authorities" in content and "required to" in content
