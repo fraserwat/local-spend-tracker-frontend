@@ -27,6 +27,7 @@ def get_council_transactions(
     amount_min: Decimal | None = None,
     amount_max: Decimal | None = None,
     q: str = "",
+    category: list[str] | None = None,
     sort: str = DEFAULT_SORT,
     descending: bool = True,
 ) -> QuerySet[SpendTransaction]:
@@ -52,6 +53,8 @@ def get_council_transactions(
         # GIN index can't use (EXPLAIN: full seq scan). iregex compiles to
         # `~*`, which pg_trgm does index (EXPLAIN: Bitmap Index Scan).
         qs = qs.filter(beneficiary_name__iregex=re.escape(q))
+    if category:
+        qs = qs.filter(category__in=category)
 
     field = SORT_FIELDS.get(sort, SORT_FIELDS[DEFAULT_SORT])
     ordering = (field, "id") if not descending else (f"-{field}", "-id")
@@ -65,6 +68,23 @@ def get_latest_transaction_date(council: Council) -> date | None:
     mean the same date range regardless of what else is already applied.
     """
     return SpendTransaction.objects.filter(council=council).aggregate(latest=Max("date"))["latest"]
+
+
+def get_distinct_categories(council: Council) -> list[str]:
+    """Distinct non-blank `category` strings on record for this council, for
+    the Category filter's choices. Unfiltered by any other applied filter --
+    same "always the full set" rule as get_latest_transaction_date, so
+    picking a category doesn't shrink the list of other categories you
+    could still add.
+    """
+    qs = (
+        SpendTransaction.objects.filter(council=council)
+        .exclude(category="")
+        .values_list("category", flat=True)
+        .distinct()
+        .order_by("category")
+    )
+    return list(qs)
 
 
 def get_beneficiary_suggestions(council: Council, q: str, limit: int = 7) -> list[str]:
