@@ -1,0 +1,6 @@
+{% comment %}
+Sortable table header cell. Expects from the including template: url (the
+sort_links entry), label, field (matched against the outer sort/dir
+context to decide whether to show an arrow), and optional th_class.
+{% endcomment %}
+<th{% if th_class %} class="{{ th_class }}"{% endif %}><a href="{{ url }}">{{ label }}{% if sort == field %}<span class="sort-arrow">{% if dir == "asc" %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>

@@ -3,14 +3,10 @@ from django.test import Client
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from apps.councils.conftest import SYNTHETIC_GSS_PREFIX
 from apps.councils.models import Council, CouncilCoverage, Region
 from apps.councils.selectors import councils_missing_coverage
 from apps.spend.models import SpendTransaction
-
-# Deliberately out of real ONS range (E09/E06/E07/E08 etc. are all real
-# prefixes) so synthetic test councils can never collide with real seeded
-# data or be mistaken for one.
-SYNTHETIC_GSS_PREFIX = "E99"
 
 
 @pytest.mark.django_db
@@ -78,13 +74,8 @@ def test_councils_api_pagination_walk_covers_hundreds_of_councils():
 
 
 @pytest.mark.django_db
-def test_councils_missing_coverage_flags_council_with_uncovered_spend():
-    council = Council.objects.create(
-        name="Synthetic Uncovered",
-        slug="synthetic-uncovered",
-        gss_code=f"{SYNTHETIC_GSS_PREFIX}000100",
-        region=Region.LONDON,
-    )
+def test_councils_missing_coverage_flags_council_with_uncovered_spend(make_synthetic_council):
+    council = make_synthetic_council("synthetic-uncovered", "000100")
     SpendTransaction.objects.create(
         council=council, date="2026-01-15", beneficiary_name="Acme Ltd", amount_gbp="100.00"
     )
@@ -93,13 +84,8 @@ def test_councils_missing_coverage_flags_council_with_uncovered_spend():
 
 
 @pytest.mark.django_db
-def test_councils_missing_coverage_excludes_properly_covered_council():
-    council = Council.objects.create(
-        name="Synthetic Covered",
-        slug="synthetic-covered",
-        gss_code=f"{SYNTHETIC_GSS_PREFIX}000200",
-        region=Region.LONDON,
-    )
+def test_councils_missing_coverage_excludes_properly_covered_council(make_synthetic_council):
+    council = make_synthetic_council("synthetic-covered", "000200")
     SpendTransaction.objects.create(
         council=council, date="2026-01-15", beneficiary_name="Acme Ltd", amount_gbp="100.00"
     )
@@ -109,29 +95,21 @@ def test_councils_missing_coverage_excludes_properly_covered_council():
 
 
 @pytest.mark.django_db
-def test_councils_missing_coverage_excludes_council_with_no_spend_at_all():
+def test_councils_missing_coverage_excludes_council_with_no_spend_at_all(make_synthetic_council):
     """A council with zero transactions has nothing to reconcile yet -- not a data-quality gap."""
-    council = Council.objects.create(
-        name="Synthetic Empty",
-        slug="synthetic-empty",
-        gss_code=f"{SYNTHETIC_GSS_PREFIX}000300",
-        region=Region.LONDON,
-    )
+    council = make_synthetic_council("synthetic-empty", "000300")
 
     assert council not in councils_missing_coverage()
 
 
 @pytest.mark.django_db
-def test_councils_missing_coverage_excludes_coverage_row_created_ahead_of_data():
+def test_councils_missing_coverage_excludes_coverage_row_created_ahead_of_data(
+    make_synthetic_council,
+):
     """Coverage can be created before any load (e.g. council onboarded but not
     yet loaded) -- with no transactions yet, it's not a reconciliation gap
     either, regardless of the coverage row already existing."""
-    council = Council.objects.create(
-        name="Synthetic Preemptive",
-        slug="synthetic-preemptive",
-        gss_code=f"{SYNTHETIC_GSS_PREFIX}000400",
-        region=Region.LONDON,
-    )
+    council = make_synthetic_council("synthetic-preemptive", "000400")
     CouncilCoverage.objects.create(council=council)
 
     assert council not in councils_missing_coverage()

@@ -1,19 +1,9 @@
 from unittest.mock import patch
 
 import pytest
-from django.core.cache import cache
 from django.test import Client
 from django.urls import reverse
 from rest_framework.throttling import AnonRateThrottle
-
-
-@pytest.fixture(autouse=True)
-def _clear_throttle_cache():
-    # AnonRateThrottle's rate limit is keyed in the default cache -- clear it
-    # around each test so tests don't bleed rate-limit state into each other.
-    cache.clear()
-    yield
-    cache.clear()
 
 
 @pytest.mark.django_db

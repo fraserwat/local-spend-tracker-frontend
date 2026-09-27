@@ -1,6 +1,6 @@
 from rest_framework.pagination import CursorPagination
 
-from .selectors import DEFAULT_SORT, SORT_FIELDS
+from .selectors import DEFAULT_SORT, resolve_ordering
 
 
 class TransactionCursorPagination(CursorPagination):
@@ -23,6 +23,5 @@ class TransactionCursorPagination(CursorPagination):
 
     def get_ordering(self, request, queryset, view):
         sort = request.query_params.get("sort", DEFAULT_SORT)
-        field = SORT_FIELDS.get(sort, SORT_FIELDS[DEFAULT_SORT])
         descending = request.query_params.get("dir", "desc") != "asc"
-        return (f"-{field}", "-id") if descending else (field, "id")
+        return resolve_ordering(sort, descending)

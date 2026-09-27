@@ -53,11 +53,15 @@ class LoadError(Exception):
     """Raised for any failure during a load; DataLoadRun is marked failed first."""
 
 
-def _validate(df_columns: set[str], council_names: set[str], expected_council_name: str) -> None:
+def validate_columns(df_columns: set[str]) -> None:
     if df_columns != EXPECTED_COLUMNS:
         missing = EXPECTED_COLUMNS - df_columns
         extra = df_columns - EXPECTED_COLUMNS
         raise LoadError(f"column mismatch: missing={missing or None} extra={extra or None}")
+
+
+def _validate(df_columns: set[str], council_names: set[str], expected_council_name: str) -> None:
+    validate_columns(df_columns)
     if council_names != {expected_council_name}:
         raise LoadError(
             f"expected COUNCIL_NAME=={{{expected_council_name!r}}}, found {council_names}"
