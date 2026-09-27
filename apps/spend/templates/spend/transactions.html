@@ -8,6 +8,37 @@
   body { margin: var(--space-5); }
   h1 { font-size: var(--text-xl); margin-bottom: var(--space-2); }
 
+  /* Design Bible doctrine IV/VI/IX: one airy, high-contrast module per
+     screen, everything else (filter panel, table) stays exactly as dense
+     as it already was. This is the only place on the page that gets real
+     breathing room on purpose. */
+  .flagship-stat {
+    padding: var(--space-8) 0 var(--space-6);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .flagship-stat__label {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+  }
+  .flagship-stat__num {
+    font-size: 3rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .flagship-stat__meta {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+  .flagship-stat__meta .dot { color: var(--color-text-faint); margin: 0 var(--space-2); }
+
   .page-header {
     background: var(--color-bg);
     padding-top: var(--space-1);
@@ -344,6 +375,14 @@
   <a class="back-link" href="{% url 'council-detail' slug=council.slug %}">&larr; Back</a>
   <h1>{{ council.name }} — spend</h1>
   <div class="council-context"><span class="council-context__mark" aria-hidden="true"></span>{{ council.get_region_display }}</div>
+
+  {% if transactions %}
+  <div class="flagship-stat">
+    <div class="flagship-stat__label">Total spend, matching filters</div>
+    <div class="flagship-stat__num">&pound;{{ total_amount|intcomma }}</div>
+    <div class="flagship-stat__meta">{{ total_count|intcomma }} transaction{{ total_count|pluralize }}<span class="dot">&middot;</span>{{ council.get_region_display }}</div>
+  </div>
+  {% endif %}
 
   {% if form.errors %}
   <ul class="errorlist">
