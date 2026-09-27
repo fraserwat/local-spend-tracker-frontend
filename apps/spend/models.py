@@ -1,6 +1,7 @@
 from django.db import models
 
 from apps.councils.models import Council
+from apps.spend.category_buckets import bucket_for
 
 # GBP amounts always carry pence-level precision. Shared with the rounding
 # step in apps/spend/services/etl.py so both stay in sync.
@@ -38,6 +39,10 @@ class SpendTransaction(models.Model):
 
     def __str__(self):
         return f"{self.council.name}: {self.beneficiary_name} ({self.amount_gbp})"
+
+    @property
+    def category_bucket(self):
+        return bucket_for(self.category) if self.category else None
 
 
 class DataLoadRun(models.Model):
