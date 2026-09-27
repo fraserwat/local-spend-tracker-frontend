@@ -380,13 +380,15 @@
   <h1>{{ council.name }} — spend</h1>
   <div class="council-context"><span class="council-context__mark" aria-hidden="true"></span>{{ council.get_region_display }}</div>
 
-  {# PLACEHOLDER -- consultancy_estimate is a category-keyword proxy
-     (apps/spend/views.py::_consultancy_estimate_filter), not real
-     entity-resolved consultancy spend (TODO.md Phase 3, unbuilt). Total
-     spend stays visible in the meta line rather than hidden, per the
-     same never-hide-uncertainty rule Phase 3 Step 5 commits to for the
-     real figure -- swap this block's data source when that ships;
-     nothing about its markup needs to change. #}
+  {% comment %}
+    PLACEHOLDER -- consultancy_estimate is a category-keyword proxy
+    (apps/spend/views.py::_consultancy_estimate_filter), not real
+    entity-resolved consultancy spend (TODO.md Phase 3, unbuilt). Total
+    spend stays visible in the meta line rather than hidden, per the
+    same never-hide-uncertainty rule Phase 3 Step 5 commits to for the
+    real figure -- swap this block's data source when that ships;
+    nothing about its markup needs to change.
+  {% endcomment %}
   {% if transactions %}
   <div class="flagship-stat">
     <div class="flagship-stat__label">Professional &amp; consultancy spend <span class="flagship-stat__caveat">— category estimate</span></div>
