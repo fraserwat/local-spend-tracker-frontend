@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const mapEl = document.getElementById("map");
-  const statusEl = document.getElementById("status");
+  const metaEl = document.getElementById("council-meta");
   const badgeEl = document.getElementById("coverage-badge");
   const nationNoteEl = document.getElementById("nation-note");
   const geojsonUrl = mapEl.dataset.geojsonUrl;
@@ -104,6 +104,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function hideNationNote() {
     nationNoteEl.classList.remove("visible");
+  }
+
+  // Same single meta-primary-span shape council-switch.js's setMeta() uses,
+  // so this rare fallback message still gets the fixed-single-line/ellipsis
+  // treatment instead of a raw text node that could wrap and shift the
+  // sidebar underneath it.
+  function setMetaFallback(text) {
+    metaEl.innerHTML = "";
+    const span = document.createElement("span");
+    span.className = "meta-primary";
+    span.title = text;
+    span.textContent = text;
+    metaEl.appendChild(span);
   }
 
   function flyToNation(slug) {
@@ -274,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Not every council has a boundary file yet -- expected, not a
         // bug, so this degrades to a status message.
         selectedSlugState = slug;
-        statusEl.textContent = "boundary data not available yet for this council";
+        setMetaFallback("boundary data not available yet for this council");
         // eslint-disable-next-line no-console
         console.error("boundary fetch failed", error);
       });
@@ -406,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
         map.fitBounds(layer.getBounds().pad(0.6));
       })
       .catch((error) => {
-        statusEl.textContent = "boundary data not available yet for this council";
+        setMetaFallback("boundary data not available yet for this council");
         // eslint-disable-next-line no-console
         console.error("boundary fetch failed", error);
       });

@@ -10,9 +10,9 @@ def get_councils():
     return Council.objects.all()
 
 
-def get_active_councils_by_region():
-    """Active councils, ordered by region then name. Backs the region and nation dashboards."""
-    return get_councils().filter(is_active=True).order_by("region", "name")
+def get_active_councils():
+    """Active councils, ordered by name. Backs the sidebar's flat council list."""
+    return get_councils().filter(is_active=True).order_by("name")
 
 
 def get_coverage(council: Council) -> CouncilCoverage | None:

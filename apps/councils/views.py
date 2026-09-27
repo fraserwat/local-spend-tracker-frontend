@@ -1,12 +1,13 @@
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.timesince import timesince
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import CursorPagination
 
 from .models import Council
 from .nations import NATIONS
-from .selectors import get_active_councils_by_region, get_councils, get_coverage
+from .selectors import get_active_councils, get_councils, get_coverage
 from .serializers import CouncilSerializer, CoverageSerializer
 
 
@@ -46,18 +47,18 @@ class CouncilCoverageView(RetrieveAPIView):
 def council_dashboard(request, slug=None):
     """GET / and GET /council/<slug>/ — one screen, two states.
 
-    The sidebar (search + region browse) and the map are the same screen,
-    not separate pages: "/" is that screen with no council chosen yet,
-    "/council/<slug>/" is the same screen with that council's boundary
-    loaded. Selecting a council in the sidebar moves between the two
-    without ever leaving the screen.
+    The sidebar (search + flat council list) and the map are the same
+    screen, not separate pages: "/" is that screen with no council chosen
+    yet, "/council/<slug>/" is the same screen with that council's
+    boundary loaded. Selecting a council in the sidebar moves between the
+    two without ever leaving the screen.
 
-    Region groups render from the DB directly via `{% regroup %}`; the
-    search widget uses the separately-generated `council-index.json`
-    instead, not this queryset.
+    The flat list renders from the DB directly; the search widget's live
+    filtering uses the separately-generated `council-index.json` instead,
+    not this queryset.
     """
     council = get_object_or_404(Council, slug=slug) if slug else None
-    councils = get_active_councils_by_region()
+    councils = get_active_councils()
     context = {
         "council": council,
         "councils": councils,
@@ -68,6 +69,12 @@ def council_dashboard(request, slug=None):
         # render an empty map rather than 404ing the page.
         context["geojson_static_path"] = f"councils/geo/{council.slug}.geojson"
         context["coverage_url"] = reverse("council-coverage", kwargs={"slug": council.slug})
+        coverage = get_coverage(council)
+        if coverage and coverage.last_loaded_at:
+            # Real ETL timestamp, not an invented figure -- councils without
+            # a coverage row yet just omit the "Updated ..." clause entirely
+            # (see #council-meta's template branch).
+            context["council_updated"] = timesince(coverage.last_loaded_at) + " ago"
     return render(request, "councils/main.html", context)
 
 
@@ -86,7 +93,7 @@ def nation_dashboard(request, slug):
     nation = NATIONS.get(slug)
     if nation is None:
         raise Http404(f"unknown nation slug={slug!r}")
-    councils = get_active_councils_by_region()
+    councils = get_active_councils()
     context = {
         "council": None,
         "nation": nation,
