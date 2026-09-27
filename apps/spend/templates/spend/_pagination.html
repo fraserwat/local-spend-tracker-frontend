@@ -1,0 +1,24 @@
+<nav class="pagination" aria-label="Pagination ({{ position }})">
+  {% if previous_link %}
+  <a class="page-btn" href="{{ previous_link }}" rel="prev">
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Previous
+  </a>
+  {% else %}
+  <span class="page-btn disabled" aria-disabled="true">
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Previous
+  </span>
+  {% endif %}
+  {% if next_link %}
+  <a class="page-btn" href="{{ next_link }}" rel="next">
+    Next
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  {% else %}
+  <span class="page-btn disabled" aria-disabled="true">
+    Next
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </span>
+  {% endif %}
+</nav>
