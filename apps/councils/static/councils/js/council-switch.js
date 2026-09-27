@@ -78,12 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
         link.className = "spend-cta";
         link.textContent = "View " + row.name + " Spend";
         statusEl.appendChild(link);
-        // Mirrors _council_sidebar.html's server-rendered <p class="council-meta">
-        // so an in-page switch matches a hard navigation to the same URL.
-        const meta = document.createElement("p");
-        meta.className = "council-meta";
-        meta.textContent = row.region_display;
-        statusEl.appendChild(meta);
         setAriaCurrent(slug);
         headingEl.textContent = row.name;
         headingEl.focus();

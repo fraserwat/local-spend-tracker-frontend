@@ -10,7 +10,7 @@ gets aria-current="page".
   <div id="council-detail-slot">
     <h1 id="council-route-heading" tabindex="-1">{% if council %}{{ council.name }}{% elif nation %}{{ nation.name }}{% else %}Select a council{% endif %}</h1>
     <div id="status">
-      {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta">View {{ council.name }} Spend</a><p class="council-meta">{{ council.get_region_display }}</p>{% else %}select a council to see its boundary{% endif %}
+      {% if council %}<a href="{% url 'council-spend' slug=council.slug %}" class="spend-cta">View {{ council.name }} Spend</a>{% else %}select a council to see its boundary{% endif %}
     </div>
     <div id="coverage-badge">
       <div class="badge-heading">&#9888; Source Data Issues</div>
