@@ -357,53 +357,19 @@
   .combobox-option { padding: var(--space-2) var(--space-3); font-size: var(--text-base); cursor: pointer; }
   .combobox-option.highlighted { background: rgba(0, 172, 230, 0.16); }
 
-  /* Real distinct-value checkbox list (apps/spend/selectors.py's
-     get_distinct_categories), not the old disabled "Coming soon" field --
-     Django's CheckboxSelectMultiple renders a plain <ul>/<li>/<label>, so
-     this just restyles that default markup rather than hand-rolling a
-     custom widget template. */
-  /* Wider column -- 170px forced every label to wrap 3-4 lines ragged.
-     Still fixed-width (sits beside three other clusters), still scrolls
-     vertically for long category lists. */
-  .cat-list { max-height: 11rem; overflow-y: auto; overflow-x: hidden; width: 240px; }
-  .cat-list ul { list-style: none; margin: 0; padding: 0; }
-  .cat-list li { padding: 2px 0; }
-  .cat-list label { display: flex; align-items: flex-start; gap: var(--space-2); font-size: var(--text-base); color: var(--color-text-muted); cursor: pointer; line-height: 1.3; }
-  .cat-list label:has(input:checked) { color: var(--color-text); font-weight: 600; }
-  /* Custom box -- native checkbox renders OS-white regardless of
-     accent-color when unchecked, a bright patch on a dark panel. */
-  .cat-list input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 15px;
-    height: 15px;
-    margin: 2px 0 0;
-    flex-shrink: 0;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    background: transparent;
-    position: relative;
-    cursor: pointer;
-    transition: background 140ms ease, border-color 140ms ease;
+  /* Inert placeholder -- same visual language as theme.css's
+     input[disabled], since this cluster has no live control right now. */
+  .cat-placeholder {
+    width: 240px;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-faint);
+    background: var(--color-border-subtle);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.05em;
   }
-  .cat-list input[type="checkbox"]:hover { border-color: var(--color-link); }
-  .cat-list input[type="checkbox"]:checked {
-    background: var(--color-link);
-    border-color: var(--color-link);
-  }
-  .cat-list input[type="checkbox"]:checked::after {
-    content: "";
-    position: absolute;
-    left: 4px;
-    top: 1px;
-    width: 4px;
-    height: 8px;
-    border: solid var(--color-accent-text);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
-  .cat-list input[type="checkbox"]:focus-visible { outline: 2px solid var(--color-link); outline-offset: 1px; }
-  .cat-summary { margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-link); }
 
   .panel-actions { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); }
 
@@ -522,7 +488,10 @@
   }
   .pill-staff { color: #1cb07c; }
   .pill-contracts { color: #d88f00; }
-  .pill-capital { color: #e07ea2; }
+  /* Was #e07ea2 (rose) -- read as red/alarm to users, same issue pill-other
+     had. Shifted further round the wheel to magenta-violet (hue 291,
+     4.95:1 against #2f3140), clear of red and of pill-grants' periwinkle. */
+  .pill-capital { color: #d581e4; }
   .pill-premises { color: #00b600; }
   .pill-grants { color: #9c92eb; }
   .pill-other { color: var(--color-text-muted); }
@@ -669,13 +638,10 @@
           </div>
         </div>
 
-        {# TODO: swap for a "Contracting Firm" filter once the Entity Resolution Layer exists #}
-        <div class="cluster{% if cluster_active.category %} active{% endif %}">
+        {# Parked -- raw per-council category codes are too inconsistent to filter on yet; placeholder until the Entity Resolution Layer lands a real "Contracting Firm" roll-up. #}
+        <div class="cluster">
           <div class="cluster-label"><span class="mark"></span>Category</div>
-          <div class="cat-list">{{ form.category }}</div>
-          {% with selected_count=form.category.data|length %}
-          {% if selected_count %}<div class="cat-summary">{{ selected_count }} selected</div>{% endif %}
-          {% endwith %}
+          <div class="cat-placeholder" aria-disabled="true">CONSULTANCY</div>
         </div>
       </div>
 
