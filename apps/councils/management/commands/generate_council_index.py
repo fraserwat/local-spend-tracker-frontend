@@ -62,6 +62,16 @@ class Command(BaseCommand):
                     # coverage fetch entirely for councils with no CouncilCoverage
                     # row yet, instead of firing a fetch that's known to 404.
                     "has_coverage": hasattr(council, "coverage"),
+                    # Raw timestamp, not a pre-rendered "3 days ago" -- this
+                    # file is a committed build artifact regenerated only
+                    # occasionally, so a baked-in relative string would go
+                    # stale silently. council-switch.js formats it relative
+                    # to "now" at render time instead.
+                    "last_loaded_at": (
+                        council.coverage.last_loaded_at.isoformat()
+                        if hasattr(council, "coverage") and council.coverage.last_loaded_at
+                        else None
+                    ),
                 }
             )
 

@@ -1,70 +1,57 @@
 (function () {
   "use strict";
 
-  var container = document.getElementById("council-search-container");
   var input = document.getElementById("council-search");
   var status = document.getElementById("search-status");
-  var resultsList = document.getElementById("council-search-results");
-  var regionBrowse = document.getElementById("council-region-browse");
-  if (!container || !input || !resultsList || !regionBrowse) return;
+  var list = document.getElementById("council-list");
+  if (!input || !status || !list) return;
 
-  var indexUrl = container.getAttribute("data-index-url");
+  // Server-rendered rows already carry the full council set (see
+  // _council_sidebar.html) -- filtering hides/shows them in place instead
+  // of re-fetching or rebuilding from council-index.json, so there's no
+  // second data source and no network request on every keystroke.
+  var rows = Array.prototype.slice.call(list.querySelectorAll("li[data-name]"));
+
+  // A dedicated "no matches" row, distinct from the server-rendered
+  // `{% empty %}` row (that one means "zero councils exist at all" and
+  // must never be touched by search).
+  var emptyRow = document.createElement("li");
+  emptyRow.className = "no-results";
+  emptyRow.hidden = true;
+  list.appendChild(emptyRow);
 
   function setStatus(message) {
-    if (status) status.textContent = message;
+    status.textContent = message;
   }
 
-  function councilUrl(slug) {
-    return councilUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
-  }
+  function render(query) {
+    var needle = query.toLowerCase();
+    var visibleCount = 0;
 
-  CouncilIndex.load(indexUrl)
-    .then(function (councils) {
-      // Pre-sorted by name (see generate_council_index), so filtering
-      // preserves order without a sort step here.
-      function render(query) {
-        var needle = query.toLowerCase();
-        var matches = councils.filter(function (council) {
-          return council.name.toLowerCase().indexOf(needle) !== -1;
-        });
-
-        // Region groups and search results share one sidebar slot -- swap
-        // rather than stack, or the list pushes itself down the page.
-        if (!query) {
-          resultsList.hidden = true;
-          resultsList.textContent = "";
-          regionBrowse.hidden = false;
-          setStatus("");
-          return;
-        }
-
-        regionBrowse.hidden = true;
-        resultsList.hidden = false;
-        resultsList.textContent = "";
-        matches.forEach(function (council) {
-          var li = document.createElement("li");
-          var a = document.createElement("a");
-          a.href = councilUrl(council.slug);
-          // Lets council-switch.js's delegated click listener intercept
-          // this the same way as region-browse links.
-          a.dataset.slug = council.slug;
-          a.textContent = council.name;
-          li.appendChild(a);
-          resultsList.appendChild(li);
-        });
-        setStatus(
-          matches.length === 1 ? "1 council found" : matches.length + " councils found"
-        );
-      }
-
-      input.addEventListener("input", function () {
-        render(input.value.trim());
-      });
-    })
-    .catch(function (error) {
-      setStatus("Search is unavailable right now. Browse by region below instead.");
-      input.disabled = true;
-      // eslint-disable-next-line no-console
-      console.error("council-index fetch failed", error);
+    rows.forEach(function (row) {
+      var matches = !needle || row.dataset.name.indexOf(needle) !== -1;
+      row.hidden = !matches;
+      if (matches) visibleCount++;
     });
+
+    if (!query) {
+      emptyRow.hidden = true;
+      setStatus("");
+      return;
+    }
+
+    emptyRow.hidden = visibleCount !== 0;
+    emptyRow.textContent = visibleCount === 0 ? "No councils match “" + query + "”." : "";
+    setStatus(
+      visibleCount === 0
+        ? "No councils found"
+        : visibleCount === 1
+          ? "1 council found"
+          : visibleCount + " councils found"
+    );
+  }
+
+  input.addEventListener("input", function () {
+    render(input.value.trim());
+  });
 })();

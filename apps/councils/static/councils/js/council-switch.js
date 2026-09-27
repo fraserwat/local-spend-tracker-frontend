@@ -1,14 +1,16 @@
-// Orchestrates in-page council switching: history/URL, <title>, #status,
-// sidebar aria-current, focus, screen-reader announcement. map.js owns the
-// camera/boundary side (window.councilMap); this owns everything else.
+// Orchestrates in-page council switching: history/URL, <title>, the
+// heading/meta/CTA trio, sidebar aria-current, focus, screen-reader
+// announcement. map.js owns the camera/boundary side (window.councilMap);
+// this owns everything else.
 //
 // Progressive enhancement: every entry point intercepts a real <a href> or
 // another script's window.councilSwitch-with-fallback call. If this script
 // fails to load, those real hrefs/hard navigations fire instead.
 document.addEventListener("DOMContentLoaded", () => {
   const sidebarEl = document.querySelector(".council-sidebar");
-  const statusEl = document.getElementById("status");
   const headingEl = document.getElementById("council-route-heading");
+  const metaEl = document.getElementById("council-meta");
+  const ctaEl = document.getElementById("council-cta");
   const announcerEl = document.getElementById("council-switch-announcer");
   const indexUrl = document
     .getElementById("council-search-container")
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Bumped on every showCouncil()/showPicker() call; a stale async
   // CouncilIndex.load().then() compares against this before touching
-  // document.title/statusEl/headingEl.
+  // document.title/headingEl/metaEl/ctaEl.
   let switchGeneration = 0;
 
   function announce(message) {
@@ -41,6 +43,49 @@ document.addEventListener("DOMContentLoaded", () => {
     if (slug) {
       const next = sidebarEl.querySelector('a[data-slug="' + slug + '"]');
       if (next) next.setAttribute("aria-current", "page");
+    }
+  }
+
+  // Mirrors django.utils.timesince's largest-unit-only output (the server
+  // renders the same "Updated ..." clause with the real timesince() on a
+  // hard load) -- council-index.json only ever carries the raw timestamp,
+  // never a pre-rendered string, so this always reflects "now" rather than
+  // whenever the index file was last regenerated.
+  function relativeTime(isoString) {
+    const seconds = Math.max(0, Math.floor((Date.now() - new Date(isoString).getTime()) / 1000));
+    const units = [
+      ["year", 31536000],
+      ["month", 2592000],
+      ["week", 604800],
+      ["day", 86400],
+      ["hour", 3600],
+      ["minute", 60],
+    ];
+    for (const [name, secondsPerUnit] of units) {
+      const count = Math.floor(seconds / secondsPerUnit);
+      if (count >= 1) return count + " " + name + (count === 1 ? "" : "s") + " ago";
+    }
+    return "just now";
+  }
+
+  // Same two-span shape council_meta's server-rendered branch uses, so an
+  // in-page switch matches a hard navigation to the same URL exactly.
+  function setMeta(primaryText, secondaryText) {
+    metaEl.innerHTML = "";
+    const primary = document.createElement("span");
+    primary.className = "meta-primary";
+    primary.title = primaryText;
+    primary.textContent = primaryText;
+    metaEl.appendChild(primary);
+    if (secondaryText) {
+      const sep = document.createElement("span");
+      sep.className = "meta-sep";
+      sep.textContent = "·";
+      metaEl.appendChild(sep);
+      const secondary = document.createElement("span");
+      secondary.className = "meta-secondary";
+      secondary.textContent = secondaryText;
+      metaEl.appendChild(secondary);
     }
   }
 
@@ -72,14 +117,17 @@ document.addEventListener("DOMContentLoaded", () => {
         window.councilMap.renderSelectedCouncil(slug, coverageUrl);
 
         document.title = row.name + " — Local Spend Tracker";
-        statusEl.innerHTML = "";
-        const link = document.createElement("a");
-        link.href = councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
-        link.className = "spend-cta";
-        link.textContent = "View " + row.name + " Spend";
-        statusEl.appendChild(link);
-        setAriaCurrent(slug);
         headingEl.textContent = row.name;
+        headingEl.title = row.name;
+        headingEl.classList.add("council-heading--serif");
+        setMeta(row.region_display, row.last_loaded_at ? "Updated " + relativeTime(row.last_loaded_at) : null);
+        // Same <a> element as the ghost state (see showPicker) -- only its
+        // href/class/disabledness change, never its node type.
+        ctaEl.href = councilSpendUrlTemplate.replace("__SLUG__", encodeURIComponent(slug));
+        ctaEl.classList.remove("council-cta--ghost");
+        ctaEl.removeAttribute("aria-disabled");
+        ctaEl.removeAttribute("tabindex");
+        setAriaCurrent(slug);
         headingEl.focus();
         announce("Now showing " + row.name);
 
@@ -100,9 +148,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.councilMap) window.councilMap.showIdleState();
 
     document.title = "Local Spend Tracker";
-    statusEl.textContent = "select a council to see its boundary";
-    setAriaCurrent(null);
     headingEl.textContent = "Select a council";
+    headingEl.removeAttribute("title");
+    headingEl.classList.remove("council-heading--serif");
+    setMeta("Select a council to see its spend", null);
+    ctaEl.removeAttribute("href");
+    ctaEl.classList.add("council-cta--ghost");
+    ctaEl.setAttribute("aria-disabled", "true");
+    ctaEl.setAttribute("tabindex", "-1");
+    setAriaCurrent(null);
     headingEl.focus();
     announce("Showing council picker");
 

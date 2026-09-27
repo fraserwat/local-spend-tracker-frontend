@@ -25,9 +25,8 @@ function loadCouncilSwitch({ councilIndexLoad }) {
       return null;
     },
   };
-  const statusEl = {
+  const metaEl = {
     _html: "",
-    _text: "",
     children: [],
     get innerHTML() {
       return this._html;
@@ -36,15 +35,15 @@ function loadCouncilSwitch({ councilIndexLoad }) {
       this._html = v;
       this.children = [];
     },
-    get textContent() {
-      return this._text;
-    },
-    set textContent(v) {
-      this._text = v;
-    },
     appendChild(child) {
       this.children.push(child);
     },
+  };
+  const ctaEl = {
+    href: "",
+    classList: { add() {}, remove() {} },
+    setAttribute() {},
+    removeAttribute() {},
   };
   const headingEl = {
     get textContent() {
@@ -53,6 +52,9 @@ function loadCouncilSwitch({ councilIndexLoad }) {
     set textContent(v) {
       state.headingText = v;
     },
+    title: "",
+    classList: { add() {}, remove() {} },
+    removeAttribute() {},
     focus() {},
   };
   const announcerEl = {
@@ -79,8 +81,9 @@ function loadCouncilSwitch({ councilIndexLoad }) {
       return sel === ".council-sidebar" ? sidebarEl : null;
     },
     getElementById(id) {
-      if (id === "status") return statusEl;
       if (id === "council-route-heading") return headingEl;
+      if (id === "council-meta") return metaEl;
+      if (id === "council-cta") return ctaEl;
       if (id === "council-switch-announcer") return announcerEl;
       if (id === "council-search-container") return searchContainerEl;
       return null;

@@ -126,11 +126,15 @@ def test_seeded_councils_default_to_london_region():
 
 
 @pytest.mark.django_db
-def test_council_picker_view_renders_region_and_council_names():
+def test_council_picker_view_renders_flat_council_list():
     """Checks real structure, not just substring presence -- a loose
     substring-only assertion here would have passed even against the
     broken build where a malformed multi-line `{# #}` Django comment leaked
-    raw text onto the page (caught only by manual browser testing)."""
+    raw text onto the page (caught only by manual browser testing).
+
+    One flat, searchable list replaces the old region-accordion browse (a
+    second, redundant way to find a council once search covers the same
+    job) -- this checks that structure, not the region grouping it replaced."""
     client = Client()
     response = client.get(reverse("council-picker"))
 
@@ -138,11 +142,15 @@ def test_council_picker_view_renders_region_and_council_names():
     content = response.content.decode()
     haringey_url = reverse("council-detail", kwargs={"slug": "haringey"})
 
-    assert "<summary>London</summary>" in content
-    assert f'<a href="{haringey_url}" data-slug="haringey">Haringey</a>' in content
+    assert '<ul id="council-list">' in content
+    assert (
+        f'<li data-name="haringey"><a href="{haringey_url}" data-slug="haringey">'
+        '<span class="row-dot" aria-hidden="true"></span>'
+        '<span class="row-name">Haringey</span></a></li>' in content
+    )
+    assert "<summary>" not in content and "<details>" not in content
     assert '<div id="council-search-container"' in content
     assert '<input type="text" id="council-search"' in content
-    assert '<ul id="council-search-results" hidden></ul>' in content
     assert '<p id="search-status" aria-live="polite">' in content
     # No stray/leaked Django comment syntax anywhere in the rendered output.
     assert "{#" not in content and "#}" not in content
@@ -163,7 +171,11 @@ def test_council_detail_route_renders_map_for_known_council():
     content = response.content.decode()
     assert 'id="map"' in content
     assert "haringey.geojson" in content
-    assert f'<a href="{url}" data-slug="haringey" aria-current="page">Haringey</a>' in content
+    assert (
+        f'<a href="{url}" data-slug="haringey" aria-current="page">'
+        '<span class="row-dot" aria-hidden="true"></span>'
+        '<span class="row-name">Haringey</span></a>' in content
+    )
 
 
 @pytest.mark.django_db
@@ -184,10 +196,16 @@ def test_nation_detail_route_renders_nation_note_and_clears_council_slot():
 
     assert response.status_code == 200
     content = response.content.decode()
-    assert '<h1 id="council-route-heading" tabindex="-1">Wales</h1>' in content
+    assert (
+        '<h1 id="council-route-heading" tabindex="-1" class="council-heading--serif" '
+        'title="Wales">Wales</h1>' in content
+    )
+    assert '<span class="meta-primary">No council-level spend data</span>' in content
     assert "No Transparency Data" in content
     assert "Welsh authorities" in content and "required to" in content
-    assert 'class="spend-cta"' not in content
+    # Same <a id="council-cta"> element as a real selection, just ghosted --
+    # never a real spend-cta href for an entity with no spend data at all.
+    assert 'id="council-cta" class="council-cta council-cta--ghost" aria-disabled="true"' in content
     assert ' aria-current="page"' not in content
 
 

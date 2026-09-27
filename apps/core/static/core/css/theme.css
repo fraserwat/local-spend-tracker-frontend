@@ -76,8 +76,10 @@
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
-  /* System serif, not a webfont -- reserved for exactly one element app-wide
-     (the spend total, see .flagship-total in transactions.html). Design
+  /* System serif, not a webfont -- reserved for one flagship element per
+     screen (the spend total in transactions.html; the selected council/
+     nation name in _council_sidebar.html), never more than one at a time
+     since those two screens are never both on-screen together. Design
      Bible doctrine VIII wants one typographic signature used nowhere else;
      adding a system stack gets that without the render-blocking network
      request the Inter self-hosting comment above already opted out of. */
