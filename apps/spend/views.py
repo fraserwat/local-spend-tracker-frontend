@@ -2,7 +2,7 @@ import calendar
 from datetime import date
 from decimal import Decimal
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import dateformat
@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 
 from apps.councils.models import Council
 
+from .category_buckets import CONTRACTS_KEYWORDS
 from .forms import TransactionFilterForm
 from .pagination import TransactionCursorPagination
 from .selectors import (
@@ -199,6 +200,30 @@ def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
     return chips
 
 
+def _consultancy_estimate_filter() -> Q:
+    """PLACEHOLDER for real entity-resolved consultancy spend (TODO.md
+    Phase 3 -- Entity Resolution Layer, not yet built; the resolver/alias
+    data are explicitly out of this repo's scope). Stands in for it on the
+    transactions page's flagship stat by keyword-matching `category`
+    against CONTRACTS_KEYWORDS at the DB level -- same free-text,
+    no-shared-vocabulary caveats as category_buckets.bucket_for(), so this
+    both over- and under-counts real consultancy spend. Replace this
+    filter (and the "estimate" framing in transactions.html) once Phase 3
+    ships; nothing else about the flagship-stat markup needs to change.
+
+    Known perf caveat: `category` has no index that supports `icontains`
+    (a Postgres trigram/GIN index would be the fix), so this OR-chain is a
+    sequential ILIKE scan -- measured ~20s against Barnet's ~2M rows over
+    the live Neon connection with no date/amount filter applied. Acceptable
+    for a placeholder; revisit before this ships broadly, and doubly so if
+    Phase 3 lands and this filter is still here for some reason.
+    """
+    query = Q()
+    for keyword in CONTRACTS_KEYWORDS:
+        query |= Q(category__icontains=keyword)
+    return query
+
+
 def _sort_link(request, field: str, current_sort: str, current_descending: bool) -> str:
     """Build a same-page URL that sorts by `field`, toggling direction if it's
     already the active sort column. Drops any pagination cursor -- changing
@@ -233,6 +258,7 @@ def council_spend_view(request, slug):
     page = []
     total_count = 0
     total_amount = Decimal("0")
+    consultancy_estimate = Decimal("0")
     paginator = TransactionCursorPagination()
     if form.is_valid():
         queryset = _filtered_transactions(council, form)
@@ -244,6 +270,13 @@ def council_spend_view(request, slug):
         totals = queryset.aggregate(count=Count("id"), amount=Sum("amount_gbp"))
         total_count = totals["count"] or 0
         total_amount = totals["amount"] or Decimal("0")
+        # PLACEHOLDER estimate, not real entity-resolved consultancy spend
+        # -- see _consultancy_estimate_filter()'s docstring and TODO.md
+        # Phase 3.
+        consultancy_totals = queryset.filter(_consultancy_estimate_filter()).aggregate(
+            amount=Sum("amount_gbp")
+        )
+        consultancy_estimate = consultancy_totals["amount"] or Decimal("0")
 
     current_sort = form.sort_field if form.is_valid() else "date"
     current_descending = form.descending if form.is_valid() else True
@@ -275,6 +308,7 @@ def council_spend_view(request, slug):
         "transactions": page,
         "total_count": total_count,
         "total_amount": total_amount,
+        "consultancy_estimate": consultancy_estimate,
         "next_link": paginator.get_next_link() if form.is_valid() else None,
         "previous_link": paginator.get_previous_link() if form.is_valid() else None,
         "sort": current_sort,

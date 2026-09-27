@@ -16,6 +16,15 @@ class CategoryBucket:
 
 OTHER = CategoryBucket("other", "Admin, overhead & other")
 
+# PLACEHOLDER -- also used by apps/spend/views.py as a stand-in for real
+# entity-resolved consultancy spend (see TODO.md Phase 3). Free-text
+# category keyword match, not a lookup table; "consult"/"contract"/
+# "advis" over-match generic contracted services that aren't consultancy,
+# and payments never *labelled* with these words in a council's own
+# category field are silently excluded. Named here, not inline in
+# views.py, so the two call sites can't drift apart.
+CONTRACTS_KEYWORDS = ("consult", "contract", "professional fee", "legal", "advis")
+
 # Checked in order -- first keyword match wins. Order matters where a
 # category could plausibly match more than one bucket.
 _BUCKETS = (
@@ -25,7 +34,7 @@ _BUCKETS = (
     ),
     (
         CategoryBucket("contracts", "Contracts & professional"),
-        ("consult", "contract", "professional fee", "legal", "advis"),
+        CONTRACTS_KEYWORDS,
     ),
     (
         CategoryBucket("capital", "Capital & infrastructure"),
