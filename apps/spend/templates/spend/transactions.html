@@ -677,11 +677,11 @@
   {% if transactions %}
   <div class="flagship-total flow">
     <span class="flagship-total__figure">&pound;{{ total_amount|intcomma }}</span>
-    <span class="flagship-total__label">Total &middot; all {{ total_count }} matching result{{ total_count|pluralize }}</span>
+    <span class="flagship-total__label">Total &middot; all {{ total_count|intcomma }} matching result{{ total_count|pluralize }}</span>
   </div>
   {% endif %}
 
-  <div class="result-summary">Showing {{ transactions|length }} of {{ total_count }} transaction{{ total_count|pluralize }} matching filters</div>
+  <div class="result-summary">Showing {{ transactions|length }} of {{ total_count|intcomma }} transaction{{ total_count|pluralize }} matching filters</div>
 
   {% if transactions %}
   {% include "spend/_pagination.html" with position="top" %}
