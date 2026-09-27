@@ -4,38 +4,26 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from apps.councils.management.commands.import_council_coverage import COVERAGE_FIXTURE
-from apps.councils.models import Council, CouncilCoverage, Region
+from apps.councils.models import Council, CouncilCoverage
 from apps.councils.selectors import get_coverage
-
-# Deliberately out of real ONS range -- see apps.councils.test_councils.
-SYNTHETIC_GSS_PREFIX = "E99"
-
-
-def _make_council(slug, suffix):
-    return Council.objects.create(
-        name=f"Synthetic {slug}",
-        slug=slug,
-        gss_code=f"{SYNTHETIC_GSS_PREFIX}{suffix}",
-        region=Region.LONDON,
-    )
 
 
 @pytest.mark.django_db
-def test_get_coverage_returns_none_for_council_with_no_row():
-    council = _make_council("synthetic-unloaded", "000500")
+def test_get_coverage_returns_none_for_council_with_no_row(make_synthetic_council):
+    council = make_synthetic_council("synthetic-unloaded", "000500")
     assert get_coverage(council) is None
 
 
 @pytest.mark.django_db
-def test_get_coverage_returns_row_when_present():
-    council = _make_council("synthetic-loaded", "000600")
+def test_get_coverage_returns_row_when_present(make_synthetic_council):
+    council = make_synthetic_council("synthetic-loaded", "000600")
     coverage = CouncilCoverage.objects.create(council=council)
     assert get_coverage(council) == coverage
 
 
 @pytest.mark.django_db
-def test_coverage_api_returns_issue_details():
-    council = _make_council("synthetic-issue", "000700")
+def test_coverage_api_returns_issue_details(make_synthetic_council):
+    council = make_synthetic_council("synthetic-issue", "000700")
     CouncilCoverage.objects.create(
         council=council,
         has_data_quality_issue=True,
@@ -50,8 +38,8 @@ def test_coverage_api_returns_issue_details():
 
 
 @pytest.mark.django_db
-def test_coverage_api_returns_no_issue_council():
-    council = _make_council("synthetic-clean", "000800")
+def test_coverage_api_returns_no_issue_council(make_synthetic_council):
+    council = make_synthetic_council("synthetic-clean", "000800")
     CouncilCoverage.objects.create(council=council)
 
     response = APIClient().get(reverse("council-coverage", kwargs={"slug": council.slug}))
@@ -62,8 +50,8 @@ def test_coverage_api_returns_no_issue_council():
 
 
 @pytest.mark.django_db
-def test_coverage_api_404s_when_council_has_no_coverage_row_yet():
-    council = _make_council("synthetic-no-coverage-row", "000900")
+def test_coverage_api_404s_when_council_has_no_coverage_row_yet(make_synthetic_council):
+    council = make_synthetic_council("synthetic-no-coverage-row", "000900")
 
     response = APIClient().get(reverse("council-coverage", kwargs={"slug": council.slug}))
 

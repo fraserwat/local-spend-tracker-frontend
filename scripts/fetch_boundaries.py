@@ -16,20 +16,14 @@ Usage:
 
 import argparse
 import json
-import os
-import sys
-from pathlib import Path
 
-import django
 import geopandas as gpd
 import requests
 import shapely
+from _bootstrap import BASE_DIR, setup_django
 from shapely.geometry import mapping
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
-django.setup()
+setup_django()
 
 from apps.councils.models import Council  # noqa: E402
 

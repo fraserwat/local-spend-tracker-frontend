@@ -12,24 +12,21 @@ Usage:
 """
 
 import argparse
-import os
 import sys
 from decimal import Decimal
 from pathlib import Path
 
-import django
 import polars as pl
+from _bootstrap import setup_django
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
-django.setup()
+setup_django()
 
 from django.conf import settings  # noqa: E402
 from django.db.models import Sum  # noqa: E402
 
 from apps.councils.models import Council  # noqa: E402
 from apps.spend.models import DataLoadRun, SpendTransaction  # noqa: E402
+from apps.spend.services.etl import source_stem  # noqa: E402
 
 
 def reconcile_one(council: Council, source_dir: Path) -> tuple[bool, str]:
@@ -37,7 +34,7 @@ def reconcile_one(council: Council, source_dir: Path) -> tuple[bool, str]:
     if last_run is None:
         return True, "SKIP -- no successful load"
 
-    source_path = source_dir / f"{council.slug.replace('-', '_')}.parquet"
+    source_path = source_dir / f"{source_stem(council.slug)}.parquet"
     if not source_path.exists():
         return False, f"FAIL -- loaded but source file missing: {source_path}"
 

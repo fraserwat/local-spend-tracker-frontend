@@ -10,16 +10,10 @@ from datetime import date, timedelta
 import pytest
 from django.db import connection
 
-from apps.councils.models import Council
 from apps.spend.models import SpendTransaction
 from apps.spend.selectors import get_council_transactions
 
 ROW_COUNT = 100000
-
-
-@pytest.fixture
-def council():
-    return Council.objects.get(slug="haringey")
 
 
 @pytest.fixture

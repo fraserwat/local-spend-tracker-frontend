@@ -19,6 +19,17 @@ SORT_FIELDS = {
 DEFAULT_SORT = "date"
 
 
+def resolve_ordering(sort: str, descending: bool) -> tuple[str, str]:
+    """Sort/dir query params -> an `.order_by()` tuple, `id` tiebreaker included.
+
+    Shared by the selector's own filtering below and by
+    spend/pagination.py's `get_ordering`, so a sort-order link and its
+    paginated results can never disagree on what "sorted by X" means.
+    """
+    field = SORT_FIELDS.get(sort, SORT_FIELDS[DEFAULT_SORT])
+    return (f"-{field}", "-id") if descending else (field, "id")
+
+
 def get_council_transactions(
     council: Council,
     *,
@@ -53,6 +64,4 @@ def get_council_transactions(
         # `~*`, which pg_trgm does index (EXPLAIN: Bitmap Index Scan).
         qs = qs.filter(beneficiary_name__iregex=re.escape(q))
 
-    field = SORT_FIELDS.get(sort, SORT_FIELDS[DEFAULT_SORT])
-    ordering = (field, "id") if not descending else (f"-{field}", "-id")
-    return qs.order_by(*ordering)
+    return qs.order_by(*resolve_ordering(sort, descending))
