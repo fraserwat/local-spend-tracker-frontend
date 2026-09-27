@@ -6,6 +6,7 @@ a lookup table -- anything unmatched falls into OTHER rather than raising.
 """
 
 from dataclasses import dataclass
+from functools import cache
 
 
 @dataclass(frozen=True)
@@ -52,6 +53,7 @@ _BUCKETS = (
 )
 
 
+@cache
 def bucket_for(category: str) -> CategoryBucket:
     lowered = category.lower()
     for bucket, keywords in _BUCKETS:

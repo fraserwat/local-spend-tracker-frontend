@@ -22,7 +22,7 @@ from _bootstrap import setup_django
 setup_django()
 
 from django.conf import settings  # noqa: E402
-from django.db.models import Sum  # noqa: E402
+from django.db.models import Count, Sum  # noqa: E402
 
 from apps.councils.models import Council  # noqa: E402
 from apps.spend.models import DataLoadRun, SpendTransaction  # noqa: E402
@@ -42,11 +42,11 @@ def reconcile_one(council: Council, source_dir: Path) -> tuple[bool, str]:
     source_rows = len(df)
     source_total = round(float(df["AMOUNT_GBP"].sum()), 2)
 
-    db_rows = SpendTransaction.objects.filter(council=council).count()
-    db_total = SpendTransaction.objects.filter(council=council).aggregate(t=Sum("amount_gbp"))[
-        "t"
-    ] or Decimal("0")
-    db_total = round(float(db_total), 2)
+    agg = SpendTransaction.objects.filter(council=council).aggregate(
+        rows=Count("id"), total=Sum("amount_gbp")
+    )
+    db_rows = agg["rows"]
+    db_total = round(float(agg["total"] or Decimal("0")), 2)
 
     if db_rows != source_rows or db_total != source_total:
         return False, (

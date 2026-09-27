@@ -1,83 +1,12 @@
 import hashlib
-import io
-import json
-from datetime import datetime
 from io import StringIO
 
-import boto3
-import polars as pl
 import pytest
 from django.core.management import CommandError, call_command
-from moto import mock_aws
 
 from apps.councils.models import Council
+from apps.spend.conftest import BUCKET, curated_parquet_bytes, seed_council
 from apps.spend.models import DataLoadRun, SpendTransaction
-from apps.spend.services import r2
-
-BUCKET = "test-bucket"
-
-
-@pytest.fixture
-def r2_settings(settings):
-    settings.R2_ACCOUNT_ID = "test-account"
-    settings.R2_ACCESS_KEY_ID = "test-key"
-    settings.R2_SECRET_ACCESS_KEY = "test-secret"
-    settings.R2_BUCKET = BUCKET
-
-
-@pytest.fixture
-def s3_client(r2_settings, monkeypatch):
-    # See apps/spend/test_r2.py for why _client() must be patched to hand
-    # back this moto-backed client rather than r2.py's real R2 endpoint.
-    with mock_aws():
-        client = boto3.client("s3", region_name="us-east-1")
-        client.create_bucket(Bucket=BUCKET)
-        monkeypatch.setattr(r2, "_client", lambda: client)
-        yield client
-
-
-def _curated_parquet_bytes(slug: str) -> bytes:
-    df = pl.DataFrame(
-        [
-            {
-                "COUNCIL_NAME": slug,
-                "DATE": datetime(2026, 1, 15),
-                "BENEFICIARY_NAME": "Acme Ltd",
-                "AMOUNT_GBP": 100.0,
-                "DIRECTORATE": "",
-                "CATEGORY": "",
-                "SUB_CATEGORY": "",
-                "DESCRIPTION": "",
-            }
-        ]
-    )
-    buf = io.BytesIO()
-    df.write_parquet(buf)
-    return buf.getvalue()
-
-
-def _seed_council(client, slug: str, *, corrupt_parquet: bool = False) -> str:
-    """Puts manifest + curated parquet for `slug`, returns the manifest's sha256."""
-    parquet_bytes = _curated_parquet_bytes(slug)
-    sha256 = hashlib.sha256(parquet_bytes).hexdigest()
-    manifest = {
-        "schema_version": 1,
-        "council": slug,
-        "source_run": "nightly",
-        "updated_at": "2026-09-04T13:36:06Z",
-        "curated": {
-            "key": f"curated/{slug}.parquet",
-            "row_count": 1,
-            "sha256": sha256,
-        },
-    }
-    client.put_object(
-        Bucket=BUCKET, Key=f"manifest/{slug}.json", Body=json.dumps(manifest).encode()
-    )
-    if corrupt_parquet:
-        parquet_bytes = parquet_bytes + b"\x00corrupt"
-    client.put_object(Bucket=BUCKET, Key=f"curated/{slug}.parquet", Body=parquet_bytes)
-    return sha256
 
 
 @pytest.mark.django_db
@@ -95,7 +24,8 @@ def test_skips_council_not_in_r2(s3_client):
 @pytest.mark.django_db
 def test_reloads_when_never_loaded(s3_client):
     council = Council.objects.get(slug="barnet")
-    sha256 = _seed_council(s3_client, "barnet")
+    seed_council(s3_client, "barnet")
+    sha256 = hashlib.sha256(curated_parquet_bytes("barnet")).hexdigest()
     out = StringIO()
 
     call_command("reload_from_r2", "--slug", "barnet", stdout=out)
@@ -110,7 +40,8 @@ def test_reloads_when_never_loaded(s3_client):
 @pytest.mark.django_db
 def test_skips_unchanged_sha256(s3_client):
     council = Council.objects.get(slug="barnet")
-    sha256 = _seed_council(s3_client, "barnet")
+    seed_council(s3_client, "barnet")
+    sha256 = hashlib.sha256(curated_parquet_bytes("barnet")).hexdigest()
     DataLoadRun.objects.create(
         council=council,
         source_file_path="r2://barnet",
@@ -130,7 +61,7 @@ def test_skips_unchanged_sha256(s3_client):
 @pytest.mark.django_db
 def test_reloads_when_sha256_differs(s3_client):
     council = Council.objects.get(slug="barnet")
-    _seed_council(s3_client, "barnet")
+    seed_council(s3_client, "barnet")
     DataLoadRun.objects.create(
         council=council,
         source_file_path="r2://barnet",
@@ -148,7 +79,7 @@ def test_reloads_when_sha256_differs(s3_client):
 
 @pytest.mark.django_db
 def test_dry_run_makes_no_changes(s3_client):
-    _seed_council(s3_client, "barnet")
+    seed_council(s3_client, "barnet")
     out = StringIO()
 
     call_command("reload_from_r2", "--slug", "barnet", "--dry-run", stdout=out)
@@ -165,7 +96,7 @@ def test_fetch_failure_writes_failed_dataloadrun_and_continues(s3_client):
     # barnet: manifest present but not valid JSON -- fails at the cheap
     # fetch_manifest step, before any reload is attempted.
     s3_client.put_object(Bucket=BUCKET, Key="manifest/barnet.json", Body=b"{not valid json")
-    _seed_council(s3_client, "camden")
+    seed_council(s3_client, "camden")
     out = StringIO()
 
     with pytest.raises(CommandError, match="one or more councils failed"):
@@ -187,8 +118,8 @@ def test_fetch_failure_writes_failed_dataloadrun_and_continues(s3_client):
 
 @pytest.mark.django_db
 def test_slug_filter_only_processes_one_council(s3_client):
-    _seed_council(s3_client, "barnet")
-    _seed_council(s3_client, "camden")
+    seed_council(s3_client, "barnet")
+    seed_council(s3_client, "camden")
     out = StringIO()
 
     call_command("reload_from_r2", "--slug", "barnet", stdout=out)

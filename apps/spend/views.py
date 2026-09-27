@@ -99,47 +99,61 @@ class BeneficiarySuggestionsAPIView(APIView):
         return Response({"results": get_beneficiary_suggestions(council, q)})
 
 
+def _link_with(request, mutate) -> str:
+    """Same-page URL with `mutate` applied to a copy of the current GET
+    params, cursor always dropped -- every link builder below changes the
+    page's filters/sort, which invalidates whatever pagination cursor was
+    in the old URL."""
+    params = request.GET.copy()
+    mutate(params)
+    params.pop("cursor", None)
+    return f"?{params.urlencode()}"
+
+
 def _date_preset_link(request, date_from: date, date_to: date) -> str:
     """Same shape as _sort_link below, but for the two Day/Month/Year
     subfields DayMonthYearField's widget renders as (see forms.py) --
     date_from_0/1/2 for day/month/year, not one date_from param."""
-    params = request.GET.copy()
-    params["date_from_0"], params["date_from_1"], params["date_from_2"] = (
-        str(date_from.day),
-        str(date_from.month),
-        str(date_from.year),
-    )
-    params["date_to_0"], params["date_to_1"], params["date_to_2"] = (
-        str(date_to.day),
-        str(date_to.month),
-        str(date_to.year),
-    )
-    params.pop("cursor", None)
-    return f"?{params.urlencode()}"
+
+    def mutate(params):
+        params["date_from_0"], params["date_from_1"], params["date_from_2"] = (
+            str(date_from.day),
+            str(date_from.month),
+            str(date_from.year),
+        )
+        params["date_to_0"], params["date_to_1"], params["date_to_2"] = (
+            str(date_to.day),
+            str(date_to.month),
+            str(date_to.year),
+        )
+
+    return _link_with(request, mutate)
 
 
 def _remove_filter_link(request, keys: list[str]) -> str:
     """Same-page URL with the given GET params (and any cursor) dropped --
     what an active-filter chip's remove button links to."""
-    params = request.GET.copy()
-    for key in keys:
-        params.pop(key, None)
-    params.pop("cursor", None)
-    return f"?{params.urlencode()}"
+
+    def mutate(params):
+        for key in keys:
+            params.pop(key, None)
+
+    return _link_with(request, mutate)
 
 
 def _remove_category_link(request, value: str) -> str:
     """Same shape as _remove_filter_link, but drops one value out of the
     repeated `category` param instead of the whole key -- each selected
     category gets its own chip/remove link, not one combined chip."""
-    params = request.GET.copy()
-    remaining = [v for v in params.getlist("category") if v != value]
-    if remaining:
-        params.setlist("category", remaining)
-    else:
-        params.pop("category", None)
-    params.pop("cursor", None)
-    return f"?{params.urlencode()}"
+
+    def mutate(params):
+        remaining = [v for v in params.getlist("category") if v != value]
+        if remaining:
+            params.setlist("category", remaining)
+        else:
+            params.pop("category", None)
+
+    return _link_with(request, mutate)
 
 
 def _active_filter_chips(request, form: TransactionFilterForm) -> list[dict]:
@@ -203,11 +217,12 @@ def _sort_link(request, field: str, current_sort: str, current_descending: bool)
     """Build a same-page URL that sorts by `field`, toggling direction if it's
     already the active sort column. Drops any pagination cursor -- changing
     sort order invalidates the caller's position in the old ordering."""
-    params = request.GET.copy()
-    params["sort"] = field
-    params["dir"] = "asc" if (field == current_sort and current_descending) else "desc"
-    params.pop("cursor", None)
-    return f"?{params.urlencode()}"
+
+    def mutate(params):
+        params["sort"] = field
+        params["dir"] = "asc" if (field == current_sort and current_descending) else "desc"
+
+    return _link_with(request, mutate)
 
 
 def council_spend_view(request, slug):
@@ -223,8 +238,9 @@ def council_spend_view(request, slug):
     """
     council = get_object_or_404(Council, slug=slug)
     form = TransactionFilterForm(request.GET, council=council)
+    valid = form.is_valid()
 
-    if form.is_valid() and request.GET.get("export") == "csv":
+    if valid and request.GET.get("export") == "csv":
         if not ExportRateThrottle().allow_request(Request(request), view=None):
             return HttpResponse("Too many export requests, try again shortly.", status=429)
         queryset = _filtered_transactions(council, form)
@@ -234,7 +250,7 @@ def council_spend_view(request, slug):
     total_count = 0
     total_amount = Decimal("0")
     paginator = TransactionCursorPagination()
-    if form.is_valid():
+    if valid:
         queryset = _filtered_transactions(council, form)
         page = paginator.paginate_queryset(queryset, Request(request)) or []
         # One aggregate query over the filtered (unsliced) queryset -- an
@@ -245,8 +261,8 @@ def council_spend_view(request, slug):
         total_count = totals["count"] or 0
         total_amount = totals["amount"] or Decimal("0")
 
-    current_sort = form.sort_field if form.is_valid() else "date"
-    current_descending = form.descending if form.is_valid() else True
+    current_sort = form.sort_field if valid else "date"
+    current_descending = form.descending if valid else True
 
     preset_links = {}
     latest_date = get_latest_transaction_date(council)
@@ -275,8 +291,8 @@ def council_spend_view(request, slug):
         "transactions": page,
         "total_count": total_count,
         "total_amount": total_amount,
-        "next_link": paginator.get_next_link() if form.is_valid() else None,
-        "previous_link": paginator.get_previous_link() if form.is_valid() else None,
+        "next_link": paginator.get_next_link() if valid else None,
+        "previous_link": paginator.get_previous_link() if valid else None,
         "sort": current_sort,
         "dir": "asc" if not current_descending else "desc",
         "sort_links": {
@@ -285,21 +301,20 @@ def council_spend_view(request, slug):
         },
         "preset_links": preset_links,
         "custom_date_open": custom_date_open,
-        "active_filters": _active_filter_chips(request, form) if form.is_valid() else [],
+        "active_filters": _active_filter_chips(request, form) if valid else [],
         "cluster_active": {
             "date": bool(
-                form.is_valid()
-                and (form.cleaned_data.get("date_from") or form.cleaned_data.get("date_to"))
+                valid and (form.cleaned_data.get("date_from") or form.cleaned_data.get("date_to"))
             ),
             "amount": bool(
-                form.is_valid()
+                valid
                 and (
                     form.cleaned_data.get("amount_min") is not None
                     or form.cleaned_data.get("amount_max") is not None
                 )
             ),
-            "recipient": bool(form.is_valid() and form.cleaned_data.get("q")),
-            "category": bool(form.is_valid() and form.cleaned_data.get("category")),
+            "recipient": bool(valid and form.cleaned_data.get("q")),
+            "category": bool(valid and form.cleaned_data.get("category")),
         },
     }
     return render(request, "spend/transactions.html", context)

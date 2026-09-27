@@ -17,11 +17,10 @@ Usage:
 import argparse
 import json
 
-import geopandas as gpd
 import requests
 import shapely
 from _bootstrap import BASE_DIR, setup_django
-from shapely.geometry import mapping
+from shapely.geometry import mapping, shape
 
 setup_django()
 
@@ -65,8 +64,8 @@ def fetch_boundary(gss_code: str) -> dict:
 
 
 def simplify_geometry(raw_geojson: dict, tolerance: float) -> dict:
-    gdf = gpd.GeoDataFrame.from_features(raw_geojson["features"], crs="EPSG:4326")
-    simplified = gdf.geometry.iloc[0].simplify(tolerance, preserve_topology=True)
+    geometry = shape(raw_geojson["features"][0]["geometry"])
+    simplified = geometry.simplify(tolerance, preserve_topology=True)
     rounded = shapely.set_precision(simplified, grid_size=COORDINATE_PRECISION_DEGREES)
     return mapping(rounded)
 

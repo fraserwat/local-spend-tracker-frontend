@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.councils.models import Council
-from apps.spend.services.etl import LoadError, load_council_spend, validate_columns
+from apps.spend.services.etl import LoadError, load_and_stamp, load_council_spend, validate_columns
 from apps.spend.services.r2 import R2Error, fetch_council, normalize_slug
 
 
@@ -87,9 +87,7 @@ class Command(BaseCommand):
 
             # Load while the temp dir (and its parquet file) is still alive --
             # load_council_spend reads it directly, no separate copy.
-            run = load_council_spend(council, fetched.parquet_path)
-            run.source_sha256 = fetched.manifest["curated"]["sha256"]
-            run.save(update_fields=["source_sha256"])
+            run = load_and_stamp(council, fetched)
             self.stdout.write(self.style.SUCCESS(f"loaded {run.row_count} rows for {council.name}"))
 
     def _check_columns(self, df):

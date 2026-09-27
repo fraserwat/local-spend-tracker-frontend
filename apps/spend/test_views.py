@@ -2,15 +2,13 @@ import re
 from datetime import date, timedelta
 
 import pytest
-from django.test import Client
 from django.urls import reverse
 
 from apps.spend.models import SpendTransaction
 
 
 @pytest.mark.django_db
-def test_html_view_renders_table_for_council(council, rows):
-    client = Client()
+def test_html_view_renders_table_for_council(council, rows, client):
     response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
 
     assert response.status_code == 200
@@ -20,14 +18,13 @@ def test_html_view_renders_table_for_council(council, rows):
 
 
 @pytest.mark.django_db
-def test_amounts_are_comma_delimited_in_table_and_total(council):
+def test_amounts_are_comma_delimited_in_table_and_total(council, client):
     SpendTransaction.objects.create(
         council=council,
         date=date(2026, 1, 1),
         beneficiary_name="Big Vendor",
         amount_gbp="1234567.89",
     )
-    client = Client()
     response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
 
     content = response.content.decode()
@@ -35,7 +32,7 @@ def test_amounts_are_comma_delimited_in_table_and_total(council):
 
 
 @pytest.mark.django_db
-def test_scraped_beneficiary_name_is_escaped_in_html(council):
+def test_scraped_beneficiary_name_is_escaped_in_html(council, client):
     """docs/ARCHITECTURE.md's security plan: scraped text (beneficiary_name,
     description, directorate, category) must never be rendered via |safe or
     mark_safe. A payload injected here proves Django's default auto-escaping
@@ -47,7 +44,6 @@ def test_scraped_beneficiary_name_is_escaped_in_html(council):
         beneficiary_name=payload,
         amount_gbp="10.00",
     )
-    client = Client()
     response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
 
     content = response.content.decode()
@@ -56,15 +52,13 @@ def test_scraped_beneficiary_name_is_escaped_in_html(council):
 
 
 @pytest.mark.django_db
-def test_html_view_404s_for_unknown_council():
-    client = Client()
+def test_html_view_404s_for_unknown_council(client):
     response = client.get(reverse("council-spend", kwargs={"slug": "not-a-real-council"}))
     assert response.status_code == 404
 
 
 @pytest.mark.django_db
-def test_html_view_rejects_inverted_date_range(council, rows):
-    client = Client()
+def test_html_view_rejects_inverted_date_range(council, rows, client):
     response = client.get(
         reverse("council-spend", kwargs={"slug": council.slug}),
         {
@@ -83,8 +77,7 @@ def test_html_view_rejects_inverted_date_range(council, rows):
 
 
 @pytest.mark.django_db
-def test_api_returns_paginated_json(council, rows):
-    client = Client()
+def test_api_returns_paginated_json(council, rows, client):
     response = client.get(reverse("council-transactions", kwargs={"slug": council.slug}))
 
     assert response.status_code == 200
@@ -94,8 +87,7 @@ def test_api_returns_paginated_json(council, rows):
 
 
 @pytest.mark.django_db
-def test_api_rejects_inverted_amount_range(council, rows):
-    client = Client()
+def test_api_rejects_inverted_amount_range(council, rows, client):
     response = client.get(
         reverse("council-transactions", kwargs={"slug": council.slug}),
         {"amount_min": "500", "amount_max": "10"},
@@ -106,8 +98,7 @@ def test_api_rejects_inverted_amount_range(council, rows):
 
 @pytest.mark.parametrize("endpoint_name", ["council-spend", "council-transactions"])
 @pytest.mark.django_db
-def test_sort_toggles_order_on_html_and_api(council, rows, endpoint_name):
-    client = Client()
+def test_sort_toggles_order_on_html_and_api(council, rows, endpoint_name, client):
     kwargs = {"slug": council.slug}
     asc = client.get(reverse(endpoint_name, kwargs=kwargs), {"sort": "amount_gbp", "dir": "asc"})
     desc = client.get(reverse(endpoint_name, kwargs=kwargs), {"sort": "amount_gbp", "dir": "desc"})
@@ -129,7 +120,7 @@ def test_sort_toggles_order_on_html_and_api(council, rows, endpoint_name):
 
 
 @pytest.mark.django_db
-def test_api_pagination_walk_covers_all_rows(council):
+def test_api_pagination_walk_covers_all_rows(council, client):
     SpendTransaction.objects.bulk_create(
         SpendTransaction(
             council=council,
@@ -139,7 +130,6 @@ def test_api_pagination_walk_covers_all_rows(council):
         )
         for i in range(180)
     )
-    client = Client()
     url = reverse("council-transactions", kwargs={"slug": council.slug})
     seen = []
     pages = 0
@@ -158,12 +148,11 @@ def test_api_pagination_walk_covers_all_rows(council):
 
 
 @pytest.mark.django_db
-def test_category_filter_only_returns_matching_rows(council, rows):
+def test_category_filter_only_returns_matching_rows(council, rows, client):
     rows[0].category = "Staff costs"
     rows[0].save()
     rows[1].category = "Grants"
     rows[1].save()
-    client = Client()
 
     response = client.get(
         reverse("council-transactions", kwargs={"slug": council.slug}),
@@ -177,12 +166,11 @@ def test_category_filter_only_returns_matching_rows(council, rows):
 
 
 @pytest.mark.django_db
-def test_category_filter_accepts_multiple_values(council, rows):
+def test_category_filter_accepts_multiple_values(council, rows, client):
     rows[0].category = "Staff costs"
     rows[0].save()
     rows[1].category = "Grants"
     rows[1].save()
-    client = Client()
 
     response = client.get(
         reverse("council-transactions", kwargs={"slug": council.slug}),
@@ -195,13 +183,12 @@ def test_category_filter_accepts_multiple_values(council, rows):
 
 
 @pytest.mark.django_db
-def test_category_filter_rejects_value_not_in_councils_categories(council, rows):
+def test_category_filter_rejects_value_not_in_councils_categories(council, rows, client):
     """A category param must be one of this council's own distinct values --
     guards against a stale bookmarked filter link silently matching nothing,
     or an unrelated value being accepted as if it filtered anything."""
     rows[0].category = "Staff costs"
     rows[0].save()
-    client = Client()
 
     response = client.get(
         reverse("council-transactions", kwargs={"slug": council.slug}),
@@ -212,10 +199,9 @@ def test_category_filter_rejects_value_not_in_councils_categories(council, rows)
 
 
 @pytest.mark.django_db
-def test_category_checkboxes_render_councils_distinct_values(council, rows):
+def test_category_checkboxes_render_councils_distinct_values(council, rows, client):
     rows[0].category = "Staff costs"
     rows[0].save()
-    client = Client()
 
     response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
 
@@ -224,10 +210,9 @@ def test_category_checkboxes_render_councils_distinct_values(council, rows):
 
 
 @pytest.mark.django_db
-def test_category_chip_shown_per_selected_category(council, rows):
+def test_category_chip_shown_per_selected_category(council, rows, client):
     rows[0].category = "Staff costs"
     rows[0].save()
-    client = Client()
 
     response = client.get(
         reverse("council-spend", kwargs={"slug": council.slug}), {"category": "Staff costs"}
@@ -238,12 +223,11 @@ def test_category_chip_shown_per_selected_category(council, rows):
 
 
 @pytest.mark.django_db
-def test_beneficiary_search_query_param_is_parameterized_not_interpolated(council, rows):
+def test_beneficiary_search_query_param_is_parameterized_not_interpolated(council, rows, client):
     """A naive f-string/raw-SQL implementation would either error or behave
     unexpectedly on unescaped SQL metacharacters; the ORM must handle it as
     inert literal text via a bound parameter."""
     malicious = "Vendor'; DROP TABLE spend_spendtransaction; --"
-    client = Client()
     response = client.get(
         reverse("council-transactions", kwargs={"slug": council.slug}), {"q": malicious}
     )
@@ -256,8 +240,7 @@ def test_beneficiary_search_query_param_is_parameterized_not_interpolated(counci
 
 
 @pytest.mark.django_db
-def test_beneficiary_suggestions_endpoint_returns_matches(council, rows):
-    client = Client()
+def test_beneficiary_suggestions_endpoint_returns_matches(council, rows, client):
     response = client.get(
         reverse("council-transaction-beneficiaries", kwargs={"slug": council.slug}),
         {"q": "Vendor 0"},
@@ -267,8 +250,7 @@ def test_beneficiary_suggestions_endpoint_returns_matches(council, rows):
 
 
 @pytest.mark.django_db
-def test_beneficiary_suggestions_endpoint_404s_for_unknown_council():
-    client = Client()
+def test_beneficiary_suggestions_endpoint_404s_for_unknown_council(client):
     response = client.get(
         reverse("council-transaction-beneficiaries", kwargs={"slug": "not-a-real-council"}),
         {"q": "ab"},
@@ -277,10 +259,9 @@ def test_beneficiary_suggestions_endpoint_404s_for_unknown_council():
 
 
 @pytest.mark.django_db
-def test_date_presets_link_to_the_latest_transactions_month_and_year(council, rows):
+def test_date_presets_link_to_the_latest_transactions_month_and_year(council, rows, client):
     """rows' latest date is 2026-01-05 (see the `rows` fixture) -- presets
     are computed from the data's own max date, not wall-clock "today"."""
-    client = Client()
     response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
     content = response.content.decode()
 
@@ -295,8 +276,7 @@ def test_date_presets_link_to_the_latest_transactions_month_and_year(council, ro
 
 
 @pytest.mark.django_db
-def test_active_filter_chip_shown_for_applied_recipient_search(council, rows):
-    client = Client()
+def test_active_filter_chip_shown_for_applied_recipient_search(council, rows, client):
     response = client.get(
         reverse("council-spend", kwargs={"slug": council.slug}), {"q": "Vendor 00"}
     )
@@ -306,7 +286,6 @@ def test_active_filter_chip_shown_for_applied_recipient_search(council, rows):
 
 
 @pytest.mark.django_db
-def test_no_chip_row_when_no_filters_applied(council, rows):
-    client = Client()
+def test_no_chip_row_when_no_filters_applied(council, rows, client):
     response = client.get(reverse("council-spend", kwargs={"slug": council.slug}))
     assert 'class="chip-row"' not in response.content.decode()
