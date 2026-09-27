@@ -41,11 +41,25 @@
      the longest real council name ("Bournemouth, Christchurch and Poole",
      366px at 1.4rem vs. this slot's 368px content width) -- 1.35rem (353px)
      was the largest step with real margin left before that name would
-     start clipping again. */
+     start clipping again.
+
+     Design Bible doctrine VIII -- one typographic signature, reused here
+     rather than invented, for the sidebar's own flagship fact. Always
+     serif, including the "Select a council" placeholder: the three states
+     (nothing selected, a council, a nation) are mutually exclusive on
+     screen, so there's never a second serif element competing with this
+     one -- doctrine VIII's "one signature" rule is about what's visible at
+     once, not about withholding it from a state that isn't real data yet.
+     theme.css's own comment used to call --font-serif a one-element-
+     app-wide reservation; that's loosened to one-per-screen here, since
+     this slot and the transactions page's spend total are never on screen
+     together either. */
   #council-route-heading {
     font-size: 1.35rem;
     margin: 0;
-    font-weight: 600;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -57,19 +71,6 @@
      draws an ugly box around the serif text on every click. */
   #council-route-heading:focus {
     outline: none;
-  }
-  /* Design Bible doctrine VIII -- one typographic signature, reused here
-     rather than invented, for the sidebar's own flagship fact (which
-     real council or nation you're looking at). theme.css's own comment
-     used to call --font-serif a one-element-app-wide reservation; that's
-     loosened to one-per-screen here, since this slot and the transactions
-     page's spend total are never on screen at the same time. Only real,
-     named entities get it -- the "Select a council" placeholder stays
-     sans, so the serif is earned by actual data, not chrome. */
-  #council-route-heading.council-heading--serif {
-    font-family: var(--font-serif);
-    font-weight: 500;
-    letter-spacing: -0.01em;
   }
   /* Same fixed-single-line contract as the heading above, for the same
      reason -- "Yorkshire and the Humber · Updated 2 days ago" is longer

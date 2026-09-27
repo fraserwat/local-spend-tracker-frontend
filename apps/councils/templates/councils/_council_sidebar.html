@@ -16,7 +16,7 @@ component updating in place, not a different page appearing underneath.
 {% endcomment %}
 <div class="council-sidebar">
   <div id="council-detail-slot">
-    <h1 id="council-route-heading" tabindex="-1"{% if council or nation %} class="council-heading--serif" title="{% if council %}{{ council.name }}{% else %}{{ nation.name }}{% endif %}"{% endif %}>{% if council %}{{ council.name }}{% elif nation %}{{ nation.name }}{% else %}Select a council{% endif %}</h1>
+    <h1 id="council-route-heading" tabindex="-1"{% if council or nation %} title="{% if council %}{{ council.name }}{% else %}{{ nation.name }}{% endif %}"{% endif %}>{% if council %}{{ council.name }}{% elif nation %}{{ nation.name }}{% else %}Select a council{% endif %}</h1>
     <p id="council-meta">{% if council %}<span class="meta-primary" title="{{ council.get_region_display }}">{{ council.get_region_display }}</span>{% if council_updated %}<span class="meta-sep">&middot;</span><span class="meta-secondary">Updated {{ council_updated }}</span>{% endif %}{% elif nation %}<span class="meta-primary">No council-level spend data</span>{% else %}<span class="meta-primary">Select a council to see its spend</span>{% endif %}</p>
     {% if council %}<a id="council-cta" class="council-cta" href="{% url 'council-spend' slug=council.slug %}">View Council Spend</a>{% else %}<a id="council-cta" class="council-cta council-cta--ghost" aria-disabled="true" tabindex="-1">View Council Spend</a>{% endif %}
   </div>

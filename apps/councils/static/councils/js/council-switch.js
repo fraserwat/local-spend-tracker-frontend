@@ -131,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.title = row.name + " — Local Spend Tracker";
         headingEl.textContent = row.name;
         headingEl.title = row.name;
-        headingEl.classList.add("council-heading--serif");
         setMeta(row.region_display, row.last_loaded_at ? "Updated " + relativeTime(row.last_loaded_at) : null);
         // Same <a> element as the ghost state (see showPicker) -- only its
         // href/class/disabledness change, never its node type.
@@ -162,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.title = "Local Spend Tracker";
     headingEl.textContent = "Select a council";
     headingEl.removeAttribute("title");
-    headingEl.classList.remove("council-heading--serif");
     setMeta("Select a council to see its spend", null);
     ctaEl.removeAttribute("href");
     ctaEl.classList.add("council-cta--ghost");
