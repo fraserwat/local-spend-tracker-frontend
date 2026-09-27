@@ -19,24 +19,19 @@ mechanism itself.
 
 import argparse
 import io
-import os
-import sys
 import time
 from pathlib import Path
 
-import django
 import polars as pl
+from _bootstrap import setup_django
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
-django.setup()
+setup_django()
 
 from django.db import connection, transaction  # noqa: E402
 
 from apps.councils.models import Council, Region  # noqa: E402
 from apps.spend.models import AMOUNT_DECIMAL_PLACES, SpendTransaction  # noqa: E402
-from apps.spend.services.etl import load_council_spend  # noqa: E402
+from apps.spend.services.etl import acquire_load_lock, load_council_spend, source_stem  # noqa: E402
 
 SCRATCH_SLUG = "benchmark-scratch"
 STAGING_TABLE = "staging_spend_transaction"
@@ -94,9 +89,7 @@ def benchmark_copy_staging(council: Council, parquet_path: Path) -> tuple[float,
     start = time.perf_counter()
     with transaction.atomic():
         with connection.cursor() as cursor:
-            cursor.execute("SELECT pg_try_advisory_xact_lock(%s)", [council.id])
-            if not cursor.fetchone()[0]:
-                raise RuntimeError(f"load already in progress for council_id={council.id}")
+            acquire_load_lock(cursor, council.id, error_cls=RuntimeError)
 
             cursor.execute(f"DROP TABLE IF EXISTS {STAGING_TABLE}")
             cursor.execute(
@@ -152,7 +145,7 @@ def main():
     args = parser.parse_args()
 
     council = _make_scratch_council()
-    relabeled_path = _relabel_parquet(args.parquet_path, SCRATCH_SLUG.replace("-", "_"))
+    relabeled_path = _relabel_parquet(args.parquet_path, source_stem(SCRATCH_SLUG))
 
     try:
         time_a, rows_a = benchmark_bulk_create(council, relabeled_path)

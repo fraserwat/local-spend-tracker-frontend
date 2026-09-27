@@ -40,15 +40,43 @@ class LoadError(Exception):
     """Raised for any failure during a load; DataLoadRun is marked failed first."""
 
 
-def _validate(df_columns: set[str], council_names: set[str], expected_council_name: str) -> None:
+def source_stem(slug: str) -> str:
+    """Council slug -> the sibling data repo's filename/COUNCIL_NAME stem.
+
+    That repo's COUNCIL_NAME values and filenames use underscores; Django's
+    slugify produces hyphens for multi-word councils (e.g. tower-hamlets vs
+    tower_hamlets) -- every local-file, R2-key, and COUNCIL_NAME comparison
+    against that repo's naming needs this same normalization.
+    """
+    return slug.replace("-", "_")
+
+
+def validate_columns(df_columns: set[str]) -> None:
     if df_columns != EXPECTED_COLUMNS:
         missing = EXPECTED_COLUMNS - df_columns
         extra = df_columns - EXPECTED_COLUMNS
         raise LoadError(f"column mismatch: missing={missing or None} extra={extra or None}")
+
+
+def _validate(df_columns: set[str], council_names: set[str], expected_council_name: str) -> None:
+    validate_columns(df_columns)
     if council_names != {expected_council_name}:
         raise LoadError(
             f"expected COUNCIL_NAME=={{{expected_council_name!r}}}, found {council_names}"
         )
+
+
+def acquire_load_lock(cursor, council_id: int, *, error_cls: type[Exception] = LoadError) -> None:
+    """Advisory tx lock so two loads for the same council can't race.
+
+    Released automatically at transaction end (pg_try_advisory_xact_lock),
+    not by an explicit unlock call. `error_cls` lets scripts/benchmark_bulk_load.py
+    reuse this outside a real load (where a LoadError has no DataLoadRun to
+    attach to) by raising a plain RuntimeError instead.
+    """
+    cursor.execute("SELECT pg_try_advisory_xact_lock(%s)", [council_id])
+    if not cursor.fetchone()[0]:
+        raise error_cls(f"load already in progress for council_id={council_id}")
 
 
 def _to_transaction(row: dict, council: Council) -> SpendTransaction:
@@ -82,20 +110,15 @@ def load_council_spend(council: Council, source_path: Path) -> DataLoadRun:
         # Upstream DATE dtype varies (Date vs Datetime) -- normalize once so
         # downstream code always sees plain datetime.date values.
         df = df.with_columns(pl.col("DATE").cast(pl.Date))
-        # Source repo's COUNCIL_NAME/filenames use underscores; Django's
-        # slugify produces hyphens for multi-word councils (e.g.
-        # tower-hamlets vs tower_hamlets) -- normalize before comparing.
         _validate(
             set(df.columns),
             set(df["COUNCIL_NAME"].unique().to_list()),
-            council.slug.replace("-", "_"),
+            source_stem(council.slug),
         )
 
         with transaction.atomic():
             with connection.cursor() as cursor:
-                cursor.execute("SELECT pg_try_advisory_xact_lock(%s)", [council.id])
-                if not cursor.fetchone()[0]:
-                    raise LoadError(f"load already in progress for council_id={council.id}")
+                acquire_load_lock(cursor, council.id)
 
             SpendTransaction.objects.filter(council=council).delete()
 

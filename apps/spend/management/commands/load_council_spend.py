@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.councils.models import Council
-from apps.spend.services.etl import EXPECTED_COLUMNS, load_council_spend
+from apps.spend.services.etl import LoadError, load_council_spend, source_stem, validate_columns
 from apps.spend.services.r2 import R2Error, fetch_council
 
 
@@ -48,18 +48,13 @@ class Command(BaseCommand):
         if not source_dir:
             raise CommandError("--source-dir not given and settings.SPEND_SOURCE_DIR not set")
 
-        # Sibling repo's curated filenames use underscores (its own
-        # naming convention); Django's slugify produces hyphens. Only
-        # single-word slugs have been loaded so far, so this mismatch
-        # was latent until multi-word boroughs (e.g. tower-hamlets).
-        source_path = Path(source_dir) / f"{slug.replace('-', '_')}.parquet"
+        source_path = Path(source_dir) / f"{source_stem(slug)}.parquet"
         if not source_path.exists():
             raise CommandError(f"source file not found: {source_path}")
 
         if dry_run:
             df = pl.read_parquet(source_path)
-            if set(df.columns) != EXPECTED_COLUMNS:
-                raise CommandError(f"column mismatch: found {set(df.columns)}")
+            self._check_columns(df)
             self.stdout.write(f"dry-run OK: {source_path} has {len(df)} rows, columns match")
             return
 
@@ -67,9 +62,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"loaded {run.row_count} rows for {council.name}"))
 
     def _handle_from_r2(self, council, slug, dry_run):
-        # Same hyphen->underscore normalization as --source-dir: R2 object
-        # keys use the sibling repo's own filename stems (underscored).
-        r2_slug = slug.replace("-", "_")
+        r2_slug = source_stem(slug)
         with tempfile.TemporaryDirectory() as tmp_dir:
             try:
                 fetched = fetch_council(r2_slug, Path(tmp_dir))
@@ -78,8 +71,7 @@ class Command(BaseCommand):
 
             if dry_run:
                 df = pl.read_parquet(fetched.parquet_path)
-                if set(df.columns) != EXPECTED_COLUMNS:
-                    raise CommandError(f"column mismatch: found {set(df.columns)}")
+                self._check_columns(df)
                 self.stdout.write(
                     f"dry-run OK: r2://{r2_slug} manifest row_count="
                     f"{fetched.manifest['curated']['row_count']}, downloaded {len(df)} rows, "
@@ -91,3 +83,9 @@ class Command(BaseCommand):
             # load_council_spend reads it directly, no separate copy.
             run = load_council_spend(council, fetched.parquet_path)
             self.stdout.write(self.style.SUCCESS(f"loaded {run.row_count} rows for {council.name}"))
+
+    def _check_columns(self, df):
+        try:
+            validate_columns(set(df.columns))
+        except LoadError as exc:
+            raise CommandError(str(exc)) from exc

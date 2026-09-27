@@ -5,27 +5,7 @@ import pytest
 from django.test import Client
 from django.urls import reverse
 
-from apps.councils.models import Council
 from apps.spend.models import SpendTransaction
-
-
-@pytest.fixture
-def council():
-    return Council.objects.get(slug="haringey")
-
-
-@pytest.fixture
-def rows(council):
-    base = date(2026, 1, 1)
-    return [
-        SpendTransaction.objects.create(
-            council=council,
-            date=base + timedelta(days=i),
-            beneficiary_name=f"Vendor {i:02d}",
-            amount_gbp=f"{(i + 1) * 10}.00",
-        )
-        for i in range(5)
-    ]
 
 
 @pytest.mark.django_db
