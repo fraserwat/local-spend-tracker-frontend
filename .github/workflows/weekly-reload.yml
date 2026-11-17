@@ -1,10 +1,12 @@
 name: Weekly R2 reload
 
 on:
-  schedule:
-    # Monday 04:00 UTC -- after nightly.yml's daily 03:00 UTC runs in the
-    # sibling repo have had a full week to publish anything that changed.
-    - cron: "0 4 * * 1"
+  # Schedule disabled: flyctl app "local-spend-tracker-frontend" not found
+  # (fails every run). Re-enable once app exists.
+  # schedule:
+  #   # Monday 04:00 UTC -- after nightly.yml's daily 03:00 UTC runs in the
+  #   # sibling repo have had a full week to publish anything that changed.
+  #   - cron: "0 4 * * 1"
   workflow_dispatch:
 
 jobs:
